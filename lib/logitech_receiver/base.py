@@ -129,7 +129,7 @@ def open():
             return handle
 
 
-def close(handle):
+def close(handle: int):
     """Closes a HID device handle."""
     if handle:
         try:
@@ -350,10 +350,15 @@ class Request:
     id: int
     id_bytes: bytes
 
+    devnumber: int
+
     timeout: int
     params: bytes = b""
+    notifications_hook: Optional[Callable] = None
 
-    def __init__(self, handle, devnumber, request_id: int, *params):
+    def __init__(self, devnumber: int, request_id: int, *params):
+        self.devnumber = devnumber
+
         if devnumber != 0xFF and request_id < 0x8000:
             # For HID++ 2.0 feature requests, randomize the SoftwareId to make it
             # easier to recognize the reply for this request. also, always set the
@@ -378,8 +383,17 @@ class Request:
                 _pack("B", p) if isinstance(p, int) else p for p in params
             )
 
+    @property
     def request_data(self) -> bytes:
         return self.id_bytes + self.params
+
+    def write(self, handle: int):
+        self.notifications_hook = getattr(handle, "notifications_hook", None)
+        _skip_incoming(handle, self.notifications_hook)
+        write(int(handle), self.devnumber, self.request_data)
+
+    def handle_reply(self, reply: RawPacket):
+        pass
 
 
 def request(handle, devnumber, request_id, *params):
@@ -397,48 +411,23 @@ def request(handle, devnumber, request_id, *params):
     # import inspect as _inspect
     # print ('\n  '.join(str(s) for s in _inspect.stack()))
 
-    assert isinstance(request_id, int)
-    if devnumber != 0xFF and request_id < 0x8000:
-        # For HID++ 2.0 feature requests, randomize the SoftwareId to make it
-        # easier to recognize the reply for this request. also, always set the
-        # most significant bit (8) in SoftwareId, to make notifications easier
-        # to distinguish from request replies.
-        # This only applies to peripheral requests, ofc.
-        request_id = (request_id & 0xFFF0) | 0x08 | _random_bits(3)
-
-    timeout = (
-        _RECEIVER_REQUEST_TIMEOUT if devnumber == 0xFF else _DEVICE_REQUEST_TIMEOUT
-    )
-    # be extra patient on long register read
-    if request_id & 0xFF00 == 0x8300:
-        timeout *= 2
-
-    if params:
-        params = b"".join(_pack("B", p) if isinstance(p, int) else p for p in params)
-    else:
-        params = b""
-    # if _log.isEnabledFor(_DEBUG):
-    # 	_log.debug("(%s) device %d request_id {%04X} params [%s]", handle, devnumber, request_id, _strhex(params))
-    request_data = _pack("!H", request_id) + params
-
-    notifications_hook = getattr(handle, "notifications_hook", None)
-    _skip_incoming(handle, notifications_hook)
-    write(int(handle), devnumber, request_data)
+    r = Request(devnumber, request_id, *params)
+    r.write(handle)
 
     # we consider timeout from this point
     request_started = _timestamp()
     delta = 0
 
-    while delta < timeout:
-        reply = _read(handle, timeout)
+    while delta < r.timeout:
+        reply = _read(handle, r.timeout - delta)
 
         if reply:
-            if reply.devnumber == devnumber:
-                # error on request
+            if reply.devnumber == devnumber and reply.data:
+                # a HID++ 1.0 feature call returned with an error
                 if (
                     reply.report_id == 0x10
-                    and reply.data[:1] == b"\x8F"
-                    and reply.data[1:3] == request_data[:2]
+                    and reply.data[0] == 0x8F
+                    and reply.data[1:3] == r.id_bytes
                 ):
                     error = ord(reply.data[3:4])
 
@@ -462,7 +451,7 @@ def request(handle, devnumber, request_id, *params):
                     return
 
                 # a HID++ 2.0 feature call returned with an error
-                if reply.data[:1] == b"\xFF" and reply.data[1:3] == request_data[:2]:
+                if reply.data[0] == 0xFF and reply.data[1:3] == r.id_bytes:
                     error = ord(reply.data[3:4])
                     _log.error(
                         "(%s) device %d error on feature request {%04X}: %d = %s",
@@ -476,7 +465,7 @@ def request(handle, devnumber, request_id, *params):
                         number=devnumber, request=request_id, error=error, params=params
                     )
 
-                if reply.data[:2] == request_data[:2]:
+                if reply.data[:2] == r.id_bytes:
                     if request_id & 0xFE00 == 0x8200:
                         # long registry r/w should return a long reply
                         assert reply.report_id == 0x11
@@ -501,14 +490,10 @@ def request(handle, devnumber, request_id, *params):
                 # reset the timeout starting point
                 request_started = _timestamp()
 
-            if notifications_hook:
+            if r.notifications_hook:
                 n = make_notification(reply.devnumber, reply.data)
                 if n:
-                    notifications_hook(n)
-            # elif _log.isEnabledFor(_DEBUG):
-            # 	_log.debug("(%s) ignoring reply %02X [%s]", handle, reply_devnumber, _strhex(reply_data))
-        # elif _log.isEnabledFor(_DEBUG):
-        # 	_log.debug("(%s) ignoring reply %02X [%s]", handle, reply_devnumber, _strhex(reply_data))
+                    r.notifications_hook(n)
 
         delta = _timestamp() - request_started
     # if _log.isEnabledFor(_DEBUG):
@@ -517,14 +502,11 @@ def request(handle, devnumber, request_id, *params):
     _log.warning(
         "timeout (%0.2f/%0.2f) on device %d request {%04X} params [%s]",
         delta,
-        timeout,
+        r.timeout,
         devnumber,
         request_id,
         _strhex(params),
     )
-
-
-# raise DeviceUnreachable(number=devnumber, request=request_id)
 
 
 def ping(handle, devnumber):
@@ -539,8 +521,7 @@ def ping(handle, devnumber):
     # print ('\n  '.join(str(s) for s in _inspect.stack()))
 
     assert devnumber != 0xFF
-    assert devnumber > 0x00
-    assert devnumber < 0x0F
+    assert 0x00 < devnumber < 0x0F
 
     # randomize the SoftwareId and mark byte to be able to identify the ping
     # reply, and set most significant (0x8) bit in SoftwareId so that the reply
@@ -548,10 +529,9 @@ def ping(handle, devnumber):
     request_id = 0x0018 | _random_bits(3)
     request_data = _pack("!HBBB", request_id, 0, 0, _random_bits(8))
 
-    ihandle = int(handle)
     notifications_hook = getattr(handle, "notifications_hook", None)
-    _skip_incoming(handle, ihandle, notifications_hook)
-    write(ihandle, devnumber, request_data)
+    _skip_incoming(handle, notifications_hook)
+    write(int(handle), devnumber, request_data)
 
     # we consider timeout from this point
     request_started = _timestamp()
@@ -561,22 +541,21 @@ def ping(handle, devnumber):
         reply = _read(handle, _PING_TIMEOUT)
 
         if reply:
-            report_id, reply_devnumber, reply_data = reply
-            if reply_devnumber == devnumber:
+            if reply.devnumber == devnumber:
                 if (
-                    reply_data[:2] == request_data[:2]
-                    and reply_data[4:5] == request_data[-1:]
+                    reply.data[:2] == request_data[:2]
+                    and reply.data[4:5] == request_data[-1:]
                 ):
                     # HID++ 2.0+ device, currently connected
-                    return ord(reply_data[2:3]) + ord(reply_data[3:4]) / 10.0
+                    return ord(reply.data[2:3]) + ord(reply.data[3:4]) / 10.0
 
                 if (
-                    report_id == 0x10
-                    and reply_data[:1] == b"\x8F"
-                    and reply_data[1:3] == request_data[:2]
+                    reply.report_id == 0x10
+                    and reply.data[:1] == b"\x8F"
+                    and reply.data[1:3] == request_data[:2]
                 ):
-                    assert reply_data[-1:] == b"\x00"
-                    error = ord(reply_data[3:4])
+                    assert reply.data[-1:] == b"\x00"
+                    error = ord(reply.data[3:4])
 
                     if (
                         error == _hidpp10.ERROR.invalid_SubID__command
@@ -597,7 +576,7 @@ def ping(handle, devnumber):
                         raise NoSuchDevice(number=devnumber, request=request_id)
 
             if notifications_hook:
-                n = make_notification(reply_devnumber, reply_data)
+                n = make_notification(reply.devnumber, reply.data)
                 if n:
                     notifications_hook(n)
             # elif _log.isEnabledFor(_DEBUG):
@@ -612,6 +591,3 @@ def ping(handle, devnumber):
         _PING_TIMEOUT,
         devnumber,
     )
-
-
-# raise DeviceUnreachable(number=devnumber, request=request_id)
