@@ -25,6 +25,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from logging import DEBUG as _DEBUG, getLogger
 from random import getrandbits as _random_bits
 from time import time as _timestamp
+from typing import NamedTuple, Optional, Callable
 
 import hidapi as _hid
 from . import hidpp10 as _hidpp10, hidpp20 as _hidpp20
@@ -145,7 +146,7 @@ def close(handle):
     return False
 
 
-def write(handle, devnumber, data):
+def write(handle: int, devnumber, data):
     """Writes some data to the receiver, addressed to a certain device.
 
     :param handle: an open UR handle.
@@ -184,6 +185,12 @@ def write(handle, devnumber, data):
         raise NoReceiver(reason=reason)
 
 
+class RawPacket(NamedTuple):
+    report_id: int
+    devnumber: int
+    data: bytes
+
+
 def read(handle, timeout=DEFAULT_TIMEOUT):
     """Read some data from the receiver. Usually called after a write (feature
     call), to get the reply.
@@ -202,7 +209,7 @@ def read(handle, timeout=DEFAULT_TIMEOUT):
         return reply[1:]
 
 
-def _read(handle, timeout):
+def _read(handle, timeout) -> RawPacket:
     """Read an incoming packet from the receiver.
 
     :returns: a tuple of (report_id, devnumber, data), or `None`.
@@ -249,7 +256,7 @@ def _read(handle, timeout):
                 _strhex(data[4:]),
             )
 
-        return report_id, devnumber, data[2:]
+        return RawPacket(report_id, devnumber, data[2:])
 
 
 #
@@ -257,7 +264,7 @@ def _read(handle, timeout):
 #
 
 
-def _skip_incoming(handle, ihandle, notifications_hook):
+def _skip_incoming(handle: int, notifications_hook: Optional[Callable]):
     """Read anything already in the input buffer.
 
     Used by request() and ping() before their write.
@@ -266,7 +273,7 @@ def _skip_incoming(handle, ihandle, notifications_hook):
     while True:
         try:
             # read whatever is already in the buffer, if any
-            data = _hid.read(ihandle, _MAX_READ_SIZE, 0)
+            data = _hid.read(int(handle), _MAX_READ_SIZE, 0)
         except Exception as reason:
             _log.error("read failed, assuming receiver %s no longer available", handle)
             close(handle)
@@ -339,7 +346,43 @@ del namedtuple
 #
 
 
-def request(handle, devnumber, request_id, *params):
+class Request:
+    id: int
+    id_bytes: bytes
+
+    timeout: int
+    params: bytes = b""
+
+    def __init__(self, handle, devnumber, request_id: int, *params):
+        if devnumber != 0xFF and request_id < 0x8000:
+            # For HID++ 2.0 feature requests, randomize the SoftwareId to make it
+            # easier to recognize the reply for this request. also, always set the
+            # most significant bit (8) in SoftwareId, to make notifications easier
+            # to distinguish from request replies.
+            # This only applies to peripheral requests, ofc.
+            request_id = (request_id & 0xFFF0) | 0x08 | _random_bits(3)
+
+        self.id = request_id
+        self.id_bytes = _pack("!H", request_id)
+
+        timeout = (
+            _RECEIVER_REQUEST_TIMEOUT if devnumber == 0xFF else _DEVICE_REQUEST_TIMEOUT
+        )
+        # be extra patient on long register read
+        if request_id & 0xFF00 == 0x8300:
+            timeout *= 2
+        self.timeout = timeout
+
+        if params:
+            self.params = b"".join(
+                _pack("B", p) if isinstance(p, int) else p for p in params
+            )
+
+    def request_data(self) -> bytes:
+        return self.id_bytes + self.params
+
+
+def request(handle: [], devnumber, request_id, *params):
     """Makes a feature call to a device and waits for a matching reply.
 
     This function will wait for a matching reply indefinitely.
@@ -378,10 +421,9 @@ def request(handle, devnumber, request_id, *params):
     # 	_log.debug("(%s) device %d request_id {%04X} params [%s]", handle, devnumber, request_id, _strhex(params))
     request_data = _pack("!H", request_id) + params
 
-    ihandle = int(handle)
     notifications_hook = getattr(handle, "notifications_hook", None)
-    _skip_incoming(handle, ihandle, notifications_hook)
-    write(ihandle, devnumber, request_data)
+    _skip_incoming(handle, notifications_hook)
+    write(handle, devnumber, request_data)
 
     # we consider timeout from this point
     request_started = _timestamp()
@@ -391,14 +433,14 @@ def request(handle, devnumber, request_id, *params):
         reply = _read(handle, timeout)
 
         if reply:
-            report_id, reply_devnumber, reply_data = reply
-            if reply_devnumber == devnumber:
+            if reply.devnumber == devnumber:
+                # error on request
                 if (
-                    report_id == 0x10
-                    and reply_data[:1] == b"\x8F"
-                    and reply_data[1:3] == request_data[:2]
+                    reply.report_id == 0x10
+                    and reply.data[:1] == b"\x8F"
+                    and reply.data[1:3] == request_data[:2]
                 ):
-                    error = ord(reply_data[3:4])
+                    error = ord(reply.data[3:4])
 
                     # if error == _hidpp10.ERROR.resource_error: # device unreachable
                     # 	_log.warning("(%s) device %d error on request {%04X}: unknown device", handle, devnumber, request_id)
@@ -419,9 +461,9 @@ def request(handle, devnumber, request_id, *params):
                         )
                     return
 
-                if reply_data[:1] == b"\xFF" and reply_data[1:3] == request_data[:2]:
-                    # a HID++ 2.0 feature call returned with an error
-                    error = ord(reply_data[3:4])
+                # a HID++ 2.0 feature call returned with an error
+                if reply.data[:1] == b"\xFF" and reply.data[1:3] == request_data[:2]:
+                    error = ord(reply.data[3:4])
                     _log.error(
                         "(%s) device %d error on feature request {%04X}: %d = %s",
                         handle,
@@ -434,33 +476,33 @@ def request(handle, devnumber, request_id, *params):
                         number=devnumber, request=request_id, error=error, params=params
                     )
 
-                if reply_data[:2] == request_data[:2]:
+                if reply.data[:2] == request_data[:2]:
                     if request_id & 0xFE00 == 0x8200:
                         # long registry r/w should return a long reply
-                        assert report_id == 0x11
+                        assert reply.report_id == 0x11
                     elif request_id & 0xFE00 == 0x8000:
                         # short registry r/w should return a short reply
-                        assert report_id == 0x10
+                        assert reply.report_id == 0x10
 
                     if devnumber == 0xFF:
                         if request_id == 0x83B5 or request_id == 0x81F1:
                             # these replies have to match the first parameter as well
-                            if reply_data[2:3] == params[:1]:
-                                return reply_data[2:]
+                            if reply.data[2:3] == params[:1]:
+                                return reply.data[2:]
                             else:
                                 # hm, not matching my request, and certainly not a notification
                                 continue
                         else:
-                            return reply_data[2:]
+                            return reply.data[2:]
                     else:
-                        return reply_data[2:]
+                        return reply.data[2:]
             else:
                 # a reply was received, but did not match our request in any way
                 # reset the timeout starting point
                 request_started = _timestamp()
 
             if notifications_hook:
-                n = make_notification(reply_devnumber, reply_data)
+                n = make_notification(reply.devnumber, reply.data)
                 if n:
                     notifications_hook(n)
             # elif _log.isEnabledFor(_DEBUG):

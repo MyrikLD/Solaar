@@ -326,7 +326,7 @@ def write(device_handle, data):
         )
 
 
-def read(device_handle, bytes_count, timeout_ms=-1):
+def read(device_handle: int, bytes_count, timeout_ms=-1):
     """Read an Input report from a HID device.
 
     :param device_handle: a device handle returned by open() or open_path().
