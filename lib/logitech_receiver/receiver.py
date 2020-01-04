@@ -38,7 +38,7 @@ _R = _hidpp10.REGISTERS
 #
 
 
-class PairedDevice(object):
+class PairedDevice:
     def __init__(self, receiver, number, link_notification=None):
         assert receiver
         self.receiver = receiver
@@ -360,7 +360,7 @@ class PairedDevice(object):
 #
 
 
-class Receiver(object):
+class Receiver:
     """A Unifying Receiver instance.
 
     The paired devices are available through the sequence interface.

@@ -326,19 +326,19 @@ def make_notification(devnumber, data):
         return _HIDPP_Notification(devnumber, sub_id, address, data[2:])
 
 
-from collections import namedtuple
+class _HIDPP_Notification(NamedTuple):
+    devnumber: int
+    sub_id: int
+    address: int
+    data: bytes
 
-_HIDPP_Notification = namedtuple(
-    "_HIDPP_Notification", ("devnumber", "sub_id", "address", "data")
-)
-_HIDPP_Notification.__str__ = lambda self: "Notification(%d,%02X,%02X,%s)" % (
-    self.devnumber,
-    self.sub_id,
-    self.address,
-    _strhex(self.data),
-)
-_HIDPP_Notification.__unicode__ = _HIDPP_Notification.__str__
-del namedtuple
+    def __str__(self):
+        return "Notification(%d,%02X,%02X,%s)" % (
+            self.devnumber,
+            self.sub_id,
+            self.address,
+            _strhex(self.data),
+        )
 
 
 #
@@ -382,7 +382,7 @@ class Request:
         return self.id_bytes + self.params
 
 
-def request(handle: [], devnumber, request_id, *params):
+def request(handle, devnumber, request_id, *params):
     """Makes a feature call to a device and waits for a matching reply.
 
     This function will wait for a matching reply indefinitely.
@@ -423,7 +423,7 @@ def request(handle: [], devnumber, request_id, *params):
 
     notifications_hook = getattr(handle, "notifications_hook", None)
     _skip_incoming(handle, notifications_hook)
-    write(handle, devnumber, request_data)
+    write(int(handle), devnumber, request_data)
 
     # we consider timeout from this point
     request_started = _timestamp()

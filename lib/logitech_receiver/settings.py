@@ -39,7 +39,7 @@ del getLogger
 KIND = _NamedInts(toggle=0x01, choice=0x02, range=0x04)
 
 
-class Setting(object):
+class Setting:
     """A setting descriptor.
     Needs to be instantiated for each specific device."""
 
@@ -206,7 +206,7 @@ class Setting(object):
 #
 
 
-class RegisterRW(object):
+class RegisterRW:
     __slots__ = ("register",)
 
     kind = _NamedInt(0x01, "register")
@@ -222,7 +222,7 @@ class RegisterRW(object):
         return device.write_register(self.register, data_bytes)
 
 
-class FeatureRW(object):
+class FeatureRW:
     __slots__ = ("feature", "read_fnid", "write_fnid")
 
     kind = _NamedInt(0x02, "feature")
@@ -252,7 +252,7 @@ class FeatureRW(object):
 #
 
 
-class BooleanValidator(object):
+class BooleanValidator:
     __slots__ = ("true_value", "false_value", "mask", "needs_current_value")
 
     kind = KIND.toggle
@@ -381,7 +381,7 @@ class BooleanValidator(object):
         return to_write
 
 
-class ChoicesValidator(object):
+class ChoicesValidator:
     __slots__ = ("choices", "flag", "_bytes_count", "needs_current_value")
 
     kind = KIND.choice
@@ -433,7 +433,7 @@ class ChoicesValidator(object):
         return choice.bytes(self._bytes_count)
 
 
-class RangeValidator(object):
+class RangeValidator:
     __slots__ = (
         "min_value",
         "max_value",

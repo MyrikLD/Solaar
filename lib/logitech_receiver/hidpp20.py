@@ -175,7 +175,7 @@ class FeatureCallError(_KwException):
 #
 
 
-class FeaturesArray(object):
+class FeaturesArray:
     """A sequence of features supported by a HID++ 2.0 device."""
 
     __slots__ = ("supported", "device", "features")
@@ -315,7 +315,7 @@ class FeaturesArray(object):
 #
 
 
-class KeysArray(object):
+class KeysArray:
     """A sequence of key mappings supported by a HID++ 2.0 device."""
 
     __slots__ = ("device", "keys", "keyversion")
