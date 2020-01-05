@@ -342,6 +342,19 @@ class _HIDPP_Notification(NamedTuple):
         )
 
 
+class ReadException(Exception):
+    def __init__(self, protocol: int, code: int):
+        self.protocol_version = protocol
+        self.code = code
+        super().__init__()
+
+    def error(self):
+        return {1: _hidpp10, 2: _hidpp20}[self.protocol_version].ERROR[self.code]
+
+    def __str__(self):
+        return f'HIDPP{self.protocol_version}0: {self.error()}'
+
+
 #
 #
 #
@@ -399,12 +412,11 @@ class Request:
     def handle_reply(self, reply: RawPacket):
         exception = self.v1_exception(reply)
         if exception:
-            raise Exception(_hidpp10.ERROR[exception])
+            raise ReadException(protocol=1, code=exception)
 
         exception = self.v2_exception(reply)
         if exception:
-
-            raise Exception(_hidpp20.ERROR[exception],)
+            raise ReadException(protocol=2, code=exception)
 
         return self.get_data(reply)
 

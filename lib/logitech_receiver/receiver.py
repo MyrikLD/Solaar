@@ -23,6 +23,7 @@ import errno as _errno
 from logging import INFO as _INFO, getLogger
 
 from . import base as _base, hidpp10 as _hidpp10, hidpp20 as _hidpp20
+from .base import ReadException
 from .common import strhex as _strhex
 from .descriptors import DEVICES as _DESCRIPTORS
 from .i18n import _
@@ -408,7 +409,13 @@ class Receiver:
         )
 
         # TODO _properly_ figure out which receivers do and which don't support unpairing
-        self.may_unpair = self.write_register(_R.receiver_pairing) is None
+        try:
+            self.write_register(_R.receiver_pairing)
+        except ReadException as e:
+            if e.protocol_version == 1 and e.code == _hidpp10.ERROR.invalid_value:
+                self.may_unpair = False
+        else:
+            self.may_unpair = True
 
         self._firmware = None
         self._devices = {}

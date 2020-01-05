@@ -1,4 +1,7 @@
-from logitech_receiver.base import request
+import pytest
+
+from logitech_receiver import hidpp10
+from logitech_receiver.base import request, ReadException
 
 
 class TestReq:
@@ -16,3 +19,19 @@ class TestReq:
 
         r = request(5, 0xFF, 33265, 2)
         assert r == b"\x02\x000"
+
+    def test_receiver_without_unpairing(self, mock_os, mock_skip_incoming):
+        mock_os.input = b"\x10\xff\x80\xb2\x00\x00\x00"
+        mock_os.output = b"\x10\xff\x8f\x80\xb2\x03\x00"
+
+        class Device:
+            handle = 5
+
+            def request(self, request_id, *params):
+                return request(self.handle, 0xFF, request_id, *params)
+
+        with pytest.raises(ReadException) as excinfo:
+            hidpp10.write_register(Device(), hidpp10.REGISTERS.receiver_pairing)
+
+            assert excinfo.code == hidpp10.ERROR.invalid_value
+            assert excinfo.protocol_version == 1
