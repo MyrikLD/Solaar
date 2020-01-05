@@ -510,7 +510,7 @@ class Receiver(object):
     # 	return len(self) > 0 or self.count() > 0
 
     def request(self, request_id, *params):
-        if bool(self):
+        if self:
             return _base.request(self.handle, 0xFF, request_id, *params)
 
     read_register = _hidpp10.read_register
