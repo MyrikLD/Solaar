@@ -129,8 +129,9 @@ def _D(
 #
 #
 
-_PERFORMANCE_MX_DPIS = _NamedInts.range(0x81, 0x8F, lambda x: str((x - 0x80) * 100))
-
+_PERFORMANCE_MX_DPIS = _NamedInts(
+    **{str((i - 0x80) * 100): i for i in range(0x81, 0x8F)}
+)
 #
 #
 #

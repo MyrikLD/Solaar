@@ -120,15 +120,15 @@ class NamedInts:
         # assert len(values) == len(self._indexed), "(%d) %r\n=> (%d) %r" % (len(values), values, len(self._indexed), self._indexed)
         self._fallback = None
 
-    @classmethod
-    def list(cls, items, name_generator=lambda x: str(x)):
-        values = {name_generator(x): x for x in items}
-        return NamedInts(**values)
-
-    @classmethod
-    def range(cls, from_value, to_value, name_generator=lambda x: str(x), step=1):
-        values = {name_generator(x): x for x in range(from_value, to_value + 1, step)}
-        return NamedInts(**values)
+    # @classmethod
+    # def list(cls, items, name_generator=lambda x: str(x)):
+    #     values = {name_generator(x): x for x in items}
+    #     return NamedInts(**values)
+    #
+    # @classmethod
+    # def range(cls, from_value, to_value, name_generator=lambda x: str(x), step=1):
+    #     values = {name_generator(x): x for x in range(from_value, to_value + 1, step)}
+    #     return NamedInts(**values)
 
     def flag_names(self, value):
         unknown_bits = value
@@ -221,7 +221,7 @@ class NamedInts:
         return "NamedInts(%s)" % ", ".join(repr(v) for v in self._values)
 
 
-def strhex(x):
+def strhex(x: bytes):
     assert x is not None
     """Produce a hex-string representation of a sequence of bytes."""
     return _hexlify(x).decode("ascii").upper()
