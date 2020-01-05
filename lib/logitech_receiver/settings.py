@@ -21,19 +21,20 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 from copy import copy as _copy
-from enum import Enum
 from logging import DEBUG as _DEBUG, getLogger
 
 from .common import (
     NamedInt as _NamedInt,
+    ReNamedInts,
     bytes2int as _bytes2int,
     int2bytes as _int2bytes,
-    ReNamedInts,
 )
 from .hidpp20 import FEATURE
 
 _log = getLogger(__name__)
 del getLogger
+
+
 #
 #
 #
@@ -91,10 +92,10 @@ class Setting:
         p = device.protocol
         if p == 1.0:
             # HID++ 1.0 devices do not support features
-            assert self._rw.kind == RegisterRW.kind
+            assert isinstance(self._rw, RegisterRW)
         elif p >= 2.0:
             # HID++ 2.0 devices do not support registers
-            assert self._rw.kind == FeatureRW.kind
+            assert isinstance(self._rw, FeatureRW)
 
         o = _copy(self)
         o._value = None
@@ -438,7 +439,7 @@ class ChoicesValidator:
 
         if choice is None:
             raise ValueError("invalid choice %r" % new_value)
-        assert isinstance(choice, _NamedInt)
+        # assert isinstance(choice, _NamedInt)
         return choice.bytes(self._bytes_count)
 
 

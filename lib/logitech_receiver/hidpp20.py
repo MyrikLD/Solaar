@@ -112,9 +112,6 @@ class FEATURE(ReNamedInts):
     MOUSE_BUTTON_SPY = 0x8110
 
 
-FEATURE._fallback = lambda x: "unknown:%04X" % x
-
-
 class FEATURE_FLAG(ReNamedInts):
     internal = 0x20
     hidden = 0x40

@@ -22,8 +22,9 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from binascii import hexlify as _hexlify
-from aenum import Enum, extend_enum
 from struct import pack, unpack
+
+from aenum import Enum, extend_enum
 
 try:
     unicode
@@ -106,7 +107,7 @@ class ReNamedInts(int, Enum):
 
     @classmethod
     def _missing_(cls, value):
-        extend_enum(cls, "unknown:%04X" % value, (value, ))
+        extend_enum(cls, "unknown:%04X" % value, (value,))
         return cls(value)
 
 

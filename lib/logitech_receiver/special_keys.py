@@ -194,8 +194,6 @@ class CONTROL(ReNamedInts):
     SHOW_DESKTOP_HPP = 0x00AE
 
 
-CONTROL._fallback = lambda x: "unknown:%04X" % x
-
 # <tasks.xml awk -F\" '/<Task /{gsub(/ /, "_", $6); printf("\t%s=0x%04X,\n", $6, $4)}'
 class TASK(ReNamedInts):
     Volume_Up = 0x0001
@@ -334,8 +332,6 @@ class TASK(ReNamedInts):
     MetroApplicationSwitch = 0x0090  # also known as MetroStartScreen
     ShowUI = 0x0092
 
-
-TASK._fallback = lambda x: "unknown:%04X" % x
 
 # hidpp 4.5 info from https://lekensteyn.nl/files/logitech/x1b04_specialkeysmsebuttons.html
 class KEY_FLAG(ReNamedInts):
