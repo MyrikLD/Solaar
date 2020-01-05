@@ -22,7 +22,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 from binascii import hexlify as _hexlify
-from enum import Enum
+from aenum import Enum, extend_enum
 from struct import pack, unpack
 
 try:
@@ -103,6 +103,11 @@ class ReNamedInts(int, Enum):
 
         if unknown_bits:
             yield "unknown:%06X" % unknown_bits
+
+    @classmethod
+    def _missing_(cls, value):
+        extend_enum(cls, "unknown:%04X" % value, (value, ))
+        return cls(value)
 
 
 def strhex(x: bytes):

@@ -263,7 +263,7 @@ class FeaturesArray:
                     )
                     if feature:
                         (feature,) = _unpack("!H", feature[:2])
-                        self.features[index] = FEATURE[feature]
+                        self.features[index] = FEATURE(feature)
 
                 return self.features[index]
 
@@ -288,7 +288,7 @@ class FeaturesArray:
                 if reply:
                     index = ord(reply[0:1])
                     if index:
-                        self.features[index] = FEATURE[ivalue]
+                        self.features[index] = FEATURE(ivalue)
                         return True
 
     def index(self, feature_id):
@@ -306,7 +306,7 @@ class FeaturesArray:
                 reply = self.device.request(0x0000, _pack("!H", ivalue))
                 if reply:
                     index = ord(reply[0:1])
-                    self.features[index] = FEATURE[ivalue]
+                    self.features[index] = FEATURE(ivalue)
                     return index
 
         raise ValueError("%r not in list" % feature_id)
@@ -360,8 +360,8 @@ class KeysArray:
                     key, key_task, flags, pos, group, gmask = _unpack(
                         "!HHBBBB", keydata[:8]
                     )
-                    ctrl_id_text = special_keys.CONTROL[key]
-                    ctrl_task_text = special_keys.TASK[key_task]
+                    ctrl_id_text = special_keys.CONTROL(key)
+                    ctrl_task_text = special_keys.TASK(key_task)
                     if self.keyversion == 1:
                         self.keys[index] = _ReprogrammableKeyInfo(
                             index, ctrl_id_text, ctrl_task_text, flags
@@ -387,7 +387,7 @@ class KeysArray:
                             remap_key = key
                             remap_flag = 0
 
-                        remapped_text = special_keys.CONTROL[remapped]
+                        remapped_text = special_keys.CONTROL(remapped)
                         self.keys[index] = _ReprogrammableKeyInfoV4(
                             index,
                             ctrl_id_text,
@@ -458,7 +458,7 @@ def get_firmware(device):
                         version += ".B%04X" % build
                     extras = fw_info[9:].rstrip(b"\x00") or None
                     fw_info = _FirmwareInfo(
-                        FIRMWARE_KIND[level], name.decode("ascii"), version, extras
+                        FIRMWARE_KIND(level), name.decode("ascii"), version, extras
                     )
                 elif level == FIRMWARE_KIND.Hardware:
                     fw_info = _FirmwareInfo(
@@ -529,9 +529,9 @@ def get_battery(device):
                 discharge,
                 discharge_next,
                 status,
-                BATTERY_STATUS[status],
+                BATTERY_STATUS(status),
             )
-        return discharge, BATTERY_STATUS[status]
+        return discharge, BATTERY_STATUS(status)
 
 
 def get_keys(device):

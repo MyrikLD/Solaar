@@ -252,7 +252,7 @@ def _process_feature_notification(device, status, n, feature):
             discharge_next_level = ord(n.data[1:2])
             battery_status = ord(n.data[2:3])
             status.set_battery_info(
-                discharge_level, _hidpp20.BATTERY_STATUS[battery_status]
+                discharge_level, _hidpp20.BATTERY_STATUS(battery_status)
             )
         else:
             _log.warning("%s: unknown BATTERY %s", device, n)
