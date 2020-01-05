@@ -21,7 +21,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from collections import namedtuple
 
-from .common import NamedInts as _NamedInts
+from .common import ReNamedInts
 from .hidpp10 import DEVICE_KIND as _DK, REGISTERS as _R
 from .settings_templates import FeatureSettings as _FS, RegisterSettings as _RS
 
@@ -129,8 +129,8 @@ def _D(
 #
 #
 
-_PERFORMANCE_MX_DPIS = _NamedInts(
-    **{str((i - 0x80) * 100): i for i in range(0x81, 0x8F)}
+PERFORMANCE_MX_DPIS = ReNamedInts._create_(
+    "PERFORMANCE_MX_DPIS", {str((i - 0x80) * 100): i for i in range(0x81, 0x8F)}
 )
 #
 #
@@ -390,7 +390,7 @@ _D(
     wpid="101A",
     registers=(_R.battery_status, _R.three_leds,),
     settings=[
-        _RS.dpi(choices=_PERFORMANCE_MX_DPIS),
+        _RS.dpi(choices=PERFORMANCE_MX_DPIS),
         _RS.smooth_scroll(),
         _RS.side_scroll(),
     ],

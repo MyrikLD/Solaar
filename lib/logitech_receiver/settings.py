@@ -21,14 +21,16 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import math
 from copy import copy as _copy
+from enum import Enum
 from logging import DEBUG as _DEBUG, getLogger
 
 from .common import (
     NamedInt as _NamedInt,
-    NamedInts as _NamedInts,
     bytes2int as _bytes2int,
     int2bytes as _int2bytes,
+    ReNamedInts,
 )
+from .hidpp20 import FEATURE
 
 _log = getLogger(__name__)
 del getLogger
@@ -36,7 +38,11 @@ del getLogger
 #
 #
 
-KIND = _NamedInts(toggle=0x01, choice=0x02, range=0x04)
+
+class KIND(ReNamedInts):
+    toggle = 0x01
+    choice = 0x02
+    range = 0x04
 
 
 class Setting:
@@ -230,9 +236,12 @@ class FeatureRW:
     default_write_fnid = 0x10
 
     def __init__(
-        self, feature, read_fnid=default_read_fnid, write_fnid=default_write_fnid
+        self,
+        feature: FEATURE,
+        read_fnid=default_read_fnid,
+        write_fnid=default_write_fnid,
     ):
-        assert isinstance(feature, _NamedInt)
+        assert isinstance(feature, FEATURE)
         self.feature = feature
         self.read_fnid = read_fnid
         self.write_fnid = write_fnid
@@ -393,7 +402,7 @@ class ChoicesValidator:
 
     def __init__(self, choices, bytes_count=None):
         assert choices is not None
-        assert isinstance(choices, _NamedInts)
+        # assert isinstance(choices, Enum)
         assert len(choices) > 2
         self.choices = choices
         self.needs_current_value = False

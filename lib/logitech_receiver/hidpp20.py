@@ -21,17 +21,18 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from enum import Enum
 from logging import DEBUG as _DEBUG, getLogger
 
 from . import special_keys
 from .common import (
     FirmwareInfo as _FirmwareInfo,
     KwException as _KwException,
-    NamedInts as _NamedInts,
     ReprogrammableKeyInfo as _ReprogrammableKeyInfo,
     ReprogrammableKeyInfoV4 as _ReprogrammableKeyInfoV4,
     pack as _pack,
     unpack as _unpack,
+    ReNamedInts,
 )
 
 _log = getLogger(__name__)
@@ -46,111 +47,124 @@ del getLogger
 A particular device might not support all these features, and may support other
 unknown features as well.
 """
-FEATURE = _NamedInts(
-    ROOT=0x0000,
-    FEATURE_SET=0x0001,
-    FEATURE_INFO=0x0002,
-    DEVICE_FW_VERSION=0x0003,
-    DEVICE_NAME=0x0005,
-    DEVICE_GROUPS=0x0006,
-    RESET=0x0020,  # "Config Change"
-    DFUCONTROL=0x00C0,
-    DFUCONTROL_2=0x00C1,
-    DFU=0x00D0,
-    BATTERY_STATUS=0x1000,
-    LED_CONTROL=0x1300,
-    CHANGE_HOST=0x1814,
-    BACKLIGHT=0x1981,
-    BACKLIGHT2=0x1982,
-    REPROG_CONTROLS=0x1B00,
-    REPROG_CONTROLS_V2=0x1B01,
-    REPROG_CONTROLS_V2_2=0x1B02,  # LogiOptions 2.10.73 features.xml
-    REPROG_CONTROLS_V3=0x1B03,
-    REPROG_CONTROLS_V4=0x1B04,
-    WIRELESS_DEVICE_STATUS=0x1D4B,
-    LEFT_RIGHT_SWAP=0x2001,
-    SWAP_BUTTON=0x2005,
-    VERTICAL_SCROLLING=0x2100,
-    SMART_SHIFT=0x2110,
-    HI_RES_SCROLLING=0x2120,
-    HIRES_WHEEL=0x2121,
-    LOWRES_WHEEL=0x2130,
-    MOUSE_POINTER=0x2200,
-    ADJUSTABLE_DPI=0x2201,
-    POINTER_SPEED=0x2205,
-    ANGLE_SNAPPING=0x2230,
-    SURFACE_TUNING=0x2240,
-    HYBRID_TRACKING=0x2400,
-    FN_INVERSION=0x40A0,
-    NEW_FN_INVERSION=0x40A2,
-    K375S_FN_INVERSION=0x40A3,
-    ENCRYPTION=0x4100,
-    LOCK_KEY_STATE=0x4220,
-    SOLAR_DASHBOARD=0x4301,
-    KEYBOARD_LAYOUT=0x4520,
-    KEYBOARD_DISABLE=0x4521,
-    DUALPLATFORM=0x4530,
-    KEYBOARD_LAYOUT_2=0x4540,
-    TOUCHPAD_FW_ITEMS=0x6010,
-    TOUCHPAD_SW_ITEMS=0x6011,
-    TOUCHPAD_WIN8_FW_ITEMS=0x6012,
-    TOUCHPAD_RAW_XY=0x6100,
-    TOUCHMOUSE_RAW_POINTS=0x6110,
-    TOUCHMOUSE_6120=0x6120,
-    GESTURE=0x6500,
-    GESTURE_2=0x6501,
-    GKEY=0x8010,
-    MKEYS=0x8020,
-    MR=0x8030,
-    REPORT_RATE=0x8060,
-    COLOR_LED_EFECTS=0x8070,
-    PER_KEY_LIGHTING=0x8080,
-    ONBOARD_PROFILES=0x8100,
-    MOUSE_BUTTON_SPY=0x8110,
-)
+
+
+class FEATURE(ReNamedInts):
+    ROOT = 0x0000
+    FEATURE_SET = 0x0001
+    FEATURE_INFO = 0x0002
+    DEVICE_FW_VERSION = 0x0003
+    DEVICE_NAME = 0x0005
+    DEVICE_GROUPS = 0x0006
+    RESET = 0x0020  # "Config Change"
+    DFUCONTROL = 0x00C0
+    DFUCONTROL_2 = 0x00C1
+    DFU = 0x00D0
+    BATTERY_STATUS = 0x1000
+    LED_CONTROL = 0x1300
+    CHANGE_HOST = 0x1814
+    BACKLIGHT = 0x1981
+    BACKLIGHT2 = 0x1982
+    REPROG_CONTROLS = 0x1B00
+    REPROG_CONTROLS_V2 = 0x1B01
+    REPROG_CONTROLS_V2_2 = 0x1B02  # LogiOptions 2.10.73 features.xml
+    REPROG_CONTROLS_V3 = 0x1B03
+    REPROG_CONTROLS_V4 = 0x1B04
+    WIRELESS_DEVICE_STATUS = 0x1D4B
+    LEFT_RIGHT_SWAP = 0x2001
+    SWAP_BUTTON = 0x2005
+    VERTICAL_SCROLLING = 0x2100
+    SMART_SHIFT = 0x2110
+    HI_RES_SCROLLING = 0x2120
+    HIRES_WHEEL = 0x2121
+    LOWRES_WHEEL = 0x2130
+    MOUSE_POINTER = 0x2200
+    ADJUSTABLE_DPI = 0x2201
+    POINTER_SPEED = 0x2205
+    ANGLE_SNAPPING = 0x2230
+    SURFACE_TUNING = 0x2240
+    HYBRID_TRACKING = 0x2400
+    FN_INVERSION = 0x40A0
+    NEW_FN_INVERSION = 0x40A2
+    K375S_FN_INVERSION = 0x40A3
+    ENCRYPTION = 0x4100
+    LOCK_KEY_STATE = 0x4220
+    SOLAR_DASHBOARD = 0x4301
+    KEYBOARD_LAYOUT = 0x4520
+    KEYBOARD_DISABLE = 0x4521
+    DUALPLATFORM = 0x4530
+    KEYBOARD_LAYOUT_2 = 0x4540
+    TOUCHPAD_FW_ITEMS = 0x6010
+    TOUCHPAD_SW_ITEMS = 0x6011
+    TOUCHPAD_WIN8_FW_ITEMS = 0x6012
+    TOUCHPAD_RAW_XY = 0x6100
+    TOUCHMOUSE_RAW_POINTS = 0x6110
+    TOUCHMOUSE_6120 = 0x6120
+    GESTURE = 0x6500
+    GESTURE_2 = 0x6501
+    GKEY = 0x8010
+    MKEYS = 0x8020
+    MR = 0x8030
+    REPORT_RATE = 0x8060
+    COLOR_LED_EFECTS = 0x8070
+    PER_KEY_LIGHTING = 0x8080
+    ONBOARD_PROFILES = 0x8100
+    MOUSE_BUTTON_SPY = 0x8110
+
+
 FEATURE._fallback = lambda x: "unknown:%04X" % x
 
-FEATURE_FLAG = _NamedInts(internal=0x20, hidden=0x40, obsolete=0x80)
 
-DEVICE_KIND = _NamedInts(
-    keyboard=0x00,
-    remote_control=0x01,
-    numpad=0x02,
-    mouse=0x03,
-    touchpad=0x04,
-    trackball=0x05,
-    presenter=0x06,
-    receiver=0x07,
-)
+class FEATURE_FLAG(ReNamedInts):
+    internal = 0x20
+    hidden = 0x40
+    obsolete = 0x80
 
-FIRMWARE_KIND = _NamedInts(Firmware=0x00, Bootloader=0x01, Hardware=0x02, Other=0x03)
+
+class DEVICE_KIND(ReNamedInts):
+    keyboard = 0x00
+    remote_control = 0x01
+    numpad = 0x02
+    mouse = 0x03
+    touchpad = 0x04
+    trackball = 0x05
+    presenter = 0x06
+    receiver = 0x07
+
+
+class FIRMWARE_KIND(ReNamedInts):
+    Firmware = 0x00
+    Bootloader = 0x01
+    Hardware = 0x02
+    Other = 0x03
+
 
 BATTERY_OK = lambda status: status not in (
     BATTERY_STATUS.invalid_battery,
     BATTERY_STATUS.thermal_error,
 )
 
-BATTERY_STATUS = _NamedInts(
-    discharging=0x00,
-    recharging=0x01,
-    almost_full=0x02,
-    full=0x03,
-    slow_recharge=0x04,
-    invalid_battery=0x05,
-    thermal_error=0x06,
-)
 
-ERROR = _NamedInts(
-    unknown=0x01,
-    invalid_argument=0x02,
-    out_of_range=0x03,
-    hardware_error=0x04,
-    logitech_internal=0x05,
-    invalid_feature_index=0x06,
-    invalid_function=0x07,
-    busy=0x08,
-    unsupported=0x09,
-)
+class BATTERY_STATUS(ReNamedInts):
+    discharging = 0x00
+    recharging = 0x01
+    almost_full = 0x02
+    full = 0x03
+    slow_recharge = 0x04
+    invalid_battery = 0x05
+    thermal_error = 0x06
+
+
+class ERROR(ReNamedInts):
+    unknown = 0x01
+    invalid_argument = 0x02
+    out_of_range = 0x03
+    hardware_error = 0x04
+    logitech_internal = 0x05
+    invalid_feature_index = 0x06
+    invalid_function = 0x07
+    busy = 0x08
+    unsupported = 0x09
 
 
 #
@@ -471,7 +485,7 @@ def get_kind(device):
         kind = ord(kind[:1])
         # if _log.isEnabledFor(_DEBUG):
         # 	_log.debug("device %d type %d = %s", devnumber, kind, DEVICE_KIND[kind])
-        return DEVICE_KIND[kind]
+        return DEVICE_KIND(kind)
 
 
 def get_name(device):

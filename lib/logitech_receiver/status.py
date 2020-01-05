@@ -19,11 +19,12 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from enum import Enum
 from logging import DEBUG as _DEBUG, getLogger
 from time import time as _timestamp
 
 from . import hidpp10 as _hidpp10, hidpp20 as _hidpp20
-from .common import NamedInt as _NamedInt, NamedInts as _NamedInts
+from .common import NamedInt as _NamedInt
 from .i18n import _, ngettext
 
 _log = getLogger(__name__)
@@ -34,19 +35,24 @@ _R = _hidpp10.REGISTERS
 #
 #
 
-ALERT = _NamedInts(
-    NONE=0x00, NOTIFICATION=0x01, SHOW_WINDOW=0x02, ATTENTION=0x04, ALL=0xFF
-)
 
-KEYS = _NamedInts(
-    BATTERY_LEVEL=1,
-    BATTERY_CHARGING=2,
-    BATTERY_STATUS=3,
-    LIGHT_LEVEL=4,
-    LINK_ENCRYPTED=5,
-    NOTIFICATION_FLAGS=6,
-    ERROR=7,
-)
+class ALERT(int, Enum):
+    NONE = 0x00
+    NOTIFICATION = 0x01
+    SHOW_WINDOW = 0x02
+    ATTENTION = 0x04
+    ALL = 0xFF
+
+
+class KEYS(int, Enum):
+    BATTERY_LEVEL = 1
+    BATTERY_CHARGING = 2
+    BATTERY_STATUS = 3
+    LIGHT_LEVEL = 4
+    LINK_ENCRYPTED = 5
+    NOTIFICATION_FLAGS = 6
+    ERROR = 7
+
 
 # If the battery charge is under this percentage, trigger an attention event
 # (blink systray icon/notification/whatever).

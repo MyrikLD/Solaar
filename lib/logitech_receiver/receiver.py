@@ -85,7 +85,7 @@ class PairedDevice:
             )
             # assert link_notification.address == (0x04 if unifying else 0x03)
             kind = ord(link_notification.data[0:1]) & 0x0F
-            self._kind = _hidpp10.DEVICE_KIND[kind]
+            self._kind = _hidpp10.DEVICE_KIND(kind)
         else:
             # force a reading of the wpid
             pair_info = receiver.read_register(_R.receiver_info, 0x20 + number - 1)
@@ -93,7 +93,7 @@ class PairedDevice:
                 # may be either a Unifying receiver, or an Unifying-ready receiver
                 self.wpid = _strhex(pair_info[3:5])
                 kind = ord(pair_info[7:8]) & 0x0F
-                self._kind = _hidpp10.DEVICE_KIND[kind]
+                self._kind = _hidpp10.DEVICE_KIND(kind)
                 self._polling_rate = ord(pair_info[2:3])
 
             else:
@@ -188,7 +188,7 @@ class PairedDevice:
             )
             if pair_info:
                 kind = ord(pair_info[7:8]) & 0x0F
-                self._kind = _hidpp10.DEVICE_KIND[kind]
+                self._kind = _hidpp10.DEVICE_KIND(kind)
                 self._polling_rate = ord(pair_info[2:3])
             elif self.online and self.protocol >= 2.0:
                 self._kind = _hidpp20.get_kind(self)
@@ -211,7 +211,7 @@ class PairedDevice:
             )
             if serial:
                 ps = ord(serial[9:10]) & 0x0F
-                self._power_switch = _hidpp10.POWER_SWITCH_LOCATION[ps]
+                self._power_switch = _hidpp10.POWER_SWITCH_LOCATION(ps)
             else:
                 # some Nano receivers?
                 serial = self.receiver.read_register(0x2D5)
@@ -229,7 +229,7 @@ class PairedDevice:
             ps = self.receiver.read_register(_R.receiver_info, 0x30 + self.number - 1)
             if ps is not None:
                 ps = ord(ps[9:10]) & 0x0F
-                self._power_switch = _hidpp10.POWER_SWITCH_LOCATION[ps]
+                self._power_switch = _hidpp10.POWER_SWITCH_LOCATION(ps)
             else:
                 self._power_switch = "(unknown)"
         return self._power_switch

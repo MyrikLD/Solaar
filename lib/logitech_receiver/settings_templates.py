@@ -21,7 +21,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 from . import hidpp10 as _hidpp10, hidpp20 as _hidpp20
 from .common import (
-    NamedInts as _NamedInts,
     bytes2int as _bytes2int,
     int2bytes as _int2bytes,
     unpack as _unpack,

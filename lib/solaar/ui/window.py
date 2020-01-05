@@ -25,7 +25,7 @@ from gi.repository import GLib, Gdk, Gtk
 from gi.repository.GObject import TYPE_PYOBJECT
 
 from logitech_receiver import hidpp10 as _hidpp10
-from logitech_receiver.common import NamedInt as _NamedInt, NamedInts as _NamedInts
+from logitech_receiver.common import NamedInt as _NamedInt, ReNamedInts
 from logitech_receiver.status import KEYS as _K
 from solaar import NAME
 from solaar.i18n import _, ngettext
@@ -54,10 +54,19 @@ try:
 except (ValueError, AttributeError):
     _CAN_SET_ROW_NONE = ""
 
+
 # tree model columns
-_COLUMN = _NamedInts(
-    PATH=0, NUMBER=1, ACTIVE=2, NAME=3, ICON=4, STATUS_TEXT=5, STATUS_ICON=6, DEVICE=7
-)
+class _COLUMN(ReNamedInts):
+    PATH = 0
+    NUMBER = 1
+    ACTIVE = 2
+    NAME = 3
+    ICON = 4
+    STATUS_TEXT = 5
+    STATUS_ICON = 6
+    DEVICE = 7
+
+
 _COLUMN_TYPES = (str, int, bool, str, str, str, str, TYPE_PYOBJECT)
 _TREE_SEPATATOR = (None, 0, False, None, None, None, None, None)
 assert len(_TREE_SEPATATOR) == len(_COLUMN_TYPES)
