@@ -370,6 +370,8 @@ class Request:
     params: bytes = b""
     notifications_hook: Optional[Callable] = None
 
+    started = 0
+
     class NotMine(Exception):
         pass
 
@@ -408,6 +410,8 @@ class Request:
         self.notifications_hook = getattr(handle, "notifications_hook", None)
         _skip_incoming(handle, self.notifications_hook)
         write(int(handle), self.devnumber, self.request_data)
+
+        self.started = _timestamp()
 
     def handle_reply(self, reply: RawPacket):
         exception = self.v1_exception(reply)
@@ -473,7 +477,6 @@ def request(handle, devnumber, request_id, *params):
     r.write(handle)
 
     # we consider timeout from this point
-    request_started = _timestamp()
     delta = 0
 
     while delta < r.timeout:
@@ -490,14 +493,14 @@ def request(handle, devnumber, request_id, *params):
             else:
                 # a reply was received, but did not match our request in any way
                 # reset the timeout starting point
-                request_started = _timestamp()
+                r.started = _timestamp()
 
             if r.notifications_hook:
                 n = make_notification(reply.devnumber, reply.data)
                 if n:
                     r.notifications_hook(n)
 
-        delta = _timestamp() - request_started
+        delta = _timestamp() - r.started
     # if _log.isEnabledFor(_DEBUG):
     # 	_log.debug("(%s) still waiting for reply, delta %f", handle, delta)
 
@@ -532,55 +535,48 @@ def ping(handle, devnumber):
     r.write(handle)
 
     # we consider timeout from this point
-    request_started = _timestamp()
     delta = 0
 
     while delta < _PING_TIMEOUT:
-        reply = _read(handle, _PING_TIMEOUT)
+        reply = _read(handle, _PING_TIMEOUT - delta)
 
         if reply:
             if reply.devnumber == devnumber:
-                if (
-                    reply.data[:2] == r.request_data[:2]
-                    and reply.data[4:5] == r.request_data[-1:]
-                ):
+                if reply.data[:2] == r.id_bytes and reply.data[4] == r.request_data[-1]:
                     # HID++ 2.0+ device, currently connected
-                    return ord(reply.data[2:3]) + ord(reply.data[3:4]) / 10.0
+                    return reply.data[2] + reply.data[3] / 10.0
 
                 if (
                     reply.report_id == 0x10
-                    and reply.data[:1] == b"\x8F"
-                    and reply.data[1:3] == r.request_data[:2]
+                    and reply.data[0] == 0x8F
+                    and reply.data[1:3] == r.id_bytes
                 ):
-                    assert reply.data[-1:] == b"\x00"
-                    error = ord(reply.data[3:4])
+                    assert reply.data[-1] == 0x00
+                    error = reply.data[3]
 
-                    if (
-                        error == _hidpp10.ERROR.invalid_SubID__command
-                    ):  # a valid reply from a HID++ 1.0 device
+                    if error == _hidpp10.ERROR.invalid_SubID__command:
+                        # a valid reply from a HID++ 1.0 device
                         return 1.0
 
-                    if error == _hidpp10.ERROR.resource_error:  # device unreachable
+                    if error == _hidpp10.ERROR.resource_error:
+                        # device unreachable
                         return
 
-                    if (
-                        error == _hidpp10.ERROR.unknown_device
-                    ):  # no paired device with that number
+                    if error == _hidpp10.ERROR.unknown_device:
+                        # no paired device with that number
                         _log.error(
                             "(%s) device %d error on ping request: unknown device",
                             handle,
                             devnumber,
                         )
-                        raise NoSuchDevice(number=devnumber, request=request_id)
+                        raise NoSuchDevice(number=devnumber, request=r.id)
 
             if r.notifications_hook:
                 n = make_notification(reply.devnumber, reply.data)
                 if n:
                     r.notifications_hook(n)
-            # elif _log.isEnabledFor(_DEBUG):
-            # 	_log.debug("(%s) ignoring reply %02X [%s]", handle, reply_devnumber, _strhex(reply_data))
 
-        delta = _timestamp() - request_started
+        delta = _timestamp() - r.started
 
     _log.warning(
         "(%s) timeout (%0.2f/%0.2f) on device %d ping",

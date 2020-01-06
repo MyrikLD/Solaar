@@ -34,7 +34,7 @@ def _print_receiver(receiver):
     print("  USB id       : 046d:%s" % receiver.product_id)
     print("  Serial       :", receiver.serial)
     for f in receiver.firmware:
-        print("    %-11s: %s" % (f.kind, f.version))
+        print("    %-11s: %s" % (f.kind.name, f.version))
 
     print(
         "  Has",
@@ -72,7 +72,7 @@ def _print_device(dev):
 
     print("  %d: %s" % (dev.number, dev.name))
     print("     Codename     :", dev.codename)
-    print("     Kind         :", dev.kind)
+    print("     Kind         :", dev.kind.name)
     print("     Wireless PID :", dev.wpid)
     if dev.protocol:
         print("     Protocol     : HID++ %1.1f" % dev.protocol)
@@ -86,10 +86,10 @@ def _print_device(dev):
         )
     print("     Serial number:", dev.serial)
     for fw in dev.firmware:
-        print("       %11s:" % fw.kind, (fw.name + " " + fw.version).strip())
+        print("       %11s:" % fw.kind.name, (fw.name + " " + fw.version).strip())
 
     if dev.power_switch_location:
-        print("     The power switch is located on the %s." % dev.power_switch_location)
+        print("     The power switch is located on the %s." % dev.power_switch_location.name)
 
     if dev.online:
         notification_flags = _hidpp10.get_notification_flags(dev)
@@ -114,7 +114,7 @@ def _print_device(dev):
             flags = _hidpp20.FEATURE_FLAG.flag_names(flags)
             print(
                 "        %2d: %-22s {%04X}   %s"
-                % (index, feature, feature, ", ".join(flags))
+                % (index, feature.name, feature.value, ", ".join(flags))
             )
             if feature == _hidpp20.FEATURE.HIRES_WHEEL:
                 wheel = _hidpp20.get_hires_wheel(dev)
@@ -202,12 +202,12 @@ def _print_device(dev):
             if dev.keys.keyversion == 1:
                 print(
                     "        %2d: %-26s => %-27s   %s"
-                    % (k.index, k.key, k.task, ", ".join(flags))
+                    % (k.index, k.key.name, k.task.name, ", ".join(flags))
                 )
             if dev.keys.keyversion == 4:
                 print(
                     "        %2d: %-26s, default: %-27s => %-26s"
-                    % (k.index, k.key, k.task, k.remapped)
+                    % (k.index, k.key.name, k.task.name, k.remapped)
                 )
                 print(
                     "             %s, pos:%d, group:%1d, gmask:%d"
@@ -228,7 +228,7 @@ def _print_device(dev):
                     text = "%d%%" % level
             else:
                 text = "N/A"
-            print("     Battery: %s, %s." % (text, status))
+            print("     Battery: %s, %s." % (text, status.name))
         else:
             print("     Battery status unavailable.")
     else:
