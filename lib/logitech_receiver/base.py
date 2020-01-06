@@ -20,16 +20,13 @@
 # Base low-level functions used by the API proper.
 # Unlikely to be used directly unless you're expanding the API.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from logging import DEBUG as _DEBUG, getLogger
 from random import getrandbits as _random_bits
 from time import time as _timestamp
 from typing import Callable, NamedTuple, Optional
 
 import hidapi as _hid
-from . import hidpp10 as _hidpp10
-from . import hidpp20 as _hidpp20
+from . import hidpp10 as _hidpp10, hidpp20 as _hidpp20
 from .common import KwException as _KwException, pack as _pack, strhex as _strhex
 
 _log = getLogger(__name__)

@@ -20,8 +20,6 @@
 # Handles incoming events from the receiver/devices, updating the related
 # status object as appropriate.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from logging import DEBUG as _DEBUG, INFO as _INFO, getLogger
 
 from . import hidpp10 as _hidpp10, hidpp20 as _hidpp20

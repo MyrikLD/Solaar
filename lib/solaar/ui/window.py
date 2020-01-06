@@ -17,8 +17,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from logging import getLogger  # , DEBUG as _DEBUG
 
 from gi.repository import GLib, Gdk, Gtk
@@ -29,7 +27,6 @@ from logitech_receiver.common import NamedInt as _NamedInt, ReNamedInts
 from logitech_receiver.status import KEYS as _K
 from solaar import NAME
 from solaar.i18n import _, ngettext
-
 # from solaar import __version__ as VERSION
 from solaar.ui import ui_async as _ui_async
 from . import action as _action, config_panel as _config_panel, icons as _icons
@@ -603,7 +600,10 @@ def _update_details(button):
 
             if read_all:
                 for fw in list(device.firmware):
-                    yield ("  " + _(str(fw.kind)), (fw.name + " " + fw.version).strip())
+                    yield (
+                        "  " + _(str(fw.kind.name)),
+                        (fw.name + " " + fw.version).strip(),
+                    )
             elif device.kind is None or device.online:
                 yield ("  %s" % _("Firmware"), "...")
 

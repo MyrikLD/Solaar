@@ -17,8 +17,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import argparse as _argparse
 import sys as _sys
 from logging import DEBUG as _DEBUG, getLogger
@@ -117,7 +115,7 @@ def _receivers(dev_path=None):
             _sys.exit("%s: error: %s" % (NAME, str(e)))
 
 
-def _find_receiver(receivers, name):
+def find_receiver(receivers, name):
     assert receivers
     assert name
 
@@ -126,7 +124,7 @@ def _find_receiver(receivers, name):
             return r
 
 
-def _find_device(receivers, name):
+def find_device(receivers, name):
     assert receivers
     assert name
 
@@ -182,7 +180,7 @@ def run(cli_args=None, hidraw_path=None):
         from importlib import import_module
 
         m = import_module("." + action, package=__name__)
-        m.run(c, args, _find_receiver, _find_device)
+        m.run(c, args)
     except AssertionError as e:
         from traceback import extract_tb
 
@@ -190,3 +188,5 @@ def run(cli_args=None, hidraw_path=None):
         _sys.exit(
             "%s: assertion failed: %s line %d" % (NAME.lower(), tb_last[0], tb_last[1])
         )
+    except Exception as e:
+        _sys.exit("%s: error: %s" % (NAME.lower(), e))

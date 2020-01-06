@@ -26,8 +26,6 @@ The docstrings are mostly copied from the hidapi API header, with changes where
 necessary.
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import errno as _errno
 import os as _os
 from select import select as _select

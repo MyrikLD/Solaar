@@ -17,10 +17,9 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from logitech_receiver import settings as _settings
 from solaar import configuration as _configuration
+from solaar.cli import find_device
 
 
 def _print_setting(s, verbose=True):
@@ -46,7 +45,7 @@ def _print_setting(s, verbose=True):
         print(s.name, "= %r" % value)
 
 
-def run(receivers, args, find_receiver, find_device):
+def run(receivers, args):
     assert receivers
     assert args.device
 

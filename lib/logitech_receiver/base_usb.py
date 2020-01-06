@@ -20,8 +20,6 @@
 # USB ids of Logitech wireless receivers.
 # Only receivers supporting the HID++ protocol can go in here.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 _DRIVER = ("hid-generic", "generic-usb", "logitech-djreceiver")
 
 # each tuple contains (vendor_id, product_id, usb interface number, hid driver)

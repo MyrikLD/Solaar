@@ -17,8 +17,6 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 from time import time as _timestamp
 
 from logitech_receiver import (
@@ -27,9 +25,10 @@ from logitech_receiver import (
     notifications as _notifications,
     status as _status,
 )
+from solaar.cli import find_receiver
 
 
-def run(receivers, args, find_receiver, _ignore):
+def run(receivers, args):
     assert receivers
 
     if args.receiver:

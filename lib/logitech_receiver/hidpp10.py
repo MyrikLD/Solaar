@@ -17,18 +17,10 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from enum import Enum
 from logging import getLogger  # , DEBUG as _DEBUG
 
-from .common import (
-    FirmwareInfo as _FirmwareInfo,
-    bytes2int as _bytes2int,
-    int2bytes as _int2bytes,
-    strhex as _strhex,
-    ReNamedInts,
-)
+from .common import (FirmwareInfo as _FirmwareInfo, ReNamedInts, bytes2int as _bytes2int, int2bytes as _int2bytes,
+                     strhex as _strhex)
 from .hidpp20 import BATTERY_STATUS, FIRMWARE_KIND
 
 _log = getLogger(__name__)
@@ -198,35 +190,28 @@ def get_battery(device):
 
 def parse_battery_status(register, reply):
     if register == REGISTERS.battery_charge:
-        charge = ord(reply[:1])
-        status_byte = ord(reply[2:3]) & 0xF0
-        status_text = (
-            BATTERY_STATUS.discharging
-            if status_byte == 0x30
-            else BATTERY_STATUS.recharging
-            if status_byte == 0x50
-            else BATTERY_STATUS.full
-            if status_byte == 0x90
-            else None
-        )
+        charge = reply[0]
+        status_byte = reply[2] & 0xF0
+        statuses = {
+            0x30: BATTERY_STATUS.discharging,
+            0x50: BATTERY_STATUS.recharging,
+            0x90: BATTERY_STATUS.full,
+        }
+
+        status_text = statuses.get(status_byte)
         return charge, status_text
 
     if register == REGISTERS.battery_status:
-        status_byte = ord(reply[:1])
-        charge = (
-            BATTERY_APPOX.full
-            if status_byte == 7  # full
-            else BATTERY_APPOX.good
-            if status_byte == 5  # good
-            else BATTERY_APPOX.low
-            if status_byte == 3  # low
-            else BATTERY_APPOX.critical
-            if status_byte == 1  # critical
-            # pure 'charging' notifications may come without a status
-            else BATTERY_APPOX.empty
-        )
+        status_byte = reply[0]
+        statuses = {
+            7: BATTERY_APPOX.full,
+            5: BATTERY_APPOX.good,
+            3: BATTERY_APPOX.low,
+            1: BATTERY_APPOX.critical,
+        }
+        charge = statuses.get(status_byte, BATTERY_APPOX.empty)
 
-        charging_byte = ord(reply[1:2])
+        charging_byte = reply[1]
         if charging_byte == 0x00:
             status_text = BATTERY_STATUS.discharging
         elif charging_byte & 0x21 == 0x21:

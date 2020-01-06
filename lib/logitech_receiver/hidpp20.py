@@ -19,21 +19,12 @@
 
 # Logitech Unifying Receiver API.
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-from enum import Enum
 from logging import DEBUG as _DEBUG, getLogger
 
 from . import special_keys
-from .common import (
-    FirmwareInfo as _FirmwareInfo,
-    KwException as _KwException,
-    ReprogrammableKeyInfo as _ReprogrammableKeyInfo,
-    ReprogrammableKeyInfoV4 as _ReprogrammableKeyInfoV4,
-    pack as _pack,
-    unpack as _unpack,
-    ReNamedInts,
-)
+from .common import (FirmwareInfo as _FirmwareInfo, KwException as _KwException, ReNamedInts,
+                     ReprogrammableKeyInfo as _ReprogrammableKeyInfo,
+                     ReprogrammableKeyInfoV4 as _ReprogrammableKeyInfoV4, pack as _pack, unpack as _unpack)
 
 _log = getLogger(__name__)
 del getLogger
