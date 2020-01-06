@@ -111,8 +111,6 @@ class _ThreadedHandle:
     def __bool__(self):
         return bool(self._local)
 
-    __nonzero__ = __bool__
-
 
 #
 #
@@ -236,5 +234,3 @@ class EventsListener(_threading.Thread):
 
     def __bool__(self):
         return bool(self._active and self.receiver)
-
-    __nonzero__ = __bool__

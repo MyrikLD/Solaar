@@ -312,7 +312,7 @@ class BooleanValidator:
 
     def validate_read(self, reply_bytes):
         if isinstance(self.mask, int):
-            reply_value = ord(reply_bytes[:1]) & self.mask
+            reply_value = reply_bytes[0] & self.mask
             if _log.isEnabledFor(_DEBUG):
                 _log.debug(
                     "BooleanValidator: validate read %r => %02X",
@@ -363,19 +363,19 @@ class BooleanValidator:
 
         if isinstance(self.mask, int):
             if current_value is not None and self.needs_current_value:
-                to_write |= ord(current_value[:1]) & (0xFF ^ self.mask)
-            if current_value is not None and to_write == ord(current_value[:1]):
+                to_write |= current_value[0] & (0xFF ^ self.mask)
+            if current_value is not None and to_write == current_value[0]:
                 return None
         else:
             to_write = bytearray(to_write)
             count = len(self.mask)
             for i in range(0, count):
-                b = ord(to_write[i : i + 1])
-                m = ord(self.mask[i : i + 1])
+                b = to_write[i]
+                m = self.mask[i]
                 assert b & m == b
                 # b &= m
                 if current_value is not None and self.needs_current_value:
-                    b |= ord(current_value[i : i + 1]) & (0xFF ^ m)
+                    b |= current_value[i] & (0xFF ^ m)
                 to_write[i] = b
             to_write = bytes(to_write)
 

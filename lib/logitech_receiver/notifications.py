@@ -76,7 +76,7 @@ def _process_receiver_notification(receiver, status, n):
         if status.lock_open:
             status.new_device = None
 
-        pair_error = ord(n.data[:1])
+        pair_error = n.data[0]
         if pair_error:
             status[_K.ERROR] = error_string = _hidpp10.PAIRING_ERRORS[pair_error]
             status.new_device = None
@@ -195,7 +195,7 @@ def _process_hidpp10_notification(device, status, n):
                 wpid = _strhex(n.data[2:3] + n.data[1:2])
                 assert wpid == device.wpid, "%s wpid mismatch, got %s" % (device, wpid)
 
-            flags = ord(n.data[:1]) & 0xF0
+            flags = n.data[0] & 0xF0
             link_encrypted = bool(flags & 0x20)
             link_established = not (flags & 0x40)
             if _log.isEnabledFor(_DEBUG):
@@ -246,9 +246,9 @@ def _process_hidpp10_notification(device, status, n):
 def _process_feature_notification(device, status, n, feature):
     if feature == _F.BATTERY_STATUS:
         if n.address == 0x00:
-            discharge_level = ord(n.data[:1])
-            discharge_next_level = ord(n.data[1:2])
-            battery_status = ord(n.data[2:3])
+            discharge_level = n.data[0]
+            discharge_next_level = n.data[1]
+            battery_status = n.data[2]
             status.set_battery_info(
                 discharge_level, _hidpp20.BATTERY_STATUS(battery_status)
             )
@@ -317,7 +317,7 @@ def _process_feature_notification(device, status, n, feature):
             if _log.isEnabledFor(_INFO):
                 _log.info("%s: TOUCH MOUSE points %s", device, n)
         elif n.address == 0x10:
-            touch = ord(n.data[:1])
+            touch = n.data[0]
             button_down = bool(touch & 0x02)
             mouse_lifted = bool(touch & 0x01)
             if _log.isEnabledFor(_INFO):
@@ -347,7 +347,7 @@ def _process_feature_notification(device, status, n, feature):
             return True
         elif n.address == 0x10:
             if _log.isEnabledFor(_INFO):
-                flags = ord(n.data[:1])
+                flags = n.data[0]
                 ratchet = flags & 0x01
                 _log.info("%s: WHEEL: ratchet: %d", device, ratchet)
             return True

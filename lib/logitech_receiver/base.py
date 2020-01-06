@@ -169,7 +169,7 @@ def write(handle: int, devnumber, data):
         _log.debug(
             "(%s) <= w[%02X %02X %s %s]",
             handle,
-            ord(wdata[:1]),
+            wdata[0],
             devnumber,
             _strhex(wdata[2:4]),
             _strhex(wdata[4:]),
@@ -227,7 +227,7 @@ def _read(handle, timeout) -> Optional[RawPacket]:
 
     if data:
         assert isinstance(data, bytes), (repr(data), type(data))
-        report_id = ord(data[:1])
+        report_id = data[0]
         assert (
             (report_id & 0xF0 == 0)
             or (report_id == 0x10 and len(data) == _SHORT_MESSAGE_SIZE)
@@ -242,7 +242,7 @@ def _read(handle, timeout) -> Optional[RawPacket]:
             # 			if _log.isEnabledFor(_DEBUG):
             # 				_log.debug("(%s) => r[%02X %s] ignoring unknown report", handle, report_id, _strhex(data[1:]))
             return
-        devnumber = ord(data[1:2])
+        devnumber = data[1]
 
         if _log.isEnabledFor(_DEBUG):
             _log.debug(
@@ -279,7 +279,7 @@ def _skip_incoming(handle: int, notifications_hook: Optional[Callable]):
 
         if data:
             assert isinstance(data, bytes), (repr(data), type(data))
-            report_id = ord(data[:1])
+            report_id = data[0]
             if _log.isEnabledFor(_DEBUG):
                 assert (
                     (report_id & 0xF0 == 0)
@@ -291,7 +291,7 @@ def _skip_incoming(handle: int, notifications_hook: Optional[Callable]):
                     % (report_id, _strhex(data))
                 )
             if notifications_hook and report_id & 0xF0:
-                n = make_notification(ord(data[1:2]), data[2:])
+                n = make_notification(data[1], data[2:])
                 if n:
                     notifications_hook(n)
         else:
@@ -302,12 +302,12 @@ def _skip_incoming(handle: int, notifications_hook: Optional[Callable]):
 def make_notification(devnumber, data):
     """Guess if this is a notification (and not just a request reply), and
     return a Notification tuple if it is."""
-    sub_id = ord(data[:1])
+    sub_id = data[0]
     if sub_id & 0x80 == 0x80:
         # this is either a HID++1.0 register r/w, or an error reply
         return
 
-    address = ord(data[1:2])
+    address = data[1]
     if (
         # standard HID++ 1.0 notification, SubId may be 0x40 - 0x7F
         (sub_id >= 0x40)

@@ -29,18 +29,15 @@ import hidapi as _hid
 #
 #
 
-try:
-    read_packet = raw_input
-except NameError:
-    # Python 3 equivalent of raw_input
-    read_packet = input
 
 interactive = os.isatty(0)
 prompt = "?? Input: " if interactive else ""
 start_time = time.time()
 
-strhex = lambda d: hexlify(d).decode("ascii").upper()
-is_string = lambda d: isinstance(d, str)
+
+def strhex(d):
+    return hexlify(d).decode("ascii").upper()
+
 
 #
 #
@@ -54,7 +51,7 @@ del Lock
 
 def _print(marker, data, scroll=False):
     t = time.time() - start_time
-    if is_string(data):
+    if isinstance(data, str):
         s = marker + " " + data
     else:
         hexs = strhex(data)
@@ -248,7 +245,7 @@ def main():
             )  # move cusor at most 300 lines down, don't scroll
 
         while t.is_alive():
-            line = read_packet(prompt)
+            line = input(prompt)
             line = line.strip().replace(" ", "")
             # print ("line", line)
             if not line:

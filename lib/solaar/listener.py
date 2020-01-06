@@ -19,6 +19,7 @@
 
 import time
 from logging import INFO as _INFO, getLogger
+from typing import Any, NamedTuple, Optional
 
 from logitech_receiver import (
     Receiver,
@@ -35,14 +36,17 @@ del getLogger
 #
 #
 
-from collections import namedtuple
 
-_GHOST_DEVICE = namedtuple(
-    "_GHOST_DEVICE", ("receiver", "number", "name", "kind", "status", "online")
-)
-_GHOST_DEVICE.__bool__ = lambda self: False
-_GHOST_DEVICE.__nonzero__ = _GHOST_DEVICE.__bool__
-del namedtuple
+class _GHOST_DEVICE(NamedTuple):
+    receiver: Any
+    number: int
+    name: str
+    kind: int
+    status: Optional[int]
+    online: bool
+
+    def __bool__(self):
+        return False
 
 
 def _ghost(device):
@@ -209,7 +213,7 @@ class ReceiverListener(_listener.EventsListener):
         # status notification seems to tell us this. If this is the case, we
         # must wait a short amount of time to avoid causing a broken pipe
         # error.
-        device_ready = not bool(ord(n.data[0:1]) & 0x80) or n.sub_id != 0x41
+        device_ready = not bool(n.data[0] & 0x80) or n.sub_id != 0x41
         if not device_ready:
             time.sleep(0.01)
 

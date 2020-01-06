@@ -253,21 +253,21 @@ def get_firmware(device):
     reply = read_register(device, REGISTERS.firmware, 0x02)
     if reply:
         fw_version += ".B" + _strhex(reply[1:3])
-    fw = _FirmwareInfo(FIRMWARE_KIND.Firmware, "", fw_version, None)
+    fw = _FirmwareInfo(FIRMWARE_KIND.Firmware, "", fw_version)
     firmware[0] = fw
 
     reply = read_register(device, REGISTERS.firmware, 0x04)
     if reply:
         bl_version = _strhex(reply[1:3])
         bl_version = "%s.%s" % (bl_version[0:2], bl_version[2:4])
-        bl = _FirmwareInfo(FIRMWARE_KIND.Bootloader, "", bl_version, None)
+        bl = _FirmwareInfo(FIRMWARE_KIND.Bootloader, "", bl_version)
         firmware[1] = bl
 
     reply = read_register(device, REGISTERS.firmware, 0x03)
     if reply:
         o_version = _strhex(reply[1:3])
         o_version = "%s.%s" % (o_version[0:2], o_version[2:4])
-        o = _FirmwareInfo(FIRMWARE_KIND.Other, "", o_version, None)
+        o = _FirmwareInfo(FIRMWARE_KIND.Other, "", o_version)
         firmware[2] = o
 
     if any(firmware):

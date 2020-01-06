@@ -172,8 +172,6 @@ class DeviceStatus(dict):
     def __bool__(self):
         return bool(self._active)
 
-    __nonzero__ = __bool__
-
     def set_battery_info(self, level, status, timestamp=None):
         if _log.isEnabledFor(_DEBUG):
             _log.debug("%s: battery %s, %s", self._device, level, status)

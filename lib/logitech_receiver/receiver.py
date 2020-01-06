@@ -77,12 +77,12 @@ class PairedDevice:
         # 	_log.debug("new PairedDevice(%s, %s, %s)", receiver, number, link_notification)
 
         if link_notification is not None:
-            self.online = not bool(ord(link_notification.data[0:1]) & 0x40)
+            self.online = not bool(link_notification.data[0] & 0x40)
             self.wpid = _strhex(
                 link_notification.data[2:3] + link_notification.data[1:2]
             )
             # assert link_notification.address == (0x04 if unifying else 0x03)
-            kind = ord(link_notification.data[0:1]) & 0x0F
+            kind = link_notification.data[0] & 0x0F
             self._kind = _hidpp10.DEVICE_KIND(kind)
         else:
             # force a reading of the wpid
@@ -90,9 +90,9 @@ class PairedDevice:
             if pair_info:
                 # may be either a Unifying receiver, or an Unifying-ready receiver
                 self.wpid = _strhex(pair_info[3:5])
-                kind = ord(pair_info[7:8]) & 0x0F
+                kind = pair_info[7] & 0x0F
                 self._kind = _hidpp10.DEVICE_KIND(kind)
-                self._polling_rate = ord(pair_info[2:3])
+                self._polling_rate = pair_info[2]
 
             else:
                 # unifying protocol not supported, must be a Nano receiver
@@ -124,7 +124,7 @@ class PairedDevice:
                 _R.receiver_info, 0x40 + self.number - 1
             )
             if codename:
-                codename_length = ord(codename[1:2])
+                codename_length = codename[1]
                 codename = codename[2 : 2 + codename_length]
                 self._codename = codename.decode("ascii")
                 self.descriptor = _DESCRIPTORS.get(self._codename)
@@ -164,7 +164,7 @@ class PairedDevice:
                 _R.receiver_info, 0x40 + self.number - 1
             )
             if codename:
-                codename_length = ord(codename[1:2])
+                codename_length = codename[1]
                 codename = codename[2 : 2 + codename_length]
                 self._codename = codename.decode("ascii")
             # if _log.isEnabledFor(_DEBUG):
@@ -186,9 +186,9 @@ class PairedDevice:
                 _R.receiver_info, 0x20 + self.number - 1
             )
             if pair_info:
-                kind = ord(pair_info[7:8]) & 0x0F
+                kind = pair_info[7] & 0x0F
                 self._kind = _hidpp10.DEVICE_KIND(kind)
-                self._polling_rate = ord(pair_info[2:3])
+                self._polling_rate = pair_info[2]
             elif self.online and self.protocol >= 2.0:
                 self._kind = _hidpp20.get_kind(self)
         return self._kind or "?"
@@ -209,7 +209,7 @@ class PairedDevice:
                 _R.receiver_info, 0x30 + self.number - 1
             )
             if serial:
-                ps = ord(serial[9:10]) & 0x0F
+                ps = serial[9] & 0x0F
                 self._power_switch = _hidpp10.POWER_SWITCH_LOCATION(ps)
             else:
                 # some Nano receivers?
@@ -227,7 +227,7 @@ class PairedDevice:
         if self._power_switch is None:
             ps = self.receiver.read_register(_R.receiver_info, 0x30 + self.number - 1)
             if ps is not None:
-                ps = ord(ps[9:10]) & 0x0F
+                ps = ps[9] & 0x0F
                 self._power_switch = _hidpp10.POWER_SWITCH_LOCATION(ps)
             else:
                 self._power_switch = "(unknown)"
@@ -240,7 +240,7 @@ class PairedDevice:
                 _R.receiver_info, 0x20 + self.number - 1
             )
             if pair_info:
-                self._polling_rate = ord(pair_info[2:3])
+                self._polling_rate = pair_info[2]
             else:
                 self._polling_rate = 0
         return self._polling_rate
@@ -341,9 +341,8 @@ class PairedDevice:
     def __hash__(self):
         return self.wpid.__hash__()
 
-    __bool__ = __nonzero__ = (
-        lambda self: self.wpid is not None and self.number in self.receiver
-    )
+    def __bool__(self):
+        return self.wpid is not None and self.number in self.receiver
 
     def __str__(self):
         return "<PairedDevice(%d,%s,%s)>" % (
@@ -383,7 +382,7 @@ class Receiver:
             serial_reply = self.read_register(_R.receiver_info, 0x03)
             assert serial_reply
             self.serial = _strhex(serial_reply[1:5])
-            self.max_devices = ord(serial_reply[6:7])
+            self.max_devices = serial_reply[6]
         else:
             self.serial = 0
             self.max_devices = 6
@@ -510,7 +509,7 @@ class Receiver:
 
     def count(self):
         count = self.read_register(_R.receiver_connection)
-        return 0 if count is None else ord(count[1:2])
+        return 0 if count is None else count[1]
 
     # def has_devices(self):
     # 	return len(self) > 0 or self.count() > 0
@@ -594,7 +593,8 @@ class Receiver:
 
     __repr__ = __str__
 
-    __bool__ = __nonzero__ = lambda self: self.handle is not None
+    def __bool__(self):
+        return self.handle is not None
 
     @classmethod
     def open(self, device_info):

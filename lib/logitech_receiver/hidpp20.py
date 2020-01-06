@@ -223,7 +223,7 @@ class FeaturesArray:
             if reply is None:
                 self.supported = False
             else:
-                fs_index = ord(reply[0:1])
+                fs_index = reply[0]
                 if fs_index:
                     count = self.device.request(fs_index << 8)
                     if count is None:
@@ -233,7 +233,7 @@ class FeaturesArray:
                         # most likely the device is unavailable
                         return False
                     else:
-                        count = ord(count[:1])
+                        count = count[0]
                         assert count >= fs_index
                         self.features = [None] * (1 + count)
                         self.features[0] = FEATURE.ROOT
@@ -244,7 +244,8 @@ class FeaturesArray:
 
         return False
 
-    __bool__ = __nonzero__ = _check
+    def __bool__(self):
+        return self._check()
 
     def __getitem__(self, index):
         if self._check():
@@ -281,7 +282,7 @@ class FeaturesArray:
             if may_have:
                 reply = self.device.request(0x0000, _pack("!H", ivalue))
                 if reply:
-                    index = ord(reply[0:1])
+                    index = reply[0]
                     if index:
                         self.features[index] = FEATURE(ivalue)
                         return True
@@ -300,7 +301,7 @@ class FeaturesArray:
             if may_have:
                 reply = self.device.request(0x0000, _pack("!H", ivalue))
                 if reply:
-                    index = ord(reply[0:1])
+                    index = reply[0]
                     self.features[index] = FEATURE(ivalue)
                     return index
 
@@ -437,13 +438,13 @@ def get_firmware(device):
     """
     count = feature_request(device, FEATURE.DEVICE_FW_VERSION)
     if count:
-        count = ord(count[:1])
+        count = count[0]
 
         fw = []
         for index in range(0, count):
             fw_info = feature_request(device, FEATURE.DEVICE_FW_VERSION, 0x10, index)
             if fw_info:
-                level = ord(fw_info[:1]) & 0x0F
+                level = fw_info[0] & 0x0F
                 if level == 0 or level == 1:
                     name, version_major, version_minor, build = _unpack(
                         "!3sBBH", fw_info[1:8]
@@ -456,11 +457,9 @@ def get_firmware(device):
                         FIRMWARE_KIND(level), name.decode("ascii"), version, extras
                     )
                 elif level == FIRMWARE_KIND.Hardware:
-                    fw_info = _FirmwareInfo(
-                        FIRMWARE_KIND.Hardware, "", str(ord(fw_info[1:2])), None
-                    )
+                    fw_info = _FirmwareInfo(FIRMWARE_KIND.Hardware, "", str(fw_info[1]))
                 else:
-                    fw_info = _FirmwareInfo(FIRMWARE_KIND.Other, "", "", None)
+                    fw_info = _FirmwareInfo(FIRMWARE_KIND.Other, "", "")
 
                 fw.append(fw_info)
             # if _log.isEnabledFor(_DEBUG):
@@ -477,7 +476,7 @@ def get_kind(device):
     """
     kind = feature_request(device, FEATURE.DEVICE_NAME, 0x20)
     if kind:
-        kind = ord(kind[:1])
+        kind = kind[0]
         # if _log.isEnabledFor(_DEBUG):
         # 	_log.debug("device %d type %d = %s", devnumber, kind, DEVICE_KIND[kind])
         return DEVICE_KIND(kind)
@@ -491,7 +490,7 @@ def get_name(device):
     """
     name_length = feature_request(device, FEATURE.DEVICE_NAME)
     if name_length:
-        name_length = ord(name_length[:1])
+        name_length = name_length[0]
 
         name = b""
         while len(name) < name_length:
@@ -535,7 +534,7 @@ def get_keys(device):
     if count is None:
         count = feature_request(device, FEATURE.REPROG_CONTROLS_V4)
     if count:
-        return KeysArray(device, ord(count[:1]))
+        return KeysArray(device, count[0])
 
 
 def get_mouse_pointer_info(device):

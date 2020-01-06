@@ -17,7 +17,7 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from collections import namedtuple
+from typing import NamedTuple, Any
 
 from .common import NamedInts
 from .hidpp10 import DEVICE_KIND as _DK, REGISTERS as _R
@@ -26,12 +26,15 @@ from .settings_templates import FeatureSettings as _FS, RegisterSettings as _RS
 #
 #
 #
+class _DeviceDescriptor(NamedTuple):
+    name: str
+    kind: int
+    wpid: int
+    codename: str
+    protocol: float
+    registers: list
+    settings: Any
 
-_DeviceDescriptor = namedtuple(
-    "_DeviceDescriptor",
-    ("name", "kind", "wpid", "codename", "protocol", "registers", "settings"),
-)
-del namedtuple
 
 DEVICES = {}
 

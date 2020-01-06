@@ -182,7 +182,7 @@ class PrintFeatures:
 
     def print_feature(self, index, feature):
         flags = self.dev.request(0x0000, feature.to_bytes(2, byteorder="big"))
-        flags = 0 if flags is None else ord(flags[1:2])
+        flags = 0 if flags is None else flags[1]
         flags = _hidpp20.FEATURE_FLAG.flag_names(flags)
         flags_text = ", ".join(flags)
         self.text(

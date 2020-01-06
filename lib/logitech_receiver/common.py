@@ -19,6 +19,7 @@
 
 from binascii import hexlify as _hexlify
 from struct import pack, unpack
+from typing import Optional, NamedTuple
 
 from aenum import IntEnum, extend_enum
 
@@ -94,19 +95,26 @@ class KwException(Exception):
             return self.args[0][k]
 
 
-from collections import namedtuple
+class FirmwareInfo(NamedTuple):
+    """Firmware information."""
 
-"""Firmware information."""
-FirmwareInfo = namedtuple("FirmwareInfo", ["kind", "name", "version", "extras"])
+    kind: int
+    name: str
+    version: str
+    extras: Optional[bytes] = None
 
-"""Reprogrammable keys information."""
-ReprogrammableKeyInfo = namedtuple(
-    "ReprogrammableKeyInfo", ["index", "key", "task", "flags"]
-)
 
-ReprogrammableKeyInfoV4 = namedtuple(
-    "ReprogrammableKeyInfoV4",
-    ["index", "key", "task", "flags", "pos", "group", "group_mask", "remapped"],
-)
+class ReprogrammableKeyInfo(NamedTuple):
+    """Reprogrammable keys information."""
 
-del namedtuple
+    index: int
+    key: int
+    task: int
+    flags: int
+
+
+class ReprogrammableKeyInfoV4(ReprogrammableKeyInfo):
+    pos: int
+    group: int
+    group_mask: int
+    remapped: bool
