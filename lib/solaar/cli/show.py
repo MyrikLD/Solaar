@@ -89,7 +89,10 @@ def _print_device(dev):
         print("       %11s:" % fw.kind.name, (fw.name + " " + fw.version).strip())
 
     if dev.power_switch_location:
-        print("     The power switch is located on the %s." % dev.power_switch_location.name)
+        print(
+            "     The power switch is located on the %s."
+            % dev.power_switch_location.name
+        )
 
     if dev.online:
         notification_flags = _hidpp10.get_notification_flags(dev)

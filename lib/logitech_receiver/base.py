@@ -531,7 +531,7 @@ def ping(handle, devnumber):
     # randomize the SoftwareId and mark byte to be able to identify the ping
     # reply, and set most significant (0x8) bit in SoftwareId so that the reply
     # is always distinguishable from notifications
-    r = Request(devnumber, 0x0018 | _random_bits(3), (0, 0, _random_bits(8)))
+    r = Request(devnumber, 0x0010, (0, 0, _random_bits(8)))
     r.write(handle)
 
     # we consider timeout from this point
