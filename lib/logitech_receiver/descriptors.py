@@ -51,19 +51,8 @@ def _D(
     assert name
 
     if kind is None:
-        kind = (
-            _DK.mouse
-            if "Mouse" in name
-            else _DK.keyboard
-            if "Keyboard" in name
-            else _DK.numpad
-            if "Number Pad" in name
-            else _DK.touchpad
-            if "Touchpad" in name
-            else _DK.trackball
-            if "Trackball" in name
-            else None
-        )
+        kind = _DK.from_name(name)
+
     assert kind is not None, "descriptor for %s does not have kind set" % name
 
     # heuristic: the codename is the last word in the device name

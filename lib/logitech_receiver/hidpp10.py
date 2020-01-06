@@ -42,6 +42,22 @@ class DEVICE_KIND(NamedInts):
     trackball = 0x08
     touchpad = 0x09
 
+    @classmethod
+    def from_name(cls, name: str):
+        for k, v in cls._mapping().items():
+            if k in name:
+                return v
+
+    @classmethod
+    def _mapping(cls):
+        return {
+            "Mouse": cls.mouse,
+            "Keyboard": cls.keyboard,
+            "Number Pad": cls.numpad,
+            "Touchpad": cls.touchpad,
+            "Trackball": cls.trackball,
+        }
+
 
 class POWER_SWITCH_LOCATION(NamedInts):
     base = 0x01
