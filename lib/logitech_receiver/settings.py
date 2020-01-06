@@ -202,7 +202,7 @@ class Setting:
             self.name,
         )
 
-    __unicode__ = __repr__ = __str__
+    __repr__ = __str__
 
 
 #

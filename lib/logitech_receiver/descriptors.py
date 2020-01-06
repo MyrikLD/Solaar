@@ -540,7 +540,7 @@ _D(
     kind=_DK.mouse,
     wpid="1014",
     registers=(_R.battery_charge,),
-    settings=[_RS.smooth_scroll(), _RS.side_scroll(),],
+    settings=[_RS.smooth_scroll(), _RS.side_scroll()],
 )
 
 # Some exotics...
