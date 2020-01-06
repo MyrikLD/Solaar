@@ -929,7 +929,7 @@ def update(device, need_popup=False):
                 _model.set_value(item, _COLUMN.STATUS_TEXT, _CAN_SET_ROW_NONE)
                 _model.set_value(item, _COLUMN.STATUS_ICON, _CAN_SET_ROW_NONE)
             else:
-                if hasattr(battery_level, 'name'):
+                if hasattr(battery_level, "name"):
                     status_text = _("%(battery_level)s") % {
                         "battery_level": _(battery_level.name)
                     }

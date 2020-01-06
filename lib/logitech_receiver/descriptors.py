@@ -182,7 +182,7 @@ PERFORMANCE_MX_DPIS = NamedInts._create_(
 # Keyboards
 
 _D("Wireless Keyboard K230", protocol=2.0, wpid="400D")
-_D("Wireless Keyboard K270(unifying)", protocol=2.0, wpid="4003")
+_D("Wireless Keyboard K270 (unifying)", protocol=2.0, wpid="4003")
 _D(
     "Wireless Keyboard MK270", protocol=2.0, wpid="4023", settings=[_FS.fn_swap()],
 )
