@@ -19,7 +19,12 @@
 
 from typing import List
 
-from logitech_receiver import (Receiver, hidpp10 as _hidpp10, hidpp20 as _hidpp20, special_keys as _special_keys)
+from logitech_receiver import (
+    Receiver,
+    hidpp10 as _hidpp10,
+    hidpp20 as _hidpp20,
+    special_keys as _special_keys,
+)
 from logitech_receiver.hidpp20 import BATTERY_STATUS
 from solaar.cli import find_device, find_receiver
 from solaar.cli.indent_helper import Text
@@ -34,7 +39,7 @@ def _print_receiver(receiver: Receiver, text: Text):
 
     with text:
         for f in receiver.firmware:
-            text("%-11s: %s" % (f.kind.name, f.version))
+            text(f"{f.kind.name:<11}: {f.version}")
 
     text(
         f"Has {paired_count} paired device(s) out of a maximum of {receiver.max_devices}."

@@ -90,7 +90,7 @@ class NamedInt(int):
         return "NamedInt(%d, %r)" % (int(self), self.name)
 
 
-class ReNamedInts(int, Enum):
+class NamedInts(int, Enum):
     @classmethod
     def flag_names(cls, value):
         unknown_bits = value

@@ -22,9 +22,15 @@
 from logging import DEBUG as _DEBUG, getLogger
 
 from . import special_keys
-from .common import (FirmwareInfo as _FirmwareInfo, KwException as _KwException, ReNamedInts,
-                     ReprogrammableKeyInfo as _ReprogrammableKeyInfo,
-                     ReprogrammableKeyInfoV4 as _ReprogrammableKeyInfoV4, pack as _pack, unpack as _unpack)
+from .common import (
+    FirmwareInfo as _FirmwareInfo,
+    KwException as _KwException,
+    NamedInts,
+    ReprogrammableKeyInfo as _ReprogrammableKeyInfo,
+    ReprogrammableKeyInfoV4 as _ReprogrammableKeyInfoV4,
+    pack as _pack,
+    unpack as _unpack,
+)
 
 _log = getLogger(__name__)
 del getLogger
@@ -40,7 +46,7 @@ unknown features as well.
 """
 
 
-class FEATURE(ReNamedInts):
+class FEATURE(NamedInts):
     ROOT = 0x0000
     FEATURE_SET = 0x0001
     FEATURE_INFO = 0x0002
@@ -103,13 +109,13 @@ class FEATURE(ReNamedInts):
     MOUSE_BUTTON_SPY = 0x8110
 
 
-class FEATURE_FLAG(ReNamedInts):
+class FEATURE_FLAG(NamedInts):
     internal = 0x20
     hidden = 0x40
     obsolete = 0x80
 
 
-class DEVICE_KIND(ReNamedInts):
+class DEVICE_KIND(NamedInts):
     keyboard = 0x00
     remote_control = 0x01
     numpad = 0x02
@@ -120,7 +126,7 @@ class DEVICE_KIND(ReNamedInts):
     receiver = 0x07
 
 
-class FIRMWARE_KIND(ReNamedInts):
+class FIRMWARE_KIND(NamedInts):
     Firmware = 0x00
     Bootloader = 0x01
     Hardware = 0x02
@@ -133,7 +139,7 @@ BATTERY_OK = lambda status: status not in (
 )
 
 
-class BATTERY_STATUS(ReNamedInts):
+class BATTERY_STATUS(NamedInts):
     discharging = 0x00
     recharging = 0x01
     almost_full = 0x02
@@ -143,7 +149,7 @@ class BATTERY_STATUS(ReNamedInts):
     thermal_error = 0x06
 
 
-class ERROR(ReNamedInts):
+class ERROR(NamedInts):
     unknown = 0x01
     invalid_argument = 0x02
     out_of_range = 0x03

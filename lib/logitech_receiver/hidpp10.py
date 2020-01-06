@@ -19,8 +19,13 @@
 
 from logging import getLogger  # , DEBUG as _DEBUG
 
-from .common import (FirmwareInfo as _FirmwareInfo, ReNamedInts, bytes2int as _bytes2int, int2bytes as _int2bytes,
-                     strhex as _strhex)
+from .common import (
+    FirmwareInfo as _FirmwareInfo,
+    NamedInts,
+    bytes2int as _bytes2int,
+    int2bytes as _int2bytes,
+    strhex as _strhex,
+)
 from .hidpp20 import BATTERY_STATUS, FIRMWARE_KIND
 
 _log = getLogger(__name__)
@@ -29,7 +34,7 @@ del getLogger
 # Constants - most of them as defined by the official Logitech HID++ 1.0
 # documentation, some of them guessed.
 #
-class DEVICE_KIND(ReNamedInts):
+class DEVICE_KIND(NamedInts):
     keyboard = 0x01
     mouse = 0x02
     numpad = 0x03
@@ -38,7 +43,7 @@ class DEVICE_KIND(ReNamedInts):
     touchpad = 0x09
 
 
-class POWER_SWITCH_LOCATION(ReNamedInts):
+class POWER_SWITCH_LOCATION(NamedInts):
     base = 0x01
     top_case = 0x02
     edge_of_top_right_corner = 0x03
@@ -64,7 +69,7 @@ class POWER_SWITCH_LOCATION(ReNamedInts):
 # - the rest work only on devices as far as we can tell right now
 # In the future would be useful to have separate enums for receiver and device notification flags,
 # but right now we don't know enough.
-class NOTIFICATION_FLAG(ReNamedInts):
+class NOTIFICATION_FLAG(NamedInts):
     battery_status = 0x100000  # send battery charge notifications (0x07 or 0x0D)
     keyboard_sleep_raw = 0x020000  # system control keys such as Sleep
     keyboard_multimedia_raw = 0x010000  # consumer controls such as Mute and Calculator
@@ -76,7 +81,7 @@ class NOTIFICATION_FLAG(ReNamedInts):
     wireless = 0x000100  # notify when the device wireless goes on/off-line
 
 
-class ERROR(ReNamedInts):
+class ERROR(NamedInts):
     invalid_SubID__command = 0x01
     invalid_address = 0x02
     invalid_value = 0x03
@@ -91,14 +96,14 @@ class ERROR(ReNamedInts):
     wrong_pin_code = 0x0C
 
 
-class PAIRING_ERRORS(ReNamedInts):
+class PAIRING_ERRORS(NamedInts):
     device_timeout = 0x01
     device_not_supported = 0x02
     too_many_devices = 0x03
     sequence_timeout = 0x06
 
 
-class BATTERY_APPOX(ReNamedInts):
+class BATTERY_APPOX(NamedInts):
     empty = 0
     critical = 5
     low = 20
@@ -111,7 +116,7 @@ Devices usually have a (small) sub-set of these. Some registers are only
 applicable to certain device kinds (e.g. smooth_scroll only applies to mice."""
 
 
-class REGISTERS(ReNamedInts):
+class REGISTERS(NamedInts):
     # only apply to receivers
     receiver_connection = 0x02
     receiver_pairing = 0xB2

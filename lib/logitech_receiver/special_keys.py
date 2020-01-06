@@ -19,11 +19,11 @@
 
 # Reprogrammable keys information
 
-from .common import ReNamedInts
+from .common import NamedInts
 
 
 # <controls.xml awk -F\" '/<Control /{sub(/^LD_FINFO_(CTRLID_)?/, "", $2);printf("\t%s=0x%04X,\n", $2, $4)}' | sort -t= -k2
-class CONTROL(ReNamedInts):
+class CONTROL(NamedInts):
     Volume_Up = 0x0001
     Volume_Down = 0x0002
     Mute = 0x0003
@@ -193,7 +193,7 @@ class CONTROL(ReNamedInts):
 
 
 # <tasks.xml awk -F\" '/<Task /{gsub(/ /, "_", $6); printf("\t%s=0x%04X,\n", $6, $4)}'
-class TASK(ReNamedInts):
+class TASK(NamedInts):
     Volume_Up = 0x0001
     Volume_Down = 0x0002
     Mute = 0x0003
@@ -332,7 +332,7 @@ class TASK(ReNamedInts):
 
 
 # hidpp 4.5 info from https://lekensteyn.nl/files/logitech/x1b04_specialkeysmsebuttons.html
-class KEY_FLAG(ReNamedInts):
+class KEY_FLAG(NamedInts):
     virtual = 0x80
     persistently_divertable = 0x40
     divertable = 0x20

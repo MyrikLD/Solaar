@@ -23,7 +23,7 @@ from logging import DEBUG as _DEBUG, getLogger
 
 from .common import (
     NamedInt as _NamedInt,
-    ReNamedInts,
+    NamedInts,
     bytes2int as _bytes2int,
     int2bytes as _int2bytes,
 )
@@ -38,7 +38,7 @@ del getLogger
 #
 
 
-class KIND(ReNamedInts):
+class KIND(NamedInts):
     toggle = 0x01
     choice = 0x02
     range = 0x04

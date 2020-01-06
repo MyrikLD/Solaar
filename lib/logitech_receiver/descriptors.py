@@ -19,7 +19,7 @@
 
 from collections import namedtuple
 
-from .common import ReNamedInts
+from .common import NamedInts
 from .hidpp10 import DEVICE_KIND as _DK, REGISTERS as _R
 from .settings_templates import FeatureSettings as _FS, RegisterSettings as _RS
 
@@ -127,7 +127,7 @@ def _D(
 #
 #
 
-PERFORMANCE_MX_DPIS = ReNamedInts._create_(
+PERFORMANCE_MX_DPIS = NamedInts._create_(
     "PERFORMANCE_MX_DPIS", {str((i - 0x80) * 100): i for i in range(0x81, 0x8F)}
 )
 #

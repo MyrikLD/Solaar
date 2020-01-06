@@ -17,17 +17,17 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from logging import getLogger  # , DEBUG as _DEBUG
+from logging import getLogger
 
 from gi.repository import GLib, Gdk, Gtk
 from gi.repository.GObject import TYPE_PYOBJECT
 
 from logitech_receiver import hidpp10 as _hidpp10
-from logitech_receiver.common import NamedInt as _NamedInt, ReNamedInts
+from logitech_receiver.common import NamedInt as _NamedInt, NamedInts
 from logitech_receiver.status import KEYS as _K
 from solaar import NAME
 from solaar.i18n import _, ngettext
-# from solaar import __version__ as VERSION
+
 from solaar.ui import ui_async as _ui_async
 from . import action as _action, config_panel as _config_panel, icons as _icons
 from .about import show_window as _show_about_window
@@ -53,7 +53,7 @@ except (ValueError, AttributeError):
 
 
 # tree model columns
-class _COLUMN(ReNamedInts):
+class _COLUMN(NamedInts):
     PATH = 0
     NUMBER = 1
     ACTIVE = 2
@@ -565,19 +565,19 @@ def _update_details(button):
             # cached, and involves no HID++ calls.
 
             if device.kind is None:
-                yield (_("Path"), device.path)
+                yield _("Path"), device.path
                 # 046d is the Logitech vendor id
-                yield (_("USB id"), "046d:" + device.product_id)
+                yield _("USB id"), "046d:" + device.product_id
 
                 if read_all:
-                    yield (_("Serial"), device.serial)
+                    yield _("Serial"), device.serial
                 else:
-                    yield (_("Serial"), "...")
+                    yield _("Serial"), "..."
 
             else:
                 # yield ('Codename', device.codename)
-                yield (_("Index"), device.number)
-                yield (_("Wireless PID"), device.wpid)
+                yield _("Index"), device.number
+                yield _("Wireless PID"), device.wpid
                 hid_version = device.protocol
                 yield (
                     _("Protocol"),
@@ -594,9 +594,9 @@ def _update_details(button):
                     )
 
                 if read_all or not device.online:
-                    yield (_("Serial"), device.serial)
+                    yield _("Serial"), device.serial
                 else:
-                    yield (_("Serial"), "...")
+                    yield _("Serial"), "..."
 
             if read_all:
                 for fw in list(device.firmware):
@@ -605,7 +605,7 @@ def _update_details(button):
                         (fw.name + " " + fw.version).strip(),
                     )
             elif device.kind is None or device.online:
-                yield ("  %s" % _("Firmware"), "...")
+                yield "  %s" % _("Firmware"), "..."
 
             flag_bits = device.status.get(_K.NOTIFICATION_FLAGS)
             if flag_bits is not None:
@@ -614,7 +614,7 @@ def _update_details(button):
                     if flag_bits == 0
                     else _hidpp10.NOTIFICATION_FLAG.flag_names(flag_bits)
                 )
-                yield (_("Notifications"), ("\n%15s" % " ").join(flag_names))
+                yield _("Notifications"), ("\n%15s" % " ").join(flag_names)
 
         def _set_details(text):
             _details._text.set_markup(text)
