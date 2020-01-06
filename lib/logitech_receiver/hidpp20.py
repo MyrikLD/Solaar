@@ -133,12 +133,6 @@ class FIRMWARE_KIND(NamedInts):
     Other = 0x03
 
 
-BATTERY_OK = lambda status: status not in (
-    BATTERY_STATUS.invalid_battery,
-    BATTERY_STATUS.thermal_error,
-)
-
-
 class BATTERY_STATUS(NamedInts):
     discharging = 0x00
     recharging = 0x01
@@ -147,6 +141,13 @@ class BATTERY_STATUS(NamedInts):
     slow_recharge = 0x04
     invalid_battery = 0x05
     thermal_error = 0x06
+
+    @property
+    def ok(self) -> bool:
+        return self not in (
+            BATTERY_STATUS.invalid_battery,
+            BATTERY_STATUS.thermal_error,
+        )
 
 
 class ERROR(NamedInts):

@@ -22,7 +22,6 @@ from logging import DEBUG as _DEBUG, getLogger
 from time import time as _timestamp
 
 from . import hidpp10 as _hidpp10, hidpp20 as _hidpp20
-from .common import NamedInt as _NamedInt
 from .i18n import _, ngettext
 
 _log = getLogger(__name__)
@@ -150,8 +149,8 @@ class DeviceStatus(dict):
 
             battery_level = self.get(KEYS.BATTERY_LEVEL)
             if battery_level is not None:
-                if isinstance(battery_level, _NamedInt):
-                    yield _("Battery: %(level)s") % {"level": _(str(battery_level))}
+                if hasattr(battery_level, "name"):
+                    yield _("Battery: %(level)s") % {"level": _(battery_level.name)}
                 else:
                     yield _("Battery: %(percent)d%%") % {"percent": battery_level}
 
@@ -204,7 +203,7 @@ class DeviceStatus(dict):
         changed = old_level != level or old_status != status or old_charging != charging
         alert, reason = ALERT.NONE, None
 
-        if _hidpp20.BATTERY_OK(status) and level > _BATTERY_ATTENTION_LEVEL:
+        if status.ok and level > _BATTERY_ATTENTION_LEVEL:
             self[KEYS.ERROR] = None
         else:
             _log.warning("%s: battery %d%%, ALERT %s", self._device, level, status)
@@ -212,10 +211,10 @@ class DeviceStatus(dict):
                 self[KEYS.ERROR] = status
                 # only show the notification once
                 alert = ALERT.NOTIFICATION | ALERT.ATTENTION
-            if isinstance(level, _NamedInt):
+            if hasattr(level, "name"):
                 reason = _("Battery: %(level)s (%(status)s)") % {
                     "level": _(level),
-                    "status": _(status),
+                    "status": _(status.name),
                 }
             else:
                 reason = _("Battery: %(percent)d%% (%(status)s)") % {

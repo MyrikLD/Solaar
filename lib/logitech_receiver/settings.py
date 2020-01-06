@@ -22,7 +22,6 @@ from copy import copy as _copy
 from logging import DEBUG as _DEBUG, getLogger
 
 from .common import (
-    NamedInt as _NamedInt,
     NamedInts,
     bytes2int as _bytes2int,
     int2bytes as _int2bytes,
@@ -211,10 +210,15 @@ class Setting:
 #
 
 
+class OperatorKind(NamedInts):
+    register = 0x01
+    feature = 0x02
+
+
 class RegisterRW:
     __slots__ = ("register",)
 
-    kind = _NamedInt(0x01, "register")
+    kind = OperatorKind.register
 
     def __init__(self, register):
         assert isinstance(register, int)
@@ -230,7 +234,7 @@ class RegisterRW:
 class FeatureRW:
     __slots__ = ("feature", "read_fnid", "write_fnid")
 
-    kind = _NamedInt(0x02, "feature")
+    kind = OperatorKind.feature
     default_read_fnid = 0x00
     default_write_fnid = 0x10
 
@@ -437,7 +441,6 @@ class ChoicesValidator:
 
         if choice is None:
             raise ValueError("invalid choice %r" % new_value)
-        # assert isinstance(choice, _NamedInt)
         return choice.bytes(self._bytes_count)
 
 

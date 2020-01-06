@@ -22,6 +22,7 @@ from .common import (
     bytes2int as _bytes2int,
     int2bytes as _int2bytes,
     unpack as _unpack,
+    NamedInts,
 )
 from .i18n import _
 from .settings import (
@@ -494,7 +495,8 @@ def _feature_adjustable_dpi_choices(device):
     if step:
         assert len(dpi_list) == 2, "Invalid DPI list range: %r" % dpi_list
         dpi_list = range(dpi_list[0], dpi_list[1] + 1, step)
-    return _NamedInts.list(dpi_list)
+
+    return NamedInts._create_("DPI_CHOICES", dpi_list)
 
 
 def _feature_adjustable_dpi():

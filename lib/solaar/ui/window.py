@@ -23,7 +23,7 @@ from gi.repository import GLib, Gdk, Gtk
 from gi.repository.GObject import TYPE_PYOBJECT
 
 from logitech_receiver import hidpp10 as _hidpp10
-from logitech_receiver.common import NamedInt as _NamedInt, NamedInts
+from logitech_receiver.common import NamedInts
 from logitech_receiver.status import KEYS as _K
 from solaar import NAME
 from solaar.i18n import _, ngettext
@@ -723,8 +723,8 @@ def _update_device_panel(device, panel, buttons, full=False):
         panel._battery._icon.set_from_icon_name(icon_name, _INFO_ICON_SIZE)
         panel._battery._icon.set_sensitive(True)
 
-        if isinstance(battery_level, _NamedInt):
-            text = _(str(battery_level))
+        if hasattr(battery_level, "name"):
+            text = _(battery_level.name)
         else:
             text = _("%(battery_percent)d%%") % {"battery_percent": battery_level}
         if is_online:
@@ -929,9 +929,9 @@ def update(device, need_popup=False):
                 _model.set_value(item, _COLUMN.STATUS_TEXT, _CAN_SET_ROW_NONE)
                 _model.set_value(item, _COLUMN.STATUS_ICON, _CAN_SET_ROW_NONE)
             else:
-                if isinstance(battery_level, _NamedInt):
+                if hasattr(battery_level, 'name'):
                     status_text = _("%(battery_level)s") % {
-                        "battery_level": _(str(battery_level))
+                        "battery_level": _(battery_level.name)
                     }
                 else:
                     status_text = _("%(battery_percent)d%%") % {

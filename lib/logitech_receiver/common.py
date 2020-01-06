@@ -17,80 +17,13 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Some common functions and types.
-
 from binascii import hexlify as _hexlify
 from struct import pack, unpack
 
-from aenum import Enum, extend_enum
-
-try:
-    unicode
-    # if Python2, unicode_literals will mess our first (un)pack() argument
-    _pack_str = pack
-    _unpack_str = unpack
-    pack = lambda x, *args: _pack_str(str(x), *args)
-    unpack = lambda x, *args: _unpack_str(str(x), *args)
-
-    is_string = lambda d: isinstance(d, unicode) or isinstance(d, str)
-# no easy way to distinguish between b'' and '' :(
-# or (isinstance(d, str) \
-# 	and not any((chr(k) in d for k in range(0x00, 0x1F))) \
-# 	and not any((chr(k) in d for k in range(0x80, 0xFF))) \
-# 	)
-except:
-    # this is certanly Python 3
-    # In Py3, unicode and str are equal (the unicode object does not exist)
-    is_string = lambda d: isinstance(d, str)
+from aenum import IntEnum, extend_enum
 
 
-#
-#
-#
-
-
-class NamedInt(int):
-    """An reqular Python integer with an attached name.
-
-    Caution: comparison with strings will also match this NamedInt's name
-    (case-insensitive)."""
-
-    def __new__(cls, value, name):
-        assert is_string(name)
-        obj = int.__new__(cls, value)
-        obj.name = str(name)
-        return obj
-
-    def bytes(self, count=2):
-        return int2bytes(self, count)
-
-    def __eq__(self, other):
-        if isinstance(other, NamedInt):
-            return int(self) == int(other) and self.name == other.name
-        if isinstance(other, int):
-            return int(self) == int(other)
-        if is_string(other):
-            return self.name.lower() == other.lower()
-        # this should catch comparisons with bytes in Py3
-        if other is not None:
-            raise TypeError("Unsupported type " + str(type(other)))
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-    def __hash__(self):
-        return int(self)
-
-    def __str__(self):
-        return self.name
-
-    __unicode__ = __str__
-
-    def __repr__(self):
-        return "NamedInt(%d, %r)" % (int(self), self.name)
-
-
-class NamedInts(int, Enum):
+class NamedInts(IntEnum):
     @classmethod
     def flag_names(cls, value):
         unknown_bits = value
