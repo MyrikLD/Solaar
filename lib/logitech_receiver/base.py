@@ -482,7 +482,9 @@ def request(handle, devnumber, request_id, *params):
         if reply:
             if reply.devnumber == devnumber and reply.data:
                 try:
-                    return r.handle_reply(reply)
+                    data = r.handle_reply(reply)
+                    if data:
+                        return data
                 except Request.NotMine:
                     continue
             else:
@@ -490,10 +492,10 @@ def request(handle, devnumber, request_id, *params):
                 # reset the timeout starting point
                 request_started = _timestamp()
 
-                if r.notifications_hook:
-                    n = make_notification(reply.devnumber, reply.data)
-                    if n:
-                        r.notifications_hook(n)
+            if r.notifications_hook:
+                n = make_notification(reply.devnumber, reply.data)
+                if n:
+                    r.notifications_hook(n)
 
         delta = _timestamp() - request_started
     # if _log.isEnabledFor(_DEBUG):

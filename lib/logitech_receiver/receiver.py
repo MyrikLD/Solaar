@@ -140,9 +140,10 @@ class PairedDevice:
                 self._kind = self.descriptor.kind
 
         if self._protocol is not None:
-            self.features = (
-                None if self._protocol < 2.0 else _hidpp20.FeaturesArray(self)
-            )
+            if self._protocol < 2.0:
+                self.features = None
+            else:
+                self.features = _hidpp20.FeaturesArray(self)
         else:
             # may be a 2.0 device; if not, it will fix itself later
             self.features = _hidpp20.FeaturesArray(self)
