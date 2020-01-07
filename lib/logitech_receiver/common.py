@@ -42,6 +42,9 @@ class NamedInts(IntEnum):
         extend_enum(cls, "unknown:%04X" % value, (value,))
         return cls(value)
 
+    def __str__(self):
+        return self.name
+
 
 def strhex(x: bytes):
     assert x is not None
