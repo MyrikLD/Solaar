@@ -428,17 +428,18 @@ class ChoicesValidator:
             choice = self.choices[:][0]
         else:
             if isinstance(new_value, int):
-                choice = self.choices[new_value]
+                choice = self.choices(new_value)
             elif int(new_value) in self.choices:
-                choice = self.choices[int(new_value)]
+                choice = self.choices(int(new_value))
             elif new_value in self.choices:
-                choice = self.choices[new_value]
+                choice = self.choices(new_value)
             else:
                 raise ValueError(new_value)
 
         if choice is None:
             raise ValueError("invalid choice %r" % new_value)
-        return choice.bytes(self._bytes_count)
+
+        return choice.to_bytes(self._bytes_count, byteorder='big')
 
 
 class RangeValidator:

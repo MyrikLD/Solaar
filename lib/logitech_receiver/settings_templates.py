@@ -493,7 +493,7 @@ def _feature_adjustable_dpi_choices(device):
         assert len(dpi_list) == 2, "Invalid DPI list range: %r" % dpi_list
         dpi_list = range(dpi_list[0], dpi_list[1] + 1, step)
 
-    return NamedInts._create_("DPI_CHOICES", dpi_list)
+    return NamedInts._create_("DPI_CHOICES", {str(i): i for i in dpi_list})
 
 
 def _feature_adjustable_dpi():
