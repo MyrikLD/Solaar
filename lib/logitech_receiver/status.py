@@ -23,7 +23,7 @@ from .i18n import _, ngettext
 
 _log = getLogger(__name__)
 del getLogger
-_R = _hidpp10.REGISTERS
+_R = _hidpp10.Registers
 
 #
 #
@@ -185,8 +185,8 @@ class DeviceStatus(dict):
         old_status, self[KEYS.BATTERY_STATUS] = self.get(KEYS.BATTERY_STATUS), status
 
         charging = status in (
-            _hidpp20.BATTERY_STATUS.recharging,
-            _hidpp20.BATTERY_STATUS.slow_recharge,
+            _hidpp20.BatteryStatus.recharging,
+            _hidpp20.BatteryStatus.slow_recharge,
         )
         old_charging, self[KEYS.BATTERY_CHARGING] = (
             self.get(KEYS.BATTERY_CHARGING),
@@ -236,8 +236,8 @@ class DeviceStatus(dict):
             # broadcasting it's battery status anyway, it will just take a little while.
             # However, when the device has just been detected, it will not show
             # any battery status for a while (broadcasts happen every 90 seconds).
-            if battery is None and _hidpp20.FEATURE.SOLAR_DASHBOARD in d.features:
-                d.feature_request(_hidpp20.FEATURE.SOLAR_DASHBOARD, 0x00, 1, 1)
+            if battery is None and _hidpp20.Feature.SOLAR_DASHBOARD in d.features:
+                d.feature_request(_hidpp20.Feature.SOLAR_DASHBOARD, 0x00, 1, 1)
                 return
 
             if battery is not None:

@@ -32,9 +32,9 @@ from .settings import (
     Setting as _Setting,
 )
 
-_DK = _hidpp10.DEVICE_KIND
-_R = _hidpp10.REGISTERS
-_F = _hidpp20.FEATURE
+_DK = _hidpp10.DeviceKind
+_R = _hidpp10.Registers
+_F = _hidpp20.Feature
 
 
 #

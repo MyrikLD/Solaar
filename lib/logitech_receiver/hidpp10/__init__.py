@@ -15,13 +15,13 @@
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from .enums import (
-    BATTERY_APPOX,
-    DEVICE_KIND,
-    ERROR,
-    NOTIFICATION_FLAG,
-    PAIRING_ERRORS,
-    POWER_SWITCH_LOCATION,
-    REGISTERS,
+    BatteryAppox,
+    DeviceKind,
+    Error,
+    NotificateionFlag,
+    PairingErrors,
+    PowerSwitchLocation,
+    Registers,
 )
 from .utils import (
     get_battery,

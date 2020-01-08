@@ -26,7 +26,7 @@ from .settings_templates import check_feature_settings as _check_feature_setting
 
 _log = getLogger(__name__)
 del getLogger
-_R = _hidpp10.REGISTERS
+_R = _hidpp10.Registers
 
 
 #
@@ -49,7 +49,7 @@ class PairedDevice:
         self.wpid = None
         self.descriptor = None
 
-        # mouse, keyboard, etc (see hidpp10.DEVICE_KIND)
+        # mouse, keyboard, etc (see hidpp10.DeviceKind)
         self._kind = None
         # Unifying peripherals report a codename.
         self._codename = None
@@ -80,7 +80,7 @@ class PairedDevice:
             )
             # assert link_notification.address == (0x04 if unifying else 0x03)
             kind = link_notification.data[0] & 0x0F
-            self._kind = _hidpp10.DEVICE_KIND(kind)
+            self._kind = _hidpp10.DeviceKind(kind)
         else:
             # force a reading of the wpid
             pair_info = receiver.read_register(_R.receiver_info, 0x20 + number - 1)
@@ -88,7 +88,7 @@ class PairedDevice:
                 # may be either a Unifying receiver, or an Unifying-ready receiver
                 self.wpid = _strhex(pair_info[3:5])
                 kind = pair_info[7] & 0x0F
-                self._kind = _hidpp10.DEVICE_KIND(kind)
+                self._kind = _hidpp10.DeviceKind(kind)
                 self._polling_rate = pair_info[2]
 
             else:
@@ -184,7 +184,7 @@ class PairedDevice:
             )
             if pair_info:
                 kind = pair_info[7] & 0x0F
-                self._kind = _hidpp10.DEVICE_KIND(kind)
+                self._kind = _hidpp10.DeviceKind(kind)
                 self._polling_rate = pair_info[2]
             elif self.online and self.protocol >= 2.0:
                 self._kind = _hidpp20.get_kind(self)
@@ -207,7 +207,7 @@ class PairedDevice:
             )
             if serial:
                 ps = serial[9] & 0x0F
-                self._power_switch = _hidpp10.POWER_SWITCH_LOCATION(ps)
+                self._power_switch = _hidpp10.PowerSwitchLocation(ps)
             else:
                 # some Nano receivers?
                 serial = self.receiver.read_register(0x2D5)
@@ -225,7 +225,7 @@ class PairedDevice:
             ps = self.receiver.read_register(_R.receiver_info, 0x30 + self.number - 1)
             if ps is not None:
                 ps = ps[9] & 0x0F
-                self._power_switch = _hidpp10.POWER_SWITCH_LOCATION(ps)
+                self._power_switch = _hidpp10.PowerSwitchLocation(ps)
             else:
                 self._power_switch = "(unknown)"
         return self._power_switch
@@ -276,10 +276,10 @@ class PairedDevice:
 
         if enable:
             set_flag_bits = (
-                _hidpp10.NOTIFICATION_FLAG.battery_status
-                | _hidpp10.NOTIFICATION_FLAG.keyboard_illumination
-                | _hidpp10.NOTIFICATION_FLAG.wireless
-                | _hidpp10.NOTIFICATION_FLAG.software_present
+                _hidpp10.NotificateionFlag.battery_status
+                | _hidpp10.NotificateionFlag.keyboard_illumination
+                | _hidpp10.NotificateionFlag.wireless
+                | _hidpp10.NotificateionFlag.software_present
             )
         else:
             set_flag_bits = 0
@@ -295,7 +295,7 @@ class PairedDevice:
         flag_names = (
             None
             if flag_bits is None
-            else tuple(_hidpp10.NOTIFICATION_FLAG.flag_names(flag_bits))
+            else tuple(_hidpp10.NotificateionFlag.flag_names(flag_bits))
         )
         if _log.isEnabledFor(_INFO):
             _log.info(
@@ -407,7 +407,7 @@ class Receiver:
         try:
             self.write_register(_R.receiver_pairing)
         except ReadException as e:
-            if e.protocol_version == 1 and e.code == _hidpp10.ERROR.invalid_value:
+            if e.protocol_version == 1 and e.code == _hidpp10.Error.invalid_value:
                 self.may_unpair = False
         else:
             self.may_unpair = True
@@ -437,9 +437,9 @@ class Receiver:
 
         if enable:
             set_flag_bits = (
-                _hidpp10.NOTIFICATION_FLAG.battery_status
-                | _hidpp10.NOTIFICATION_FLAG.wireless
-                | _hidpp10.NOTIFICATION_FLAG.software_present
+                _hidpp10.NotificateionFlag.battery_status
+                | _hidpp10.NotificateionFlag.wireless
+                | _hidpp10.NotificateionFlag.software_present
             )
         else:
             set_flag_bits = 0
@@ -456,7 +456,7 @@ class Receiver:
         flag_names = (
             None
             if flag_bits is None
-            else tuple(_hidpp10.NOTIFICATION_FLAG.flag_names(flag_bits))
+            else tuple(_hidpp10.NotificateionFlag.flag_names(flag_bits))
         )
         if _log.isEnabledFor(_INFO):
             _log.info(

@@ -15,12 +15,12 @@
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from .enums import (
-    ERROR,
-    BATTERY_STATUS,
-    DEVICE_KIND,
-    FEATURE,
-    FEATURE_FLAG,
-    FIRMWARE_KIND,
+    Error,
+    BatteryStatus,
+    DeviceKind,
+    Feature,
+    FeatureFlag,
+    FirmwareKind,
 )
 from .exceptions import FeatureCallError, FeatureNotSupported
 from .arrays import FeaturesArray, KeysArray

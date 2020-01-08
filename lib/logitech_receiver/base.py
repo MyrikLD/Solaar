@@ -343,7 +343,7 @@ class ReadException(Exception):
         super().__init__()
 
     def error(self):
-        return {1.0: hidpp10, 2.0: hidpp20}[self.protocol_version].ERROR[self.code]
+        return {1.0: hidpp10, 2.0: hidpp20}[self.protocol_version].Error[self.code]
 
     def __str__(self):
         return f"HIDPP{self.protocol_version}0: {self.error()}"
@@ -548,15 +548,15 @@ def ping(handle, devnumber):
                     assert reply.data[-1] == 0x00
                     error = reply.data[3]
 
-                    if error == hidpp10.ERROR.invalid_SubID__command:
+                    if error == hidpp10.Error.invalid_SubID__command:
                         # a valid reply from a HID++ 1.0 device
                         return 1.0
 
-                    if error == hidpp10.ERROR.resource_error:
+                    if error == hidpp10.Error.resource_error:
                         # device unreachable
                         return
 
-                    if error == hidpp10.ERROR.unknown_device:
+                    if error == hidpp10.Error.unknown_device:
                         # no paired device with that number
                         _log.error(
                             "(%s) device %d error on ping request: unknown device",

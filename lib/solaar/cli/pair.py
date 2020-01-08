@@ -41,9 +41,9 @@ def run(receivers, args):
 
     # check if it's necessary to set the notification flags
     old_notification_flags = _hidpp10.get_notification_flags(receiver) or 0
-    if not (old_notification_flags & _hidpp10.NOTIFICATION_FLAG.wireless):
+    if not (old_notification_flags & _hidpp10.NotificateionFlag.wireless):
         _hidpp10.set_notification_flags(
-            receiver, old_notification_flags | _hidpp10.NOTIFICATION_FLAG.wireless
+            receiver, old_notification_flags | _hidpp10.NotificateionFlag.wireless
         )
 
     # get all current devices
@@ -78,7 +78,7 @@ def run(receivers, args):
             if n:
                 receiver.handle.notifications_hook(n)
 
-    if not (old_notification_flags & _hidpp10.NOTIFICATION_FLAG.wireless):
+    if not (old_notification_flags & _hidpp10.NotificateionFlag.wireless):
         # only clear the flags if they weren't set before, otherwise a
         # concurrently running Solaar app might stop working properly
         _hidpp10.set_notification_flags(receiver, old_notification_flags)

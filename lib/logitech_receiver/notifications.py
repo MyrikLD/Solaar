@@ -26,8 +26,8 @@ from .status import ALERT as _ALERT, KEYS as _K
 
 _log = getLogger(__name__)
 del getLogger
-_R = _hidpp10.REGISTERS
-_F = _hidpp20.FEATURE
+_R = _hidpp10.Registers
+_F = _hidpp20.Feature
 
 
 def process(device, notification):
@@ -65,7 +65,7 @@ def _process_receiver_notification(receiver, status, n):
 
         pair_error = n.data[0]
         if pair_error:
-            status[_K.ERROR] = error_string = _hidpp10.PAIRING_ERRORS[pair_error]
+            status[_K.ERROR] = error_string = _hidpp10.PairingErrors[pair_error]
             status.new_device = None
             _log.warning(f"pairing error {pair_error}: {error_string}")
 
@@ -220,7 +220,7 @@ def _process_feature_notification(device, status, n, feature):
             discharge_next_level = n.data[1]
             battery_status = n.data[2]
             status.set_battery_info(
-                discharge_level, _hidpp20.BATTERY_STATUS(battery_status)
+                discharge_level, _hidpp20.BatteryStatus(battery_status)
             )
         else:
             _log.warning(f"{device}: unknown BATTERY {n}")
@@ -254,7 +254,7 @@ def _process_feature_notification(device, status, n, feature):
             charge, lux, adc = _unpack("!BHH", n.data[:5])
             # guesstimate the battery voltage, emphasis on 'guess'
             # status_text = '%1.2fV' % (adc * 2.67793237653 / 0x0672)
-            status_text = _hidpp20.BATTERY_STATUS.discharging
+            status_text = _hidpp20.BatteryStatus.discharging
 
             if n.address == 0x00:
                 status[_K.LIGHT_LEVEL] = None
@@ -262,7 +262,7 @@ def _process_feature_notification(device, status, n, feature):
             elif n.address == 0x10:
                 status[_K.LIGHT_LEVEL] = lux
                 if lux > 200:
-                    status_text = _hidpp20.BATTERY_STATUS.recharging
+                    status_text = _hidpp20.BatteryStatus.recharging
                 status.set_battery_info(charge, status_text)
             elif n.address == 0x20:
                 if _log.isEnabledFor(_DEBUG):

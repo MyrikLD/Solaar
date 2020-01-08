@@ -17,12 +17,10 @@
 from typing import NamedTuple, Any
 
 from .common import NamedInts
-from .hidpp10 import DEVICE_KIND as _DK, REGISTERS as _R
+from .hidpp10 import DeviceKind as _DK, Registers as _R
 from .settings_templates import FeatureSettings as _FS, RegisterSettings as _RS
 
-#
-#
-#
+
 class _DeviceDescriptor(NamedTuple):
     name: str
     kind: int

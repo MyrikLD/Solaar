@@ -609,7 +609,7 @@ def _update_details(button):
                 flag_names = (
                     ("(%s)" % _("none"),)
                     if flag_bits == 0
-                    else _hidpp10.NOTIFICATION_FLAG.flag_names(flag_bits)
+                    else _hidpp10.NotificateionFlag.flag_names(flag_bits)
                 )
                 yield _("Notifications"), ("\n%15s" % " ").join(flag_names)
 

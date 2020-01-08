@@ -22,7 +22,7 @@ from logitech_receiver import (
     hidpp20 as _hidpp20,
     special_keys as _special_keys,
 )
-from logitech_receiver.hidpp20 import BATTERY_STATUS
+from logitech_receiver.hidpp20 import BatteryStatus
 from solaar.cli import find_device, find_receiver
 from solaar.cli.indent_helper import Text
 
@@ -46,7 +46,7 @@ def _print_receiver(receiver: Receiver, text: Text):
     if notification_flags is not None:
         if notification_flags:
             notification_names = ", ".join(
-                _hidpp10.NOTIFICATION_FLAG.flag_names(notification_flags)
+                _hidpp10.NotificateionFlag.flag_names(notification_flags)
             )
             text(f"Notifications: {notification_names} (0x{notification_flags:06x})")
         else:
@@ -56,7 +56,7 @@ def _print_receiver(receiver: Receiver, text: Text):
     # counter when the corresponding device sends any non-empty report. When the software needs activity
     # information, it polls this register at regular intervals and subtracts the previous counter values from the
     # current ones to get the number of non-empty reports received during the interval.
-    # activity = receiver.read_register(hidpp10.REGISTERS.devices_activity)
+    # activity = receiver.read_register(hidpp10.Registers.devices_activity)
     # if activity:
     #     activity = activity[:receiver.max_devices]
     #     activity_text = (
@@ -110,7 +110,7 @@ class PrintDevice:
         notification_flags = _hidpp10.get_notification_flags(self.dev)
         if notification_flags is not None:
             if notification_flags:
-                notification_names = _hidpp10.NOTIFICATION_FLAG.flag_names(
+                notification_names = _hidpp10.NotificateionFlag.flag_names(
                     notification_flags
                 )
                 self.text(
@@ -155,7 +155,7 @@ class PrintDevice:
         if battery is not None:
             level, status = battery
             if level is not None:
-                if isinstance(level, BATTERY_STATUS):
+                if isinstance(level, BatteryStatus):
                     level_text = level.name
                 else:
                     level_text = "%d%%" % level
@@ -177,7 +177,7 @@ class PrintFeatures:
     def print_feature(self, index, feature):
         flags = self.dev.request(0x0000, feature.to_bytes(2, byteorder="big"))
         flags = 0 if flags is None else flags[1]
-        flags = _hidpp20.FEATURE_FLAG.flag_names(flags)
+        flags = _hidpp20.FeatureFlag.flag_names(flags)
         flags_text = ", ".join(flags)
         self.text(f"{index:>2d}: {feature:<23} {{{feature.value:04X}}}  {flags_text}")
 

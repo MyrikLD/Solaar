@@ -33,7 +33,7 @@ try:
     # available = True
 
     # This is not working on Fedora 26. If fails with:
-    # ERROR [MainThread] solaar.ui.notify: showing <Notify.Notification object at 0x7f82c2484640 (NotifyNotification at 0x556fa0fc5a40)>
+    # Error [MainThread] solaar.ui.notify: showing <Notify.Notification object at 0x7f82c2484640 (NotifyNotification at 0x556fa0fc5a40)>
     # File "./solaar/lib/solaar/ui/notify.py", line 145, in show
     #   n.show()
     # Error: g-io-error-quark: Error calling StartServiceByName for org.freedesktop.Notifications: Timeout was reached (24)

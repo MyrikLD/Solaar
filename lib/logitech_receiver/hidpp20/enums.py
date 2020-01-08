@@ -39,7 +39,7 @@ https://github.com/Logitech/cpg-docs/tree/master/hidpp20
 """
 
 
-class FEATURE(NamedInts):
+class Feature(NamedInts):
     ROOT = 0x0000
     FEATURE_SET = 0x0001
     FEATURE_INFO = 0x0002
@@ -149,13 +149,13 @@ class FEATURE(NamedInts):
     HEADSET_OUT = 0x8320
 
 
-class FEATURE_FLAG(NamedInts):
+class FeatureFlag(NamedInts):
     internal = 0x20
     hidden = 0x40
     obsolete = 0x80
 
 
-class DEVICE_KIND(NamedInts):
+class DeviceKind(NamedInts):
     keyboard = 0x00
     remote_control = 0x01
     numpad = 0x02
@@ -166,14 +166,14 @@ class DEVICE_KIND(NamedInts):
     receiver = 0x07
 
 
-class FIRMWARE_KIND(NamedInts):
+class FirmwareKind(NamedInts):
     Firmware = 0x00
     Bootloader = 0x01
     Hardware = 0x02
     Other = 0x03
 
 
-class BATTERY_STATUS(NamedInts):
+class BatteryStatus(NamedInts):
     discharging = 0x00
     recharging = 0x01
     almost_full = 0x02
@@ -185,12 +185,12 @@ class BATTERY_STATUS(NamedInts):
     @property
     def ok(self) -> bool:
         return self not in (
-            BATTERY_STATUS.invalid_battery,
-            BATTERY_STATUS.thermal_error,
+            BatteryStatus.invalid_battery,
+            BatteryStatus.thermal_error,
         )
 
 
-class ERROR(NamedInts):
+class Error(NamedInts):
     unknown = 0x01
     invalid_argument = 0x02
     out_of_range = 0x03

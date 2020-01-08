@@ -23,7 +23,7 @@ from .common import (
     bytes2int as _bytes2int,
     int2bytes as _int2bytes,
 )
-from .hidpp20 import FEATURE
+from .hidpp20 import Feature
 
 _log = getLogger(__name__)
 del getLogger
@@ -237,11 +237,11 @@ class FeatureRW:
 
     def __init__(
         self,
-        feature: FEATURE,
+        feature: Feature,
         read_fnid=default_read_fnid,
         write_fnid=default_write_fnid,
     ):
-        assert isinstance(feature, FEATURE)
+        assert isinstance(feature, Feature)
         self.feature = feature
         self.read_fnid = read_fnid
         self.write_fnid = write_fnid
@@ -439,7 +439,7 @@ class ChoicesValidator:
         if choice is None:
             raise ValueError("invalid choice %r" % new_value)
 
-        return choice.to_bytes(self._bytes_count, byteorder='big')
+        return choice.to_bytes(self._bytes_count, byteorder="big")
 
 
 class RangeValidator:
@@ -453,13 +453,13 @@ class RangeValidator:
 
     kind = KIND.range
 
-    """Translates between integers and a byte sequence.
-    :param min_value: minimum accepted value (inclusive)
-    :param max_value: maximum accepted value (inclusive)
-    :param bytes_count: the size of the derived byte sequence. If None, it
-    will be calculated from the range."""
-
     def __init__(self, min_value, max_value, bytes_count=None):
+        """Translates between integers and a byte sequence.
+            :param min_value: minimum accepted value (inclusive)
+            :param max_value: maximum accepted value (inclusive)
+            :param bytes_count: the size of the derived byte sequence.
+            If None, it will be calculated from the range.
+        """
         assert max_value > min_value
         self.min_value = min_value
         self.max_value = max_value

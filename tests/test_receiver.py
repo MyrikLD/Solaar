@@ -31,7 +31,7 @@ class TestReq:
                 return request(self.handle, 0xFF, request_id, *params)
 
         with pytest.raises(ReadException) as excinfo:
-            hidpp10.write_register(Device(), hidpp10.REGISTERS.receiver_pairing)
+            hidpp10.write_register(Device(), hidpp10.Registers.receiver_pairing)
 
-            assert excinfo.code == hidpp10.ERROR.invalid_value
+            assert excinfo.code == hidpp10.Error.invalid_value
             assert excinfo.protocol_version == 1

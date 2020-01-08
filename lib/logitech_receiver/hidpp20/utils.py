@@ -18,7 +18,7 @@ from logging import DEBUG, getLogger
 from struct import unpack
 
 from logitech_receiver.common import FirmwareInfo
-from .enums import BATTERY_STATUS, DEVICE_KIND, FEATURE, FIRMWARE_KIND
+from .enums import BatteryStatus, DeviceKind, Feature, FirmwareKind
 
 
 _log = getLogger(__name__)
@@ -36,13 +36,13 @@ def get_firmware(device):
 
     :returns: a list of FirmwareInfo tuples, ordered by firmware layer.
     """
-    count = feature_request(device, FEATURE.DEVICE_FW_VERSION)
+    count = feature_request(device, Feature.DEVICE_FW_VERSION)
     if count:
         count = count[0]
 
         fw = []
         for index in range(0, count):
-            fw_info = feature_request(device, FEATURE.DEVICE_FW_VERSION, 0x10, index)
+            fw_info = feature_request(device, Feature.DEVICE_FW_VERSION, 0x10, index)
             if fw_info:
                 level = fw_info[0] & 0x0F
                 if level == 0 or level == 1:
@@ -54,12 +54,12 @@ def get_firmware(device):
                         version += ".B%04X" % build
                     extras = fw_info[9:].rstrip(b"\x00") or None
                     fw_info = FirmwareInfo(
-                        FIRMWARE_KIND(level), name.decode("ascii"), version, extras
+                        FirmwareKind(level), name.decode("ascii"), version, extras
                     )
-                elif level == FIRMWARE_KIND.Hardware:
-                    fw_info = FirmwareInfo(FIRMWARE_KIND.Hardware, "", str(fw_info[1]))
+                elif level == FirmwareKind.Hardware:
+                    fw_info = FirmwareInfo(FirmwareKind.Hardware, "", str(fw_info[1]))
                 else:
-                    fw_info = FirmwareInfo(FIRMWARE_KIND.Other, "", "")
+                    fw_info = FirmwareInfo(FirmwareKind.Other, "", "")
 
                 fw.append(fw_info)
             # if _log.isEnabledFor(_DEBUG):
@@ -70,16 +70,16 @@ def get_firmware(device):
 def get_kind(device):
     """Reads a device's type.
 
-    :see DEVICE_KIND:
+    :see DeviceKind:
     :returns: a string describing the device type, or ``None`` if the device is
     not available or does not support the ``DEVICE_NAME`` feature.
     """
-    kind = feature_request(device, FEATURE.DEVICE_NAME, 0x20)
+    kind = feature_request(device, Feature.DEVICE_NAME, 0x20)
     if kind:
         kind = kind[0]
         # if _log.isEnabledFor(_DEBUG):
-        # 	_log.debug("device %d type %d = %s", devnumber, kind, DEVICE_KIND[kind])
-        return DEVICE_KIND(kind)
+        # 	_log.debug("device %d type %d = %s", devnumber, kind, DeviceKind[kind])
+        return DeviceKind(kind)
 
 
 def get_name(device):
@@ -88,13 +88,13 @@ def get_name(device):
     :returns: a string with the device name, or ``None`` if the device is not
     available or does not support the ``DEVICE_NAME`` feature.
     """
-    name_length = feature_request(device, FEATURE.DEVICE_NAME)
+    name_length = feature_request(device, Feature.DEVICE_NAME)
     if name_length:
         name_length = name_length[0]
 
         name = b""
         while len(name) < name_length:
-            fragment = feature_request(device, FEATURE.DEVICE_NAME, 0x10, len(name))
+            fragment = feature_request(device, Feature.DEVICE_NAME, 0x10, len(name))
             if fragment:
                 name += fragment[: name_length - len(name)]
             else:
@@ -113,7 +113,7 @@ def get_battery(device):
 
     :raises FeatureNotSupported: if the device does not support this feature.
     """
-    battery = feature_request(device, FEATURE.BATTERY_STATUS)
+    battery = feature_request(device, Feature.BATTERY_STATUS)
     if battery:
         discharge, discharge_next, status = unpack("!BBB", battery[:3])
         if _log.isEnabledFor(DEBUG):
@@ -123,16 +123,16 @@ def get_battery(device):
                 discharge,
                 discharge_next,
                 status,
-                BATTERY_STATUS(status),
+                BatteryStatus(status),
             )
-        return discharge, BATTERY_STATUS(status)
+        return discharge, BatteryStatus(status)
 
 
 def get_keys(device):
     # TODO: add here additional variants for other REPROG_CONTROLS
-    count = feature_request(device, FEATURE.REPROG_CONTROLS)
+    count = feature_request(device, Feature.REPROG_CONTROLS)
     if count is None:
-        count = feature_request(device, FEATURE.REPROG_CONTROLS_V4)
+        count = feature_request(device, Feature.REPROG_CONTROLS_V4)
     if count:
         from .arrays import KeysArray
 
@@ -140,7 +140,7 @@ def get_keys(device):
 
 
 def get_mouse_pointer_info(device):
-    pointer_info = feature_request(device, FEATURE.MOUSE_POINTER)
+    pointer_info = feature_request(device, Feature.MOUSE_POINTER)
     if pointer_info:
         dpi, flags = unpack("!HB", pointer_info[:3])
         acceleration = ("none", "low", "med", "high")[flags & 0x3]
@@ -155,7 +155,7 @@ def get_mouse_pointer_info(device):
 
 
 def get_vertical_scrolling_info(device):
-    vertical_scrolling_info = feature_request(device, FEATURE.VERTICAL_SCROLLING)
+    vertical_scrolling_info = feature_request(device, Feature.VERTICAL_SCROLLING)
     if vertical_scrolling_info:
         roller, ratchet, lines = unpack("!BBB", vertical_scrolling_info[:3])
         roller_type = (
@@ -172,14 +172,14 @@ def get_vertical_scrolling_info(device):
 
 
 def get_hi_res_scrolling_info(device):
-    hi_res_scrolling_info = feature_request(device, FEATURE.HI_RES_SCROLLING)
+    hi_res_scrolling_info = feature_request(device, Feature.HI_RES_SCROLLING)
     if hi_res_scrolling_info:
         mode, resolution = unpack("!BB", hi_res_scrolling_info[:2])
         return mode, resolution
 
 
 def get_pointer_speed_info(device):
-    pointer_speed_info = feature_request(device, FEATURE.POINTER_SPEED)
+    pointer_speed_info = feature_request(device, Feature.POINTER_SPEED)
     if pointer_speed_info:
         pointer_speed_hi, pointer_speed_lo = unpack("!BB", pointer_speed_info[:2])
         # if pointer_speed_lo > 0:
@@ -188,7 +188,7 @@ def get_pointer_speed_info(device):
 
 
 def get_lowres_wheel_status(device):
-    lowres_wheel_status = feature_request(device, FEATURE.LOWRES_WHEEL)
+    lowres_wheel_status = feature_request(device, Feature.LOWRES_WHEEL)
     if lowres_wheel_status:
         wheel_flag = unpack("!B", lowres_wheel_status[:1])[0]
         wheel_reporting = ("HID", "HID++")[wheel_flag & 0x01]
@@ -196,9 +196,9 @@ def get_lowres_wheel_status(device):
 
 
 def get_hires_wheel(device):
-    caps = feature_request(device, FEATURE.HIRES_WHEEL, 0x00)
-    mode = feature_request(device, FEATURE.HIRES_WHEEL, 0x10)
-    ratchet = feature_request(device, FEATURE.HIRES_WHEEL, 0x030)
+    caps = feature_request(device, Feature.HIRES_WHEEL, 0x00)
+    mode = feature_request(device, Feature.HIRES_WHEEL, 0x10)
+    ratchet = feature_request(device, Feature.HIRES_WHEEL, 0x030)
 
     if caps and mode and ratchet:
         # Parse caps

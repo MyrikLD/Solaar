@@ -19,7 +19,7 @@ from struct import unpack, pack
 from logitech_receiver import special_keys
 from logitech_receiver.common import ReprogrammableKeyInfoV4, ReprogrammableKeyInfo
 from .utils import feature_request
-from .enums import FEATURE
+from .enums import Feature
 from logging import getLogger
 
 
@@ -31,7 +31,7 @@ class FeaturesArray:
     """A sequence of features supported by a HID++ 2.0 device."""
 
     __slots__ = ("supported", "device", "features")
-    assert FEATURE.ROOT == 0x0000
+    assert Feature.ROOT == 0x0000
 
     def __init__(self, device):
         assert device is not None
@@ -62,7 +62,7 @@ class FeaturesArray:
                 self.device = None
                 return False
 
-            reply = self.device.request(0x0000, pack("!H", FEATURE.FEATURE_SET))
+            reply = self.device.request(0x0000, pack("!H", Feature.FEATURE_SET))
             if reply is None:
                 self.supported = False
             else:
@@ -79,8 +79,8 @@ class FeaturesArray:
                         count = count[0]
                         assert count >= fs_index
                         self.features = [None] * (1 + count)
-                        self.features[0] = FEATURE.ROOT
-                        self.features[fs_index] = FEATURE.FEATURE_SET
+                        self.features[0] = Feature.ROOT
+                        self.features[fs_index] = Feature.FEATURE_SET
                         return True
                 else:
                     self.supported = False
@@ -98,11 +98,11 @@ class FeaturesArray:
 
                 if self.features[index] is None:
                     feature = self.device.feature_request(
-                        FEATURE.FEATURE_SET, 0x10, index
+                        Feature.FEATURE_SET, 0x10, index
                     )
                     if feature:
                         (feature,) = unpack("!H", feature[:2])
-                        self.features[index] = FEATURE(feature)
+                        self.features[index] = Feature(feature)
 
                 return self.features[index]
 
@@ -127,7 +127,7 @@ class FeaturesArray:
                 if reply:
                     index = reply[0]
                     if index:
-                        self.features[index] = FEATURE(ivalue)
+                        self.features[index] = Feature(ivalue)
                         return True
 
     def index(self, feature_id):
@@ -145,14 +145,14 @@ class FeaturesArray:
                 reply = self.device.request(0x0000, pack("!H", ivalue))
                 if reply:
                     index = reply[0]
-                    self.features[index] = FEATURE(ivalue)
+                    self.features[index] = Feature(ivalue)
                     return index
 
         raise ValueError("%r not in list" % feature_id)
 
     def __iter__(self):
         if self._check():
-            yield FEATURE.ROOT
+            yield Feature.ROOT
             index = 1
             last_index = len(self.features)
             while index < last_index:
@@ -182,12 +182,12 @@ class KeysArray:
             # TODO: add here additional variants for other REPROG_CONTROLS
             if self.keys[index] is None:
                 keydata = feature_request(
-                    self.device, FEATURE.REPROG_CONTROLS, 0x10, index
+                    self.device, Feature.REPROG_CONTROLS, 0x10, index
                 )
                 self.keyversion = 1
                 if keydata is None:
                     keydata = feature_request(
-                        self.device, FEATURE.REPROG_CONTROLS_V4, 0x10, index
+                        self.device, Feature.REPROG_CONTROLS_V4, 0x10, index
                     )
                     self.keyversion = 4
                 if keydata:
@@ -206,7 +206,7 @@ class KeysArray:
                         try:
                             mapped_data = feature_request(
                                 self.device,
-                                FEATURE.REPROG_CONTROLS_V4,
+                                Feature.REPROG_CONTROLS_V4,
                                 0x20,
                                 key & 0xFF00,
                                 key & 0xFF,
