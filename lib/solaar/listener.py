@@ -1,6 +1,3 @@
-# -*- python-mode -*-
-# -*- coding: UTF-8 -*-
-
 ## Copyright (C) 2012-2013  Daniel Pavel
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -250,7 +247,7 @@ class ReceiverListener(_listener.EventsListener):
             # this should be the first notification after a device was paired
             assert n.sub_id == 0x41 and n.address == 0x04
             if _log.isEnabledFor(_INFO):
-                _log.info("%s: pairing detected new device", self.receiver)
+                _log.info(f"{self.receiver}: pairing detected new device")
             self.receiver.status.new_device = dev
         elif dev.online is None:
             dev.ping()

@@ -1,6 +1,3 @@
-# -*- python-mode -*-
-# -*- coding: UTF-8 -*-
-
 ## Copyright (C) 2012-2013  Daniel Pavel
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -176,6 +173,8 @@ try:
         # ind.set_label(NAME, NAME)
 
         ind.set_menu(menu)
+
+        ind.set_secondary_activate_target(menu.get_children()[0])
         ind.connect("scroll-event", _scroll)
 
         return ind
@@ -229,6 +228,8 @@ except ImportError:
         icon.set_tooltip_text(NAME)
         icon.connect("activate", _window_toggle)
         icon.connect("scroll-event", _scroll)
+
+        icon.set_secondary_activate_target(menu.get_children()[0])
         icon.connect(
             "popup-menu",
             lambda icon, button, time: menu.popup(

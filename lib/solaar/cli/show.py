@@ -1,6 +1,3 @@
-# -*- python-mode -*-
-# -*- coding: UTF-8 -*-
-
 ## Copyright (C) 2012-2013  Daniel Pavel
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -39,7 +36,7 @@ def _print_receiver(receiver: Receiver, text: Text):
 
     with text:
         for f in receiver.firmware:
-            text(f"{f.kind.name:<11}: {f.version}")
+            text(f"{f.kind:<11}: {f.version}")
 
     text(
         f"Has {paired_count} paired device(s) out of a maximum of {receiver.max_devices}."
@@ -59,7 +56,7 @@ def _print_receiver(receiver: Receiver, text: Text):
     # counter when the corresponding device sends any non-empty report. When the software needs activity
     # information, it polls this register at regular intervals and subtracts the previous counter values from the
     # current ones to get the number of non-empty reports received during the interval.
-    # activity = receiver.read_register(_hidpp10.REGISTERS.devices_activity)
+    # activity = receiver.read_register(hidpp10.REGISTERS.devices_activity)
     # if activity:
     #     activity = activity[:receiver.max_devices]
     #     activity_text = (
@@ -77,7 +74,7 @@ class PrintDevice:
         self.text = text
 
         text(f"Codename      : {dev.codename}")
-        text(f"Kind          : {dev.kind.name}")
+        text(f"Kind          : {dev.kind}")
         text(f"Wireless PID  : {dev.wpid}")
         if dev.protocol:
             text("Protocol      : HID++ %1.1f" % dev.protocol)
@@ -92,12 +89,10 @@ class PrintDevice:
         text(f"Serial number : {dev.serial}")
         with text:
             for fw in dev.firmware:
-                text(f"{fw.kind.name:10}: {fw.name} {fw.version}")
+                text(f"{fw.kind:10}: {fw.name} {fw.version}")
 
         if dev.power_switch_location:
-            text(
-                f"The power switch is located on the {dev.power_switch_location.name}."
-            )
+            text(f"The power switch is located on the {dev.power_switch_location}.")
 
         if dev.online:
             self.print_notifications()
@@ -141,17 +136,16 @@ class PrintDevice:
                 # TODO: add here additional variants for other REPROG_CONTROLS
                 if dev.keys.keyversion == 1:
                     flags_text = ", ".join(flags)
-                    text(
-                        f"{k.index:>2d}: {k.key.name:<26} => {k.task.name:<27}  {flags_text}"
-                    )
+                    text(f"{k.index:>2d}: {k.key:<26} => {k.task:<27}  {flags_text}")
                 if dev.keys.keyversion == 4:
                     text(
-                        f"{k.index:>2d}: {k.key.name:<26}, default: {k.task.name:<27} => {k.remapped:<26}"
+                        f"{k.index:>2d}: {k.key:<26}, default: {k.task:<27} => {k.remapped:<26}"
                     )
-                    flags_text = ", ".join(flags)
-                    text(
-                        f"{flags_text}, pos:{k.pos}, group:{k.group}, gmask:{k.group_mask}"
-                    )
+                    with text:
+                        flags_text = ", ".join(flags)
+                        k_text = f"pos:{k.pos:>3}, group:{k.group:>3}, gmask:{k.group_mask:>3}"
+                        text(f"{k_text}")
+                        text(f"{flags_text}")
 
     def print_battery(self):
         battery = _hidpp20.get_battery(self.dev)
@@ -167,7 +161,7 @@ class PrintDevice:
                     level_text = "%d%%" % level
             else:
                 level_text = "N/A"
-            self.text(f"Battery: {level_text}, {status.name}.")
+            self.text(f"Battery: {level_text}, {status}.")
         else:
             self.text("Battery status unavailable.")
 
@@ -185,9 +179,7 @@ class PrintFeatures:
         flags = 0 if flags is None else flags[1]
         flags = _hidpp20.FEATURE_FLAG.flag_names(flags)
         flags_text = ", ".join(flags)
-        self.text(
-            f"{index:>2d}: {feature.name:<23} {{{feature.value:04X}}}  {flags_text}"
-        )
+        self.text(f"{index:>2d}: {feature:<23} {{{feature.value:04X}}}  {flags_text}")
 
         fun = getattr(self, feature.name, None)
         if fun:
@@ -280,7 +272,7 @@ def run(receivers: List[Receiver], args):
                     for dev in r:
                         dev.ping()
                         text()
-                        text(f"{dev.number}: {dev.name}")
+                        text(f"{dev.number}: {dev}")
                         with text:
                             PrintDevice(dev, text)
                         count -= 1

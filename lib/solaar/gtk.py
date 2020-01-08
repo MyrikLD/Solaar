@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-# -*- python-mode -*-
-# -*- coding: UTF-8 -*-
-
 ## Copyright (C) 2012-2013  Daniel Pavel
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -60,6 +57,11 @@ def _parse_arguments():
     )
     arg_parser.add_argument(
         "--restart-on-wake-up",
+        action="store_true",
+        help="restart Solaar on sleep wake-up (experimental)",
+    )
+    arg_parser.add_argument(
+        "--gtk-debug",
         action="store_true",
         help="restart Solaar on sleep wake-up (experimental)",
     )

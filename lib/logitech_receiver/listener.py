@@ -1,6 +1,3 @@
-# -*- python-mode -*-
-# -*- coding: UTF-8 -*-
-
 ## Copyright (C) 2012-2013  Daniel Pavel
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -160,7 +157,7 @@ class EventsListener(_threading.Thread):
         # get the right low-level handle for this thread
         ihandle = int(self.receiver.handle)
         if _log.isEnabledFor(_INFO):
-            _log.info("started with %s (%d)", self.receiver, ihandle)
+            _log.info(f"started with {self.receiver} ({ihandle})")
 
         self.has_started()
 
@@ -191,7 +188,7 @@ class EventsListener(_threading.Thread):
                 try:
                     self._notifications_callback(n)
                 except:
-                    _log.exception("processing %s", n)
+                    _log.exception(f"processing {n}")
 
         # elif self.tick_period:
         # 	idle_reads -= 1

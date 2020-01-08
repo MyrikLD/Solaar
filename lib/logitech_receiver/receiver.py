@@ -1,6 +1,3 @@
-# -*- python-mode -*-
-# -*- coding: UTF-8 -*-
-
 ## Copyright (C) 2012-2013  Daniel Pavel
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -52,7 +49,7 @@ class PairedDevice:
         self.wpid = None
         self.descriptor = None
 
-        # mouse, keyboard, etc (see _hidpp10.DEVICE_KIND)
+        # mouse, keyboard, etc (see hidpp10.DEVICE_KIND)
         self._kind = None
         # Unifying peripherals report a codename.
         self._codename = None

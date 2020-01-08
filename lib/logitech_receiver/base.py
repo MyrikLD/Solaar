@@ -1,6 +1,3 @@
-# -*- python-mode -*-
-# -*- coding: UTF-8 -*-
-
 ## Copyright (C) 2012-2013  Daniel Pavel
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -26,7 +23,7 @@ from time import time as _timestamp
 from typing import Callable, NamedTuple, Optional
 
 import hidapi as _hid
-from . import hidpp10 as _hidpp10, hidpp20 as _hidpp20
+from . import hidpp10, hidpp20
 from .common import KwException as _KwException, pack as _pack, strhex as _strhex
 
 _log = getLogger(__name__)
@@ -240,7 +237,7 @@ def _read(handle, timeout) -> Optional[RawPacket]:
         if report_id & 0xF0 == 0x00:
             # These all should be normal HID reports that shouldn't really be reported in debugging
             # 			if _log.isEnabledFor(_DEBUG):
-            # 				_log.debug("(%s) => r[%02X %s] ignoring unknown report", handle, report_id, _strhex(data[1:]))
+            # 				_log.debug("(%s) => r[%02X %s] ignoring unknown report", handle, report_id, strhex(data[1:]))
             return
         devnumber = data[1]
 
@@ -346,7 +343,7 @@ class ReadException(Exception):
         super().__init__()
 
     def error(self):
-        return {1.0: _hidpp10, 2.0: _hidpp20}[self.protocol_version].ERROR[self.code]
+        return {1.0: hidpp10, 2.0: hidpp20}[self.protocol_version].ERROR[self.code]
 
     def __str__(self):
         return f"HIDPP{self.protocol_version}0: {self.error()}"
@@ -551,15 +548,15 @@ def ping(handle, devnumber):
                     assert reply.data[-1] == 0x00
                     error = reply.data[3]
 
-                    if error == _hidpp10.ERROR.invalid_SubID__command:
+                    if error == hidpp10.ERROR.invalid_SubID__command:
                         # a valid reply from a HID++ 1.0 device
                         return 1.0
 
-                    if error == _hidpp10.ERROR.resource_error:
+                    if error == hidpp10.ERROR.resource_error:
                         # device unreachable
                         return
 
-                    if error == _hidpp10.ERROR.unknown_device:
+                    if error == hidpp10.ERROR.unknown_device:
                         # no paired device with that number
                         _log.error(
                             "(%s) device %d error on ping request: unknown device",

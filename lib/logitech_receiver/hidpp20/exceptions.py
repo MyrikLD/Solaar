@@ -14,38 +14,16 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Translation support for the Logitech receivers library
+from logitech_receiver.common import KwException
 
-import gettext as _gettext
 
-_ = _gettext.gettext
-ngettext = _gettext.ngettext
+class FeatureNotSupported(KwException):
+    """Raised when trying to request a feature not supported by the device."""
 
-# A few common strings, not always accessible as such in the code.
+    pass
 
-_DUMMY = (
-    # approximative battery levels
-    _("empty"),
-    _("critical"),
-    _("low"),
-    _("good"),
-    _("full"),
-    # battery charging statuses
-    _("discharging"),
-    _("recharging"),
-    _("almost full"),
-    _("charged"),
-    _("slow recharge"),
-    _("invalid battery"),
-    _("thermal error"),
-    # pairing errors
-    _("device timeout"),
-    _("device not supported"),
-    _("too many devices"),
-    _("sequence timeout"),
-    # firmware kinds
-    _("Firmware"),
-    _("Bootloader"),
-    _("Hardware"),
-    _("Other"),
-)
+
+class FeatureCallError(KwException):
+    """Raised if the device replied to a feature call with an error."""
+
+    pass

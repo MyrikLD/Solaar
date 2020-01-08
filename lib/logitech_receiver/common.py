@@ -1,6 +1,3 @@
-# -*- python-mode -*-
-# -*- coding: UTF-8 -*-
-
 ## Copyright (C) 2012-2013  Daniel Pavel
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -22,6 +19,9 @@ from struct import pack, unpack
 from typing import Optional, NamedTuple
 
 from aenum import IntEnum, extend_enum
+
+if False:
+    from logitech_receiver.special_keys import TASK, CONTROL
 
 
 class NamedInts(IntEnum):
@@ -116,8 +116,13 @@ class ReprogrammableKeyInfo(NamedTuple):
     flags: int
 
 
-class ReprogrammableKeyInfoV4(ReprogrammableKeyInfo):
+class ReprogrammableKeyInfoV4(NamedTuple):
+    index: int
+    key: "CONTROL"
+    task: "TASK"
+    flags: int
+
     pos: int
     group: int
     group_mask: int
-    remapped: bool
+    remapped: "CONTROL"

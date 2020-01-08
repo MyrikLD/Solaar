@@ -14,38 +14,27 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Translation support for the Logitech receivers library
-
-import gettext as _gettext
-
-_ = _gettext.gettext
-ngettext = _gettext.ngettext
-
-# A few common strings, not always accessible as such in the code.
-
-_DUMMY = (
-    # approximative battery levels
-    _("empty"),
-    _("critical"),
-    _("low"),
-    _("good"),
-    _("full"),
-    # battery charging statuses
-    _("discharging"),
-    _("recharging"),
-    _("almost full"),
-    _("charged"),
-    _("slow recharge"),
-    _("invalid battery"),
-    _("thermal error"),
-    # pairing errors
-    _("device timeout"),
-    _("device not supported"),
-    _("too many devices"),
-    _("sequence timeout"),
-    # firmware kinds
-    _("Firmware"),
-    _("Bootloader"),
-    _("Hardware"),
-    _("Other"),
+from .enums import (
+    ERROR,
+    BATTERY_STATUS,
+    DEVICE_KIND,
+    FEATURE,
+    FEATURE_FLAG,
+    FIRMWARE_KIND,
+)
+from .exceptions import FeatureCallError, FeatureNotSupported
+from .arrays import FeaturesArray, KeysArray
+from .utils import (
+    feature_request,
+    get_firmware,
+    get_kind,
+    get_name,
+    get_battery,
+    get_keys,
+    get_mouse_pointer_info,
+    get_vertical_scrolling_info,
+    get_hi_res_scrolling_info,
+    get_pointer_speed_info,
+    get_lowres_wheel_status,
+    get_hires_wheel,
 )
