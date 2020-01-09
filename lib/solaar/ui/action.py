@@ -38,19 +38,6 @@ def make_toggle(name, label, function, stock_id=None, *args):
     return action
 
 
-#
-#
-#
-
-# def _toggle_notifications(action):
-# 	if action.get_active():
-# 		notify.init('Solaar')
-# 	else:
-# 		notify.uninit()
-# 	action.set_sensitive(notify.available)
-# toggle_notifications = make_toggle('notifications', 'Notifications', _toggle_notifications)
-
-
 from .about import show_window as _show_about_window
 from solaar import NAME
 

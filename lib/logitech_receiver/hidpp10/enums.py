@@ -127,23 +127,165 @@ class Registers(NamedInts):
     Devices usually have a (small) sub-set of these. Some registers are only
     applicable to certain device kinds (e.g. smooth_scroll only applies to mice."""
 
-    # only apply to receivers
-    receiver_connection = 0x02
-    receiver_pairing = 0xB2
-    devices_activity = 0x2B3
-    receiver_info = 0x2B5
+    HIDPP_REPORTING = 0x00  # Enable HID++ reporting
     # only apply to devices
     mouse_button_flags = 0x01
     keyboard_hand_detection = 0x01
-    battery_status = 0x07
-    keyboard_fn_swap = 0x09
-    battery_charge = 0x0D
-    keyboard_illumination = 0x17
-    three_leds = 0x51
-    mouse_dpi = 0x63
-    # apply to both
-    notifications = 0x00
-    firmware = 0xF1
+    FEATURES = 0x01  # Enable individual features
+    # only apply to receivers
+    CONNECTION_STATE = 0x02  # Connection state
+    SW_UPDATE_PENDING = 0x03  # Software update pending
+    # only apply to devices
+    BATTERY_STATUS = 0x07  # Battery status
+    UI_EVENT = 0x08  # User interface event and status {read-only}
+    # only apply to devices
+    F_LOCK = 0x09  # F-Lock status
+    # only apply to devices
+    BATTERY_MILEAGE = 0x0D  # Battery mileage {read-only}
+    FEATURES_CONT = 0x0E  # Enable individual features (extension to Reg. 0x01)
+    PROFILE_MGT = 0x0F  # Profile management
+    LCD_MODE = 0x10  # LCD mode {write-only}
+    LCD_ICONS = (
+        0x11  # LCD notification icons {long} (obsolete use \ref HIDPP_REG_UI_NOTIF)
+    )
+    LCD_CMD = 0x12  # LCD command {write-only}
+    LCD_DESCR = 0x13  # LCD descriptor {long} (obsolete)
+    LCD_FW_VERSION = 0x14  # LCD FW_VERSION version {long} {read-only} (obsolete)
+    LCD_CONTRAST = 0x15  # LCD contrast (obsolete)
+    # only apply to devices
+    LCD_BACKLIGHT = 0x17  # LCD backlight
+    LCD_DATAL1B0 = 0x20  # LCD content line 1 buffer 0 {long}
+    LCD_DATAL1B1 = 0x21  # LCD content line 1 buffer 1 {long}
+    LCD_DATAL1B2 = 0x22  # LCD content line 1 buffer 2 {long}
+    LCD_DATAL2B0 = 0x23  # LCD content line 2 buffer 0 {long}
+    LCD_DATAL2B1 = 0x24  # LCD content line 2 buffer 1 {long}
+    LCD_DATAL2B2 = 0x25  # LCD content line 2 buffer 2 {long}
+    LCD_DATAL3B0 = 0x26  # LCD content line 3 buffer 0 {long}
+    LCD_DATAL3B1 = 0x27  # LCD content line 3 buffer 1 {long}
+    LCD_DATAL3B2 = 0x28  # LCD content line 3 buffer 2 {long}
+    TIME_FORMAT = 0x30  # Time and date format
+    TIME_VALUE = 0x31  # Time value
+    DATE_VALUE_MDW = 0x32  # Date value= month day and week
+    DATE_VALUE_Y = 0x33  # Date value= year
+    USER_NAME = 0x34  # User name {long}
+    CALC_FORMAT = 0x35  # Calculator format
+    LOC_WRITE_CONTROL = 0x40  # Localization write control (status) {read-only}
+    LOC_MONTH_NAME_00_0F = (
+        0x41  # Localized month names non-volatile memory addresses 0x00 .. 0x0F {long}
+    )
+    LOC_MONTH_NAME_10_1F = (
+        0x42  # Localized month names non-volatile memory addresses 0x10 .. 0x1F {long}
+    )
+    LOC_MONTH_NAME_20_2F = (
+        0x43  # Localized month names non-volatile memory addresses 0x20 .. 0x2F {long}
+    )
+    LOC_MONTH_NAME_30_3B = (
+        0x44  # Localized month names non-volatile memory addresses 0x30 .. 0x3B {long}
+    )
+    LOC_STRING_CONNECTING = 0x45  # Localized string "Connecting" {long}
+    LOC_STRING_NOT_AVAILABLE = 0x46  # Localized string "Not available" {long}
+    LOC_STRING_CONNECTED = 0x47  # Localized string "Connected" {long}
+    LOC_STRING_FAILED = 0x48  # Localized string "Failed" {long}
+    UI_ACTION = 0x50  # User interface action
+    # only apply to devices
+    UI_LEDS = 0x51  # User interface LEDs
+    UI_NOTIF = 0x52  # User interface notification icons {short long}
+    TOUCHPAD_SETTINGS = 0x53  # Touchpad settings
+    LED_INTENSITY = 0x54  # LED intensity
+    AIR_FEATURE = 0x55  # Air feature (3D movement)
+    THREEG_ROLLER_CONTROL = 0x56  # 3G roller control
+    LED_RGB_CONTROL = 0x57  # LED RGB color control
+    DAC_CODEC = 0x59  # Dedicated audio controls= CODEC
+    DAC_PARAM = 0x5A  # Dedicated audio controls= parameters
+    VOIP_STATUS = 0x5C  # VoIP call and audio status
+    SENSOR_SETTINGS = 0x60  # Optical sensor configuration settings
+    SENSOR_RAW_DATA = 0x61  # Optical sensor raw data
+    SENSOR_PROCESS_DATA = 0x62  # Optical sensor processed data {read-only}
+    # only apply to devices
+    SENSOR_RESOLUTION = 0x63  # Optical sensor resolution and frame rate {short long}
+    TIME_BETWEEN_REPORT = 0x64  # Time between report
+    SENSOR_RES_TOGGLE = 0x65  # Optical sensor resolution toggle
+    GESTURE_CONTROL = 0x68  # Gesture control
+    BIRKIN_CONTROL = 0x69  # Birkin control {long} {read-only}
+    RX0_RADIO_LINK_CONTROL = 0x70  # Receiver 0 radio link control
+    RX1_RADIO_LINK_CONTROL = 0x71  # Receiver 1 radio link control
+    TX_RADIO_LINK_CONTROL = 0x72  # Transmitter radio link control
+    RECEIVER_SETTINGS = 0x73  # Receiver scan settings
+    TRACEABILITY_ACCESS = 0x78  # Traceability access {short long} {read-only}
+    RECEIVER_MODE = 0x80  # Receiver mode
+    DISCOVER_DEVICE = 0x81  # Device discovery
+    CONNECT_DEVICE = 0x82  # Device connection & deconnection
+    CURRENT_DEVICE = 0x83  # Current active device {long}
+    LEDS_ALL_ON = 0x84  # LED blinking pattern for connection {write-only}
+    VIRTUAL_CABLE_KBD = 0x85  # Virtual cable information for keyboard {long}
+    VIRTUAL_CABLE_MSE = 0x86  # Virtual cable information for mouse {long}
+    VIRTUAL_CABLE_NUM = 0x87  # Virtual cable information for numeric pad {long}
+    PIN_CODE = (
+        0x88  # Current device (see \ref HIDPP_REG_CURRENT_DEVICE) PIN code (BT) {long}
+    )
+    DEVICE_CONNECTIVITY = 0x89  # Device connectivity control {write-only}
+    RFID_PAIRING_INFO = 0x8A  # RFID pairing information (BT) {long} {read-only}
+    DEVICE_DESCR = 0x90  # Current device (see \ref HIDPP_REG_CURRENT_DEVICE) SDP information (BT) {long} {read-only}
+    DEVICE_NAME_1 = 0x91  # Current device (see \ref HIDPP_REG_CURRENT_DEVICE) name part 1 (bytes 1 to 16) (BT) {long} {read-only}
+    DEVICE_NAME_2 = 0x92  # Current device (see \ref HIDPP_REG_CURRENT_DEVICE) name part 2 (bytes 17 to 32) (BT) {long} {read-only}
+    SIGNAL_QUALITY = 0x93  # Signal quality (BT) {read-only}
+    BQB = 0x99  # Current device (see \ref HIDPP_REG_CURRENT_DEVICE) BQB test command (BT) {short long}
+    MEMORY_MGT = 0xA0  # Memory management {long} {write-only}
+    HOT_SYNERGY = 0xA1  # HOT/SYNERGY command
+    READ_SECTOR = 0xA2  # Read sector {long} {read-only}
+    LINK_QUALITY_INFO = 0xB0  # Link quality information (Quad) {read-only}
+    FORCE_QUAD_CHANNEL = 0xB1  # Force Quad channel / disable agility (Quad)
+    # only apply to receivers
+    QUAD_CONNECT_DEVICE = (
+        0xB2  # Quad device connection and disconnection (Quad eQuad) {write-only}
+    )
+    DEVICE_ACTIVITY = 0xB3  # Device activity (eQuad) {long} {read-only}
+    NV_PAIRING_INFO = 0xB5  # Non-volatile and pairing information (Quad eQuad) {long}
+    TESTMODE_CONTROL = 0xD0  # Test mode control
+    RF_REGISTER = 0xD1  # RF register access {short long}
+    RAM_SINGLE = 0xD2  # RAM access (single-byte)
+    RAM_MULTI = 0xD3  # RAM access (multi-bytes) {long}
+    EEPROM_SINGLE = 0xD4  # Non-volatile memory (EEPROM) access (single-byte)
+    EEPROM_MULTI = 0xD5  # Non-volatile memory (EEPROM) access (multi-bytes) {long}
+    EEPROM_SECURED = 0xD6  # Non-volatile memory (EEPROM) secured access
+    EEPROM_OPERATION = 0xD7  # Non-volatile memory (EEPROM) operation {write-only}
+    EEPROM_CHECKSUM = 0xD8  # Non-volatile memory (EEPROM) checksum {read-only}
+    UI = 0xD9  # User interface
+    SPI = 0xDA  # SPI access
+    MOUSE_SENSOR = 0xDB  # Optical mouse sensor {long} {read-only}
+    PAIRING_INFORMATION = (
+        0xDC  # Device pairing information in non-volatile memory and RAM
+    )
+    POWER_MODE = 0xDD  # Power mode {write-only}
+    SPI_CS = 0xDE  # SPI chip select
+    MANUFACTURING_PARAM = (
+        0xDF  # Manufacturing parameters (device-dependent) {read-only}
+    )
+    SET_HCI = 0xE1  # Send an HCI request {long very-long} {write-only}
+    SET_ACL = 0xE2  # Send an ACL request {long very-long} {write-only}
+    DFU_LITE_DATA = 0xE2  # DFU Lite data {long}
+    RFID = 0xE3  # RFID access {long}
+    HW_STATE = 0xE4  # Hardware state {read-only}
+    UART_TX = 0xE5  # UART transmitted string {very-long} {write-only}
+    ENCRYPT_ERR_COUNTER = (
+        0xE6  # Encryption rejected-frame counter (eQuad debug) {read-only}
+    )
+    USB_ICP = 0xF0  # Enter USB ICP/DFU/OTA DFU programming mode
+    FW_VERSION = 0xF1  # Firmware version {read-only}
+    RESET = 0xF2  # Reset {write-only}
+    DEBUG_MODE = 0xF3  # Debug mode (eQuad)
+    FW_DEBUG = 0xFD  # General-purpose FW_VERSION debug (device-dependent) {short, long}
+
+    # only apply to receivers
+    devices_activity = 0x2B3
+    receiver_info = 0x2B5
+
+
+class FirmwareVersionItem(NamedInts):
+    FW_VERSION = 0x01  # Firmware name/number & version
+    FW_BUILD = 0x02  # Firmware build number
+    HW_VERSION = 0x03  # Hardware version
+    BL_VERSION = 0x04  # Bootloader version & build number
 
 
 class SubId(NamedInts):

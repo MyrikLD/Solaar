@@ -19,17 +19,17 @@
 
 from logging import DEBUG as _DEBUG, INFO as _INFO, getLogger
 
-from . import hidpp10 as _hidpp10, hidpp20 as _hidpp20
+from . import hidpp10, hidpp20
 from .base.enums import ProtocolType
 from .common import strhex as _strhex, unpack as _unpack
+from .hidpp10 import Registers
 from .hidpp10.enums import SubId
+from .hidpp20 import Feature
 from .i18n import _
 from .status import ALERT, KEYS, KEYS_MASK
 
 _log = getLogger(__name__)
 del getLogger
-_R = _hidpp10.Registers
-_F = _hidpp20.Feature
 
 
 def process(device, notification):
@@ -67,7 +67,7 @@ def _process_receiver_notification(receiver, status, n):
 
         pair_error = n.data[0]
         if pair_error:
-            status[KEYS.ERROR] = error_string = _hidpp10.PairingErrors[pair_error]
+            status[KEYS.ERROR] = error_string = hidpp10.PairingErrors[pair_error]
             status.new_device = None
             _log.warning(f"pairing error {pair_error}: {error_string}")
 
@@ -116,15 +116,15 @@ def _process_hidpp10_custom_notification(device, status, n):
     if _log.isEnabledFor(_DEBUG):
         _log.debug(f"{device} ({device.protocol}) custom notification {n}")
 
-    if n.sub_id in (_R.battery_status, _R.battery_charge):
+    if n.sub_id in (Registers.BATTERY_STATUS, Registers.BATTERY_MILEAGE):
         # message layout: 10 ix <register> <xx> <yy> <zz> <00>
         assert n.data[-1:] == b"\x00"
         data = chr(n.address).encode() + n.data
-        charge, status_text = _hidpp10.parse_battery_status(n.sub_id, data)
+        charge, status_text = hidpp10.parse_battery_status(n.sub_id, data)
         status.set_battery_info(charge, status_text)
         return True
 
-    if n.sub_id == _R.keyboard_illumination:
+    if n.sub_id == Registers.LCD_BACKLIGHT:
         # message layout: 10 ix 17("address")  <??> <?> <??> <light level 1=off..5=max>
         # TODO anything we can do with this?
         if _log.isEnabledFor(_INFO):
@@ -202,21 +202,21 @@ def _process_hidpp10_notification(device, status, n):
     _log.warning(f"{device}: unrecognized {n}")
 
 
-def _process_feature_notification(device, status, n, feature: _F):
-    if feature == _F.BATTERY_STATUS:
+def _process_feature_notification(device, status, n, feature: Feature):
+    if feature == Feature.BATTERY_STATUS:
         if n.address == 0x00:
             discharge_level = n.data[0]
             discharge_next_level = n.data[1]
             battery_status = n.data[2]
             status.set_battery_info(
-                discharge_level, _hidpp20.BatteryStatus(battery_status)
+                discharge_level, hidpp20.BatteryStatus(battery_status)
             )
         else:
             _log.warning(f"{device}: unknown BATTERY {n}")
         return True
 
     # TODO: what are REPROG_CONTROLS_V{2,3}?
-    if feature == _F.REPROG_CONTROLS:
+    if feature == Feature.REPROG_CONTROLS:
         if n.address == 0x00:
             if _log.isEnabledFor(_INFO):
                 _log.info(f"{device}: reprogrammable key: {n}")
@@ -224,7 +224,7 @@ def _process_feature_notification(device, status, n, feature: _F):
             _log.warning(f"{device}: unknown REPROGRAMMABLE KEYS {n}")
         return True
 
-    if feature == _F.WIRELESS_DEVICE_STATUS:
+    if feature == Feature.WIRELESS_DEVICE_STATUS:
         if n.address == 0x00:
             if _log.isEnabledFor(_DEBUG):
                 _log.debug(f"wireless status: {n}")
@@ -238,12 +238,12 @@ def _process_feature_notification(device, status, n, feature: _F):
             _log.warning(f"{device}: unknown WIRELESS {n}")
         return True
 
-    if feature == _F.SOLAR_DASHBOARD:
+    if feature == Feature.SOLAR_DASHBOARD:
         if n.data[5:9] == b"GOOD":
             charge, lux, adc = _unpack("!BHH", n.data[:5])
             # guesstimate the battery voltage, emphasis on 'guess'
             # status_text = '%1.2fV' % (adc * 2.67793237653 / 0x0672)
-            status_text = _hidpp20.BatteryStatus.discharging
+            status_text = hidpp20.BatteryStatus.discharging
 
             if n.address == 0x00:
                 status[KEYS.LIGHT_LEVEL] = None
@@ -251,19 +251,19 @@ def _process_feature_notification(device, status, n, feature: _F):
             elif n.address == 0x10:
                 status[KEYS.LIGHT_LEVEL] = lux
                 if lux > 200:
-                    status_text = _hidpp20.BatteryStatus.recharging
+                    status_text = hidpp20.BatteryStatus.recharging
                 status.set_battery_info(charge, status_text)
             elif n.address == 0x20:
                 if _log.isEnabledFor(_DEBUG):
                     _log.debug(f"{device}: Light Check button pressed")
                 status.changed(alert=ALERT.SHOW_WINDOW)
                 # first cancel any reporting
-                # device.feature_request(_F.SOLAR_DASHBOARD)
+                # device.feature_request(Feature.SOLAR_DASHBOARD)
                 # trigger a new report chain
                 reports_count = 15
                 reports_period = 2  # seconds
                 device.feature_request(
-                    _F.SOLAR_DASHBOARD, 0x00, reports_count, reports_period
+                    Feature.SOLAR_DASHBOARD, 0x00, reports_count, reports_period
                 )
             else:
                 _log.warning(f"{device}: unknown SOLAR CHARGE {n}")
@@ -271,7 +271,7 @@ def _process_feature_notification(device, status, n, feature: _F):
             _log.warning(f"{device}: SOLAR CHARGE not GOOD? {n}")
         return True
 
-    if feature == _F.TOUCHMOUSE_RAW_POINTS:
+    if feature == Feature.TOUCHMOUSE_RAW_POINTS:
         if n.address == 0x00:
             if _log.isEnabledFor(_INFO):
                 _log.info("%s: TOUCH MOUSE points %s", device, n)
@@ -287,7 +287,7 @@ def _process_feature_notification(device, status, n, feature: _F):
             _log.warning(f"{device}: unknown TOUCH MOUSE {n}")
         return True
 
-    if feature == _F.HIRES_WHEEL:
+    if feature == Feature.HIRES_WHEEL:
         if n.address == 0x00:
             if _log.isEnabledFor(_INFO):
                 flags, delta_v = _unpack(">bh", n.data[:3])

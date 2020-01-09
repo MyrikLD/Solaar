@@ -18,24 +18,16 @@ import time
 from logging import INFO as _INFO, getLogger
 from typing import Any, NamedTuple, Optional
 
-from logitech_receiver import (
-    Receiver,
-    listener as _listener,
-    notifications as _notifications,
-    status as _status,
-)
+from logitech_receiver import Receiver, base, listener, notifications, status as _status
 from logitech_receiver.hidpp10.enums import SubId
 from solaar.i18n import _
 from . import configuration
 
 _log = getLogger(__name__)
 del getLogger
-#
-#
-#
 
 
-class _GHOST_DEVICE(NamedTuple):
+class GhostDevice(NamedTuple):
     receiver: Any
     number: int
     name: str
@@ -48,7 +40,7 @@ class _GHOST_DEVICE(NamedTuple):
 
 
 def _ghost(device):
-    return _GHOST_DEVICE(
+    return GhostDevice(
         receiver=device.receiver,
         number=device.number,
         name=device.name,
@@ -58,16 +50,12 @@ def _ghost(device):
     )
 
 
-#
-#
-#
-
 # how often to poll devices that haven't updated their statuses on their own
 # (through notifications)
 # _POLL_TICK = 5 * 60  # seconds
 
 
-class ReceiverListener(_listener.EventsListener):
+class ReceiverListener(listener.EventsListener):
     """Keeps the status of a Receiver.
     """
 
@@ -110,43 +98,6 @@ class ReceiverListener(_listener.EventsListener):
             except:
                 _log.exception("closing receiver %s" % r.path)
         self.status_changed_callback(r)  # , _status.ALERT.NOTIFICATION)
-
-    # def tick(self, timestamp):
-    # 	if not self.tick_period:
-    # 		raise Exception("tick() should not be called without a tick_period: %s", self)
-    #
-    # 	# not necessary anymore, we're now using udev monitor to watch for receiver status
-    # 	# if self._last_tick > 0 and timestamp - self._last_tick > _POLL_TICK * 2:
-    # 	# 	# if we missed a couple of polls, most likely the computer went into
-    # 	# 	# sleep, and we have to reinitialize the receiver again
-    # 	# 	_log.warning("%s: possible sleep detected, closing this listener", self.receiver)
-    # 	# 	self.stop()
-    # 	# 	return
-    #
-    # 	self._last_tick = timestamp
-    #
-    # 	try:
-    # 		# read these in case they haven't been read already
-    # 		# self.receiver.serial, self.receiver.firmware
-    # 		if self.receiver.status.lock_open:
-    # 			# don't mess with stuff while pairing
-    # 			return
-    #
-    # 		self.receiver.status.poll(timestamp)
-    #
-    # 		# Iterating directly through the reciver would unnecessarily probe
-    # 		# all possible devices, even unpaired ones.
-    # 		# Checking for each device number in turn makes sure only already
-    # 		# known devices are polled.
-    # 		# This is okay because we should have already known about them all
-    # 		# long before the first poll() happents, through notifications.
-    # 		for number in range(1, 6):
-    # 			if number in self.receiver:
-    # 				dev = self.receiver[number]
-    # 				if dev and dev.status is not None:
-    # 					dev.status.poll(timestamp)
-    # 	except Exception as e:
-    # 		_log.exception("polling", e)
 
     def _status_changed(self, device, alert=_status.ALERT.NONE, reason=None):
         assert device is not None
@@ -198,7 +149,7 @@ class ReceiverListener(_listener.EventsListener):
         # 	_log.debug("%s: handling %s", self.receiver, n)
         if n.devnumber == 0xFF:
             # a receiver notification
-            _notifications.process(self.receiver, n)
+            notifications.process(self.receiver, n)
             return
 
         # a device notification
@@ -243,7 +194,7 @@ class ReceiverListener(_listener.EventsListener):
 
         assert dev
         assert dev.status is not None
-        _notifications.process(dev, n)
+        notifications.process(dev, n)
         if self.receiver.status.lock_open and not already_known:
             # this should be the first notification after a device was paired
             assert n.sub_id == SubId.DEVICE_CONNECT and n.address == SubId.POWER
@@ -284,7 +235,7 @@ def start_all():
 
     if _log.isEnabledFor(_INFO):
         _log.info("starting receiver listening threads")
-    for device_info in _base.receivers():
+    for device_info in base.receivers():
         _process_receiver_event("add", device_info)
 
 
@@ -318,8 +269,6 @@ def ping_all():
                     break
 
 
-from logitech_receiver import base as _base
-
 _status_callback = None
 _error_callback = None
 
@@ -331,7 +280,7 @@ def setup_scanner(status_changed_callback, error_callback):
     _status_callback = status_changed_callback
     _error_callback = error_callback
 
-    _base.notify_on_receivers_glib(_process_receiver_event)
+    base.notify_on_receivers_glib(_process_receiver_event)
 
 
 # receiver add/remove events will start/stop listener threads

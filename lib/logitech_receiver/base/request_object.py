@@ -19,6 +19,7 @@ from struct import pack
 from time import time as _timestamp
 from typing import Callable, Optional
 
+from .enums import ReportType
 from .exceptions import ReadException
 from .schemes import RawPacket
 from .skip_incoming import skip_incoming
@@ -97,9 +98,9 @@ class Request:
 
     def v1_exception(self, reply: RawPacket) -> int:
         if (
-                reply.report_id == 0x10
-                and reply.data[0] == 0x8F
-                and reply.data[1:3] == self.id_bytes
+            reply.report_type == ReportType.HIDPP_SHORT
+            and reply.data[0] == 0x8F
+            and reply.data[1:3] == self.id_bytes
         ):
             error = reply.data[3]
             return error
@@ -108,10 +109,10 @@ class Request:
         if reply.data[:2] == self.id_bytes:
             if self.id & 0xFE00 == 0x8200:
                 # long registry r/w should return a long reply
-                assert reply.report_id == 0x11
+                assert reply.report_type == ReportType.HIDPP_LONG
             elif self.id & 0xFE00 == 0x8000:
                 # short registry r/w should return a short reply
-                assert reply.report_id == 0x10
+                assert reply.report_type == ReportType.HIDPP_SHORT
 
             if self.devnumber == 0xFF and (self.id in (0x83B5, 0x81F1)):
                 # these replies have to match the first parameter as well

@@ -352,11 +352,6 @@ class PairedDevice:
     __repr__ = __str__
 
 
-#
-#
-#
-
-
 class Receiver:
     """A Unifying Receiver instance.
 
@@ -406,7 +401,7 @@ class Receiver:
 
         # TODO _properly_ figure out which receivers do and which don't support unpairing
         try:
-            self.write_register(_R.receiver_pairing)
+            self.write_register(_R.QUAD_CONNECT_DEVICE)
         except ReadException as e:
             if e.protocol_version == 1 and e.code == _hidpp10.Error.invalid_value:
                 self.may_unpair = False
@@ -418,7 +413,7 @@ class Receiver:
 
     def close(self):
         handle, self.handle = self.handle, None
-        if hasattr(self, '_devices'):
+        if hasattr(self, "_devices"):
             self._devices.clear()
         return handle and _base.close(handle)
 
@@ -471,7 +466,7 @@ class Receiver:
 
     def notify_devices(self):
         """Scan all devices."""
-        if self.handle and not self.write_register(_R.receiver_connection, 0x02):
+        if self.handle and not self.write_register(_R.CONNECTION_STATE, 0x02):
             _log.warning("%s: failed to trigger device link notifications", self)
 
     def register_new_device(self, number, notification=None):
@@ -497,7 +492,7 @@ class Receiver:
     def set_lock(self, lock_closed=True, device=0, timeout=0):
         if self.handle:
             action = 0x02 if lock_closed else 0x01
-            reply = self.write_register(_R.receiver_pairing, action, device, timeout)
+            reply = self.write_register(_R.QUAD_CONNECT_DEVICE, action, device, timeout)
             if reply:
                 return True
             _log.warning(
@@ -507,7 +502,7 @@ class Receiver:
             )
 
     def count(self):
-        count = self.read_register(_R.receiver_connection)
+        count = self.read_register(_R.CONNECTION_STATE)
         return 0 if count is None else count[1]
 
     # def has_devices(self):
@@ -557,7 +552,7 @@ class Receiver:
             return
 
         action = 0x03
-        reply = self.write_register(_R.receiver_pairing, action, key)
+        reply = self.write_register(_R.QUAD_CONNECT_DEVICE, action, key)
         if reply:
             # invalidate the device
             dev.online = False

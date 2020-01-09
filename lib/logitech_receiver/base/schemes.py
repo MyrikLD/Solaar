@@ -16,12 +16,13 @@
 
 from typing import NamedTuple
 
+from logitech_receiver.base import ReportType
 from logitech_receiver.common import strhex
 from logitech_receiver.hidpp10.enums import SubId
 
 
 class RawPacket(NamedTuple):
-    report_id: int
+    report_type: ReportType
     devnumber: int
     data: bytes
 

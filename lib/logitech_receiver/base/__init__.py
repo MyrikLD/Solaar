@@ -20,4 +20,12 @@ from .exceptions import DeviceUnreachable, NoReceiver, NoSuchDevice, ReadExcepti
 from .make_notification import make_notification
 from .make_request import ping, request, request
 from .schemes import HIDPP_Notification, RawPacket
-from .utils import close, notify_on_receivers_glib, open, open_path, read, receivers, write
+from .utils import (
+    close,
+    notify_on_receivers_glib,
+    open,
+    open_path,
+    read,
+    receivers,
+    write,
+)

@@ -15,15 +15,17 @@
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 from logging import getLogger
+from typing import Optional
 
 from logitech_receiver.common import (
+    Firmware,
     FirmwareInfo,
     bytes2int,
     int2bytes,
     strhex,
 )
-from .enums import Registers, BatteryAppox
-from logitech_receiver.hidpp20.enums import FirmwareKind, BatteryStatus
+from logitech_receiver.hidpp20.enums import BatteryStatus, FirmwareKind
+from .enums import BatteryAppox, FirmwareVersionItem, Registers
 
 _log = getLogger(__name__)
 del getLogger
@@ -60,7 +62,7 @@ def get_battery(device):
         # let's just assume HID++ 2.0 devices do not provide the battery info in a register
         return
 
-    for r in (Registers.battery_status, Registers.battery_charge):
+    for r in (Registers.BATTERY_STATUS, Registers.BATTERY_MILEAGE):
         if r in device.registers:
             reply = read_register(device, r)
             if reply:
@@ -68,21 +70,21 @@ def get_battery(device):
             return
 
     # the descriptor does not tell us which register this device has, try them both
-    reply = read_register(device, Registers.battery_charge)
+    reply = read_register(device, Registers.BATTERY_MILEAGE)
     if reply:
         # remember this for the next time
-        device.registers.append(Registers.battery_charge)
-        return parse_battery_status(Registers.battery_charge, reply)
+        device.registers.append(Registers.BATTERY_MILEAGE)
+        return parse_battery_status(Registers.BATTERY_MILEAGE, reply)
 
-    reply = read_register(device, Registers.battery_status)
+    reply = read_register(device, Registers.BATTERY_STATUS)
     if reply:
         # remember this for the next time
-        device.registers.append(Registers.battery_status)
-        return parse_battery_status(Registers.battery_status, reply)
+        device.registers.append(Registers.BATTERY_STATUS)
+        return parse_battery_status(Registers.BATTERY_STATUS, reply)
 
 
 def parse_battery_status(register, reply):
-    if register == Registers.battery_charge:
+    if register == Registers.BATTERY_MILEAGE:
         charge = reply[0]
         status_byte = reply[2] & 0xF0
         statuses = {
@@ -94,7 +96,7 @@ def parse_battery_status(register, reply):
         status_text = statuses.get(status_byte)
         return charge, status_text
 
-    if register == Registers.battery_status:
+    if register == Registers.BATTERY_STATUS:
         status_byte = reply[0]
         statuses = {
             7: BatteryAppox.full,
@@ -126,40 +128,41 @@ def parse_battery_status(register, reply):
         return charge, status_text
 
 
-def get_firmware(device):
+def get_firmware(device) -> Optional[Firmware]:
     assert device
 
     firmware = [None, None, None]
 
-    reply = read_register(device, Registers.firmware, 0x01)
+    reply = read_register(device, Registers.FW_VERSION, FirmwareVersionItem.FW_VERSION)
     if not reply:
         # won't be able to read any of it now...
         return
 
     fw_version = strhex(reply[1:3])
     fw_version = "%s.%s" % (fw_version[0:2], fw_version[2:4])
-    reply = read_register(device, Registers.firmware, 0x02)
+
+    reply = read_register(device, Registers.FW_VERSION, FirmwareVersionItem.FW_BUILD)
     if reply:
         fw_version += ".B" + strhex(reply[1:3])
+
     fw = FirmwareInfo(FirmwareKind.FW_VERSION, "", fw_version)
     firmware[0] = fw
 
-    reply = read_register(device, Registers.firmware, 0x04)
+    reply = read_register(device, Registers.FW_VERSION, FirmwareVersionItem.BL_VERSION)
     if reply:
         bl_version = strhex(reply[1:3])
-        bl_version = "%s.%s" % (bl_version[0:2], bl_version[2:4])
+        bl_version = f"{bl_version[0:2]}.{bl_version[2:4]}"
         bl = FirmwareInfo(FirmwareKind.FW_BUILD, "", bl_version)
         firmware[1] = bl
 
-    reply = read_register(device, Registers.firmware, 0x03)
+    reply = read_register(device, Registers.FW_VERSION, FirmwareVersionItem.HW_VERSION)
     if reply:
-        o_version = strhex(reply[1:3])
-        o_version = "%s.%s" % (o_version[0:2], o_version[2:4])
-        o = FirmwareInfo(FirmwareKind.BL_VERSION, "", o_version)
-        firmware[2] = o
+        hw_version = strhex(reply[1:3])
+        hw_version = f"{hw_version[0:2]}.{hw_version[2:4]}"
+        hw = FirmwareInfo(FirmwareKind.BL_VERSION, "", hw_version)
+        firmware[2] = hw
 
-    if any(firmware):
-        return tuple(f for f in firmware if f)
+    return Firmware(*firmware)
 
 
 def set_3leds(device, battery_level=None, charging=None, warning=None):
@@ -168,7 +171,7 @@ def set_3leds(device, battery_level=None, charging=None, warning=None):
     if not device.online:
         return
 
-    if Registers.three_leds not in device.registers:
+    if Registers.UI_LEDS not in device.registers:
         return
 
     if battery_level is not None:
@@ -202,7 +205,7 @@ def set_3leds(device, battery_level=None, charging=None, warning=None):
         # turn off all leds
         v1, v2 = 0x11, 0x11
 
-    write_register(device, Registers.three_leds, v1, v2)
+    write_register(device, Registers.UI_LEDS, v1, v2)
 
 
 def get_notification_flags(device):
@@ -215,7 +218,7 @@ def get_notification_flags(device):
         if device.protocol and device.protocol >= 2.0:
             return
 
-    flags = read_register(device, Registers.notifications)
+    flags = read_register(device, Registers.HIDPP_REPORTING)
     if flags is not None:
         assert len(flags) == 3
         return bytes2int(flags)
@@ -233,5 +236,5 @@ def set_notification_flags(device, *flag_bits):
 
     flag_bits = sum(int(b) for b in flag_bits)
     assert flag_bits & 0x00FFFFFF == flag_bits
-    result = write_register(device, Registers.notifications, int2bytes(flag_bits, 3))
+    result = write_register(device, Registers.HIDPP_REPORTING, int2bytes(flag_bits, 3))
     return result is not None

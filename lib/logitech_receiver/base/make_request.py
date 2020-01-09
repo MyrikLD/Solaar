@@ -19,6 +19,7 @@ from random import getrandbits as _random_bits
 from time import time as _timestamp
 
 from logitech_receiver import hidpp10, strhex
+from .enums import ReportType
 from .exceptions import NoSuchDevice
 from .make_notification import make_notification
 from .request_object import Request
@@ -118,7 +119,7 @@ def ping(handle, devnumber):
                     return reply.data[2] + reply.data[3] / 10.0
 
                 if (
-                    reply.report_id == 0x10
+                    reply.report_type == ReportType.HIDPP_SHORT
                     and reply.data[0] == 0x8F
                     and reply.data[1:3] == r.id_bytes
                 ):

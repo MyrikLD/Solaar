@@ -137,7 +137,7 @@ def write(handle: int, devnumber, data):
 def read(handle, timeout=DEFAULT_TIMEOUT) -> Optional[RawPacket]:
     """Read an incoming packet from the receiver.
 
-    :returns: a tuple of (report_id, devnumber, data), or `None`.
+    :returns: a tuple of (report_type, devnumber, data), or `None`.
 
     :raises NoReceiver: if the receiver is no longer available, i.e. has
     been physically removed from the machine, or the kernel driver has been
@@ -168,13 +168,13 @@ def read(handle, timeout=DEFAULT_TIMEOUT) -> Optional[RawPacket]:
                 and len(data) == MEDIUM_MESSAGE_SIZE
             )
         ), (
-            "unexpected message size: report_id %02X message %s"
+            "unexpected message size: report_type %02X message %s"
             % (report_type, strhex(data))
         )
         if report_type & 0xF0 == 0x00:
             # These all should be normal HID reports that shouldn't really be reported in debugging
             # 			if _log.isEnabledFor(_DEBUG):
-            # 				_log.debug("(%s) => r[%02X %s] ignoring unknown report", handle, report_id, strhex(data[1:]))
+            # 				_log.debug("(%s) => r[%02X %s] ignoring unknown report", handle, report_type, strhex(data[1:]))
             return
         devnumber = data[1]
 

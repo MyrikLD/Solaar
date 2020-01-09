@@ -16,7 +16,7 @@
 
 from binascii import hexlify as _hexlify
 from struct import pack, unpack
-from typing import Optional, NamedTuple
+from typing import NamedTuple, Optional
 
 from aenum import IntEnum, extend_enum
 
@@ -105,6 +105,12 @@ class FirmwareInfo(NamedTuple):
     name: str
     version: str
     extras: Optional[bytes] = None
+
+
+class Firmware(NamedTuple):
+    fw: Optional[FirmwareInfo] = None
+    bl: Optional[FirmwareInfo] = None
+    hw: Optional[FirmwareInfo] = None
 
 
 class ReprogrammableKeyInfo(NamedTuple):

@@ -290,9 +290,7 @@ def _register_hand_detection(
     )
 
 
-def _register_fn_swap(
-    register=_R.keyboard_fn_swap, true_value=b"\x00\x01", mask=b"\x00\x01"
-):
+def _register_fn_swap(register=_R.F_LOCK, true_value=b"\x00\x01", mask=b"\x00\x01"):
     return register_toggle(
         _FN_SWAP[0],
         register,
@@ -328,7 +326,7 @@ def _register_side_scroll(register=_R.mouse_button_flags, true_value=0x02, mask=
     )
 
 
-def _register_dpi(register=_R.mouse_dpi, choices=None):
+def _register_dpi(register=_R.SENSOR_RESOLUTION, choices=None):
     return register_choices(
         _DPI[0],
         register,

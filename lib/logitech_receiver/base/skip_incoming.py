@@ -19,6 +19,7 @@ from typing import Callable, Optional
 
 import hidapi
 from logitech_receiver import strhex
+from .enums import ReportType
 from .exceptions import NoReceiver
 from .make_notification import make_notification
 from .static import (
@@ -49,18 +50,27 @@ def skip_incoming(handle: int, notifications_hook: Optional[Callable]):
 
         if data:
             assert isinstance(data, bytes), (repr(data), type(data))
-            report_id = data[0]
+            report_type = ReportType(data[0])
+
             if _log.isEnabledFor(_DEBUG):
                 assert (
-                        (report_id & 0xF0 == 0)
-                        or (report_id == 0x10 and len(data) == SHORT_MESSAGE_SIZE)
-                        or (report_id == 0x11 and len(data) == LONG_MESSAGE_SIZE)
-                        or (report_id == 0x20 and len(data) == MEDIUM_MESSAGE_SIZE)
+                    (report_type & 0xF0 == 0)
+                    or (
+                        report_type == ReportType.HIDPP_SHORT
+                        and len(data) == SHORT_MESSAGE_SIZE
+                    )
+                    or (
+                        report_type == ReportType.HIDPP_LONG
+                        and len(data) == LONG_MESSAGE_SIZE
+                    )
+                    or (
+                        report_type == ReportType.DJ_BUS_ENUM_SHORT
+                        and len(data) == MEDIUM_MESSAGE_SIZE
+                    )
                 ), (
-                        "unexpected message size: report_id %02X message %s"
-                        % (report_id, strhex(data))
+                    f"unexpected message size: report_type {report_type} message {strhex(data)}"
                 )
-            if notifications_hook and report_id & 0xF0:
+            if notifications_hook and report_type & 0xF0:
                 n = make_notification(data[1], data[2:])
                 if n:
                     notifications_hook(n)
