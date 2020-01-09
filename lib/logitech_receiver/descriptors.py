@@ -94,9 +94,9 @@ def _D(
         settings=settings,
     )
 
-    assert codename not in DEVICES, "duplicate codename in device descriptors: %s" % (
-        DEVICES[codename],
-    )
+    assert (
+        codename not in DEVICES
+    ), f"duplicate codename in device descriptors: {DEVICES[codename]}"
     DEVICES[codename] = device_descriptor
 
     if wpid:
@@ -104,9 +104,9 @@ def _D(
             wpid = (wpid,)
 
         for w in wpid:
-            assert w not in DEVICES, "duplicate wpid in device descriptors: %s" % (
-                DEVICES[w],
-            )
+            assert (
+                w not in DEVICES
+            ), f"duplicate wpid in device descriptors: {DEVICES[w]}"
             DEVICES[w] = device_descriptor
 
 
@@ -169,7 +169,12 @@ PERFORMANCE_MX_DPIS = NamedInts._create_(
 # Keyboards
 
 _D("Wireless Keyboard K230", protocol=2.0, wpid="400D")
-_D("Wireless Keyboard K270 (unifying)", protocol=2.0, wpid="4003")
+_D(
+    "Wireless Keyboard K270 (unifying)",
+    codename="K270 (unifying)",
+    protocol=2.0,
+    wpid="4003",
+)
 _D(
     "Wireless Keyboard MK270", protocol=2.0, wpid="4023", settings=[_FS.fn_swap()],
 )

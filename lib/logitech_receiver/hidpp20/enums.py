@@ -167,10 +167,10 @@ class DeviceKind(NamedInts):
 
 
 class FirmwareKind(NamedInts):
-    Firmware = 0x00
-    Bootloader = 0x01
-    Hardware = 0x02
-    Other = 0x03
+    FW_VERSION = 0x00  # FW_VERSION name/number & version
+    FW_BUILD = 0x01  # FW_VERSION build number
+    HW_VERSION = 0x02  # HW_VERSION version
+    BL_VERSION = 0x03  # FW_BUILD version & build number
 
 
 class BatteryStatus(NamedInts):
@@ -184,10 +184,7 @@ class BatteryStatus(NamedInts):
 
     @property
     def ok(self) -> bool:
-        return self not in (
-            BatteryStatus.invalid_battery,
-            BatteryStatus.thermal_error,
-        )
+        return self not in (BatteryStatus.invalid_battery, BatteryStatus.thermal_error,)
 
 
 class Error(NamedInts):

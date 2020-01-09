@@ -6,7 +6,7 @@
 msgid   ""
 msgstr  "Project-Id-Version: solaar 0.9.3\n"
         "Report-Msgid-Bugs-To: \n"
-        "POT-Creation-Date: 2019-07-27 07:22+0200\n"
+        "POT-Creation-Date: 2020-01-09 17:05+0300\n"
         "PO-Revision-Date: 2019-07-01 19:42+0200\n"
         "Last-Translator: gogo <trebelnik2@gmail.com>\n"
         "Language-Team: Croatian <hr@hr.org>\n"
@@ -18,145 +18,145 @@ msgstr  "Project-Id-Version: solaar 0.9.3\n"
         "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 "
         "&& n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: lib/logitech_receiver/i18n.py:40
-msgid   "critical"
-msgstr  "kritično"
-
-#: lib/logitech_receiver/i18n.py:40
+#: lib/logitech_receiver/i18n.py:28
 msgid   "empty"
 msgstr  "prazna"
 
-#: lib/logitech_receiver/i18n.py:40
-msgid   "full"
-msgstr  "napunjena"
+#: lib/logitech_receiver/i18n.py:29
+msgid   "critical"
+msgstr  "kritično"
 
-#: lib/logitech_receiver/i18n.py:40
-msgid   "good"
-msgstr  "dobra"
-
-#: lib/logitech_receiver/i18n.py:40
+#: lib/logitech_receiver/i18n.py:30
 msgid   "low"
 msgstr  "slaba"
 
-#: lib/logitech_receiver/i18n.py:43
-msgid   "almost full"
-msgstr  "uskoro puno"
+#: lib/logitech_receiver/i18n.py:31
+msgid   "good"
+msgstr  "dobra"
 
-#: lib/logitech_receiver/i18n.py:43
-msgid   "charged"
+#: lib/logitech_receiver/i18n.py:32
+msgid   "full"
 msgstr  "napunjena"
 
-#: lib/logitech_receiver/i18n.py:43
+#: lib/logitech_receiver/i18n.py:34
 msgid   "discharging"
 msgstr  "pražnjenje"
 
-#: lib/logitech_receiver/i18n.py:43
+#: lib/logitech_receiver/i18n.py:35
 msgid   "recharging"
 msgstr  "punjenje"
 
-#: lib/logitech_receiver/i18n.py:44
-msgid   "invalid battery"
-msgstr  "neispravna baterija"
+#: lib/logitech_receiver/i18n.py:36
+msgid   "almost full"
+msgstr  "uskoro puno"
 
-#: lib/logitech_receiver/i18n.py:44
+#: lib/logitech_receiver/i18n.py:37
+msgid   "charged"
+msgstr  "napunjena"
+
+#: lib/logitech_receiver/i18n.py:38
 msgid   "slow recharge"
 msgstr  "sporo punjenje"
 
-#: lib/logitech_receiver/i18n.py:44
+#: lib/logitech_receiver/i18n.py:39
+msgid   "invalid battery"
+msgstr  "neispravna baterija"
+
+#: lib/logitech_receiver/i18n.py:40
 msgid   "thermal error"
 msgstr  "toplinska greška"
 
-#: lib/logitech_receiver/i18n.py:47
-msgid   "device not supported"
-msgstr  "uređaj nije podržan"
-
-#: lib/logitech_receiver/i18n.py:47
+#: lib/logitech_receiver/i18n.py:42
 msgid   "device timeout"
 msgstr  "istek čekanja uređaja"
 
-#: lib/logitech_receiver/i18n.py:47
+#: lib/logitech_receiver/i18n.py:43
+msgid   "device not supported"
+msgstr  "uređaj nije podržan"
+
+#: lib/logitech_receiver/i18n.py:44
+msgid   "too many devices"
+msgstr  "previše uređaja"
+
+#: lib/logitech_receiver/i18n.py:45
 msgid   "sequence timeout"
 msgstr  "redoslijed isteka vremena"
 
 #: lib/logitech_receiver/i18n.py:47
-msgid   "too many devices"
-msgstr  "previše uređaja"
-
-#: lib/logitech_receiver/i18n.py:50
-msgid   "Bootloader"
-msgstr  "Učitač pokretanja"
-
-#: lib/logitech_receiver/i18n.py:50 lib/solaar/ui/window.py:528
-msgid   "Firmware"
+msgid   "FW_VERSION"
 msgstr  "Firmver"
 
-#: lib/logitech_receiver/i18n.py:50
-msgid   "Hardware"
+#: lib/logitech_receiver/i18n.py:48
+msgid   "FW_BUILD"
+msgstr  "Učitač pokretanja"
+
+#: lib/logitech_receiver/i18n.py:49
+msgid   "HW_VERSION"
 msgstr  "Hardver"
 
 #: lib/logitech_receiver/i18n.py:50
-msgid   "Other"
+msgid   "BL_VERSION"
 msgstr  "Ostalo"
 
-#: lib/logitech_receiver/notifications.py:67
-msgid   "pairing lock is closed"
-msgstr  "uparivanje je zatvoreno"
-
-#: lib/logitech_receiver/notifications.py:67
+#: lib/logitech_receiver/notifications.py:55
 msgid   "pairing lock is open"
 msgstr  "uparivanje je otvoreno"
 
-#: lib/logitech_receiver/notifications.py:150 lib/solaar/ui/notify.py:132
+#: lib/logitech_receiver/notifications.py:57
+msgid   "pairing lock is closed"
+msgstr  "uparivanje je zatvoreno"
+
+#: lib/logitech_receiver/notifications.py:145 lib/solaar/ui/notify.py:126
 msgid   "unpaired"
 msgstr  "neupareno"
 
-#: lib/logitech_receiver/notifications.py:195
+#: lib/logitech_receiver/notifications.py:207
 msgid   "powered on"
 msgstr  "uključen"
 
-#: lib/logitech_receiver/receiver.py:107 lib/solaar/ui/window.py:614
+#: lib/logitech_receiver/receiver.py:107 lib/solaar/ui/window.py:716
 msgid   "unknown"
 msgstr  "nepoznato"
 
-#: lib/logitech_receiver/settings_templates.py:119
+#: lib/logitech_receiver/settings_templates.py:203
 msgid   "Smooth Scrolling"
 msgstr  "Glatko pomicanje kotačićem"
 
-#: lib/logitech_receiver/settings_templates.py:120
-#: lib/logitech_receiver/settings_templates.py:125
-#: lib/logitech_receiver/settings_templates.py:129
+#: lib/logitech_receiver/settings_templates.py:204
+#: lib/logitech_receiver/settings_templates.py:215
+#: lib/logitech_receiver/settings_templates.py:225
 msgid   "High-sensitivity mode for vertical scroll with the wheel."
 msgstr  "Visokoosjetljivi način okomitog pomicanja kotačićem."
 
-#: lib/logitech_receiver/settings_templates.py:121
+#: lib/logitech_receiver/settings_templates.py:208
 msgid   "HID++ Scrolling"
 msgstr  ""
 
-#: lib/logitech_receiver/settings_templates.py:122
+#: lib/logitech_receiver/settings_templates.py:209
 msgid   "HID++ mode for vertical scroll with the wheel."
 msgstr  ""
 
-#: lib/logitech_receiver/settings_templates.py:124
+#: lib/logitech_receiver/settings_templates.py:214
 msgid   "High Resolution Scrolling"
 msgstr  ""
 
-#: lib/logitech_receiver/settings_templates.py:126
+#: lib/logitech_receiver/settings_templates.py:219
 msgid   "High Resolution Wheel Invert"
 msgstr  ""
 
-#: lib/logitech_receiver/settings_templates.py:127
+#: lib/logitech_receiver/settings_templates.py:220
 msgid   "High-sensitivity wheel invert mode for vertical scroll."
 msgstr  ""
 
-#: lib/logitech_receiver/settings_templates.py:128
+#: lib/logitech_receiver/settings_templates.py:224
 msgid   "Wheel Resolution"
 msgstr  ""
 
-#: lib/logitech_receiver/settings_templates.py:130
+#: lib/logitech_receiver/settings_templates.py:229
 msgid   "Side Scrolling"
 msgstr  "Bočno pomicanje kotačićem"
 
-#: lib/logitech_receiver/settings_templates.py:131
+#: lib/logitech_receiver/settings_templates.py:231
 msgid   "When disabled, pushing the wheel sideways sends custom button "
         "events\n"
         "instead of the standard side-scrolling events."
@@ -164,45 +164,53 @@ msgstr  "Kad je onemogućeno, guranje kotačića ustranu šalje prilagođeni "
         "događaj tipke\n"
         "umjesto uobičajanog događaja bočnog pomicanja."
 
-#: lib/logitech_receiver/settings_templates.py:133
+#: lib/logitech_receiver/settings_templates.py:235
 msgid   "Sensitivity (DPI)"
 msgstr  "Osjetljivost (DPI)"
 
-#: lib/logitech_receiver/settings_templates.py:134
+#: lib/logitech_receiver/settings_templates.py:236
 msgid   "Sensitivity (Pointer Speed)"
 msgstr  ""
 
-#: lib/logitech_receiver/settings_templates.py:135
+#: lib/logitech_receiver/settings_templates.py:239
 msgid   "Swap Fx function"
 msgstr  "Zamijeni Fx funkciju"
 
-#: lib/logitech_receiver/settings_templates.py:136
+#: lib/logitech_receiver/settings_templates.py:241
 msgid   "When set, the F1..F12 keys will activate their special function,\n"
         "and you must hold the FN key to activate their standard function."
 msgstr  "Kada je omogućeno, tipke F1..F12 će aktivirati svoje dodatne "
         "funkcije,\n"
         "a za aktivaciju njihovih osnovnih funkcija morate držati FN tipku."
 
-#: lib/logitech_receiver/settings_templates.py:139
+#: lib/logitech_receiver/settings_templates.py:246
 msgid   "When unset, the F1..F12 keys will activate their standard function,\n"
         "and you must hold the FN key to activate their special function."
 msgstr  "Kada nije omogućeno, tipke F1..F12 će aktivirati svoje osnovne "
         "funkcije,\n"
         "a za aktivaciju njihovih dodatnih funkcija morate držati FN tipku."
 
-#: lib/logitech_receiver/settings_templates.py:141
+#: lib/logitech_receiver/settings_templates.py:252
 msgid   "Hand Detection"
 msgstr  "Otkrivanje ruku"
 
-#: lib/logitech_receiver/settings_templates.py:142
+#: lib/logitech_receiver/settings_templates.py:253
 msgid   "Turn on illumination when the hands hover over the keyboard."
 msgstr  "Uključite osvjetljenje kada ruke lebde nad tipkovnicom."
 
-#: lib/logitech_receiver/settings_templates.py:143
+#: lib/logitech_receiver/settings_templates.py:257
+msgid   "Backlight"
+msgstr  ""
+
+#: lib/logitech_receiver/settings_templates.py:258
+msgid   "Turn illumination on or off on keyboard."
+msgstr  ""
+
+#: lib/logitech_receiver/settings_templates.py:263
 msgid   "Smart Shift"
 msgstr  "Pametan pomak"
 
-#: lib/logitech_receiver/settings_templates.py:144
+#: lib/logitech_receiver/settings_templates.py:265
 msgid   "Automatically switch the mouse wheel between ratchet and freespin "
         "mode.\n"
         "The mouse wheel is always free at 0, and always locked at 50"
@@ -210,11 +218,11 @@ msgstr  "Automatski prebaci kotačić miša između ustavljačkog i slobodnog "
         "načina vrtnje kotačića.\n"
         "Kotačić miša je uvijek slobodan pri 0 i uvijek zaključan pri 50"
 
-#: lib/logitech_receiver/status.py:99
+#: lib/logitech_receiver/status.py:111
 msgid   "No paired devices."
 msgstr  "Nema uparenih uređaja."
 
-#: lib/logitech_receiver/status.py:100 lib/solaar/ui/window.py:569
+#: lib/logitech_receiver/status.py:114 lib/solaar/ui/window.py:654
 #, python-format
 msgid   "%(count)s paired device."
 msgid_plural    "%(count)s paired devices."
@@ -222,47 +230,47 @@ msgstr[0]       "%(count)s upareni uređaj."
 msgstr[1]       "%(count)s uparena uređaja."
 msgstr[2]       "%(count)s uparenih uređaj."
 
-#: lib/logitech_receiver/status.py:149
+#: lib/logitech_receiver/status.py:155
 #, python-format
 msgid   "Battery: %(level)s"
 msgstr  "Baterija: %(level)s"
 
-#: lib/logitech_receiver/status.py:151
+#: lib/logitech_receiver/status.py:157
 #, python-format
 msgid   "Battery: %(percent)d%%"
 msgstr  "Baterija: %(percent)d%%"
 
-#: lib/logitech_receiver/status.py:162
+#: lib/logitech_receiver/status.py:169
 #, python-format
 msgid   "Lighting: %(level)s lux"
 msgstr  "Osvjetljenje: %(level)s lux"
 
-#: lib/logitech_receiver/status.py:203
+#: lib/logitech_receiver/status.py:215
 #, python-format
 msgid   "Battery: %(level)s (%(status)s)"
 msgstr  "Baterija: %(level)s (%(status)s)"
 
-#: lib/logitech_receiver/status.py:205
+#: lib/logitech_receiver/status.py:220
 #, python-format
 msgid   "Battery: %(percent)d%% (%(status)s)"
 msgstr  "Baterija: %(percent)d%% (%(status)s)"
 
-#: lib/solaar/listener.py:96
+#: lib/solaar/listener.py:105
 msgid   "The receiver was unplugged."
 msgstr  "Prijemnik je odspojen."
 
-#: lib/solaar/ui/__init__.py:48
+#: lib/solaar/ui/__init__.py:43
 msgid   "Permissions error"
 msgstr  "Greška dozvole"
 
-#: lib/solaar/ui/__init__.py:49
+#: lib/solaar/ui/__init__.py:45
 #, python-format
 msgid   "Found a Logitech Receiver (%s), but did not have permission to open "
         "it."
 msgstr  "Pronađen je (%s) Logitech Receiver, ali nemate ovlasti za otvoriti "
         "ga."
 
-#: lib/solaar/ui/__init__.py:51
+#: lib/solaar/ui/__init__.py:49
 msgid   "If you've just installed Solaar, try removing the receiver and "
         "plugging it back in."
 msgstr  "Ako ste upravo instalirali Solaar, pokušajte odspojiti prijemnik i "
@@ -272,201 +280,205 @@ msgstr  "Ako ste upravo instalirali Solaar, pokušajte odspojiti prijemnik i "
 msgid   "Unpairing failed"
 msgstr  "Uparivanje neuspjelo"
 
-#: lib/solaar/ui/__init__.py:54
+#: lib/solaar/ui/__init__.py:55
 #, python-brace-format
 msgid   "Failed to unpair %{device} from %{receiver}."
 msgstr  "Neuspjelo uparivanje %{device} s %{receiver}."
 
-#: lib/solaar/ui/__init__.py:56
+#: lib/solaar/ui/__init__.py:59
 msgid   "The receiver returned an error, with no further details."
 msgstr  "Došlo je do greške kod prijemnika, bez više pojedinosti."
 
-#: lib/solaar/ui/about.py:39
+#: lib/solaar/ui/about.py:35
 msgid   "Shows status of devices connected\n"
         "through wireless Logitech receivers."
 msgstr  "Prikazuje stanje uređaja povezanih\n"
         "putem Logitech bežičnih prijemnika."
 
-#: lib/solaar/ui/about.py:48
+#: lib/solaar/ui/about.py:45
 msgid   "GUI design"
 msgstr  "GUI dizajn"
 
-#: lib/solaar/ui/about.py:49
+#: lib/solaar/ui/about.py:47
 msgid   "Testing"
 msgstr  "Testiranje"
 
-#: lib/solaar/ui/about.py:54
+#: lib/solaar/ui/about.py:55
 msgid   "Logitech documentation"
 msgstr  "Logitech dokumentacija"
 
-#: lib/solaar/ui/action.py:68 lib/solaar/ui/window.py:309
+#: lib/solaar/ui/action.py:58 lib/solaar/ui/window.py:338
 msgid   "About"
 msgstr  "O"
 
-#: lib/solaar/ui/action.py:95 lib/solaar/ui/action.py:98
-#: lib/solaar/ui/window.py:191
+#: lib/solaar/ui/action.py:93 lib/solaar/ui/action.py:97
+#: lib/solaar/ui/window.py:212
 msgid   "Unpair"
 msgstr  "Odpari"
 
-#: lib/solaar/ui/config_panel.py:120
+#: lib/solaar/ui/config_panel.py:125
 msgid   "Working"
 msgstr  "Izvodi se"
 
-#: lib/solaar/ui/config_panel.py:123
+#: lib/solaar/ui/config_panel.py:128
 msgid   "Read/write operation failed."
 msgstr  "Radnja čitanja/pisanja neuspjela."
 
-#: lib/solaar/ui/notify.py:134
+#: lib/solaar/ui/notify.py:128
 msgid   "connected"
 msgstr  "povezano"
 
-#: lib/solaar/ui/notify.py:136 lib/solaar/ui/tray.py:295
-#: lib/solaar/ui/tray.py:300 lib/solaar/ui/window.py:650
+#: lib/solaar/ui/notify.py:130 lib/solaar/ui/tray.py:304
+#: lib/solaar/ui/tray.py:309 lib/solaar/ui/window.py:760
 msgid   "offline"
 msgstr  "nespojivo"
 
-#: lib/solaar/ui/pair_window.py:133
+#: lib/solaar/ui/pair_window.py:131
 msgid   "Pairing failed"
 msgstr  "Neuspjelo uparivanje"
 
-#: lib/solaar/ui/pair_window.py:135
+#: lib/solaar/ui/pair_window.py:134
 msgid   "Make sure your device is within range, and has a decent battery "
         "charge."
 msgstr  "Pobrinite se da je vaš uređaj u dometu bežičnog povezivanja i da je "
         "dovoljno napunjen."
 
-#: lib/solaar/ui/pair_window.py:137
+#: lib/solaar/ui/pair_window.py:138
 msgid   "A new device was detected, but it is not compatible with this "
         "receiver."
 msgstr  "Novi uređaj je otkriven, ali nije kompatibilan s ovim uređajem."
 
-#: lib/solaar/ui/pair_window.py:139
+#: lib/solaar/ui/pair_window.py:141
 #, python-format
 msgid   "The receiver only supports %d paired device(s)."
 msgstr  "Prijemnik samo podržava %d upareni uređaj(e)."
 
-#: lib/solaar/ui/pair_window.py:141
+#: lib/solaar/ui/pair_window.py:143
 msgid   "No further details are available about the error."
 msgstr  "Nema dostupnih više pojedinosti o ovoj grešci."
 
-#: lib/solaar/ui/pair_window.py:155
+#: lib/solaar/ui/pair_window.py:157
 msgid   "Found a new device:"
 msgstr  "Novi uređaj je pronađen:"
 
-#: lib/solaar/ui/pair_window.py:180
+#: lib/solaar/ui/pair_window.py:188
 msgid   "The wireless link is not encrypted"
 msgstr  "Bežično povezivanje nije šifrirano"
 
-#: lib/solaar/ui/pair_window.py:197
+#: lib/solaar/ui/pair_window.py:211
 #, python-format
 msgid   "%(receiver_name)s: pair new device"
 msgstr  "%(receiver_name)s: upari novi uređaj"
 
-#: lib/solaar/ui/pair_window.py:205
+#: lib/solaar/ui/pair_window.py:222
 msgid   "Turn on the device you want to pair."
 msgstr  "Uključite uređaj koji želite upariti."
 
-#: lib/solaar/ui/pair_window.py:206
+#: lib/solaar/ui/pair_window.py:224
 msgid   "If the device is already turned on,\n"
         "turn if off and on again."
 msgstr  "Ako je uređaj već uključen,\n"
         "isključite ga i ponovno uključite."
 
-#: lib/solaar/ui/tray.py:55
+#: lib/solaar/ui/tray.py:50
 msgid   "No Logitech receiver found"
 msgstr  "Nema pronađenih Logitechovih prijemnika"
 
-#: lib/solaar/ui/tray.py:62
+#: lib/solaar/ui/tray.py:60
 msgid   "Quit"
 msgstr  "Zatvori"
 
-#: lib/solaar/ui/tray.py:279
+#: lib/solaar/ui/tray.py:291
 msgid   "no receiver"
 msgstr  "nema prijemnika"
 
-#: lib/solaar/ui/tray.py:298
+#: lib/solaar/ui/tray.py:307
 msgid   "no status"
 msgstr  "Bez stanja."
 
-#: lib/solaar/ui/window.py:98
+#: lib/solaar/ui/window.py:113
 msgid   "Scanning"
 msgstr  "Pretraživanje"
 
-#: lib/solaar/ui/window.py:131
+#: lib/solaar/ui/window.py:146
 msgid   "Battery"
 msgstr  "Baterija"
 
-#: lib/solaar/ui/window.py:134
+#: lib/solaar/ui/window.py:149
 msgid   "Wireless Link"
 msgstr  "Bežično povezivanje"
 
-#: lib/solaar/ui/window.py:138
+#: lib/solaar/ui/window.py:153
 msgid   "Lighting"
 msgstr  "Osvjetljenje"
 
-#: lib/solaar/ui/window.py:167
+#: lib/solaar/ui/window.py:185
 msgid   "Show Technical Details"
 msgstr  "Prikaži tehničke pojedinosti"
 
-#: lib/solaar/ui/window.py:180
+#: lib/solaar/ui/window.py:201
 msgid   "Pair new device"
 msgstr  "Upari novi uređaj"
 
-#: lib/solaar/ui/window.py:199
+#: lib/solaar/ui/window.py:220
 msgid   "Select a device"
 msgstr  "Odaberi uređaj"
 
-#: lib/solaar/ui/window.py:501
+#: lib/solaar/ui/window.py:565
 msgid   "Path"
 msgstr  "Putanja"
 
-#: lib/solaar/ui/window.py:503
+#: lib/solaar/ui/window.py:567
 msgid   "USB id"
 msgstr  "USB id"
 
-#: lib/solaar/ui/window.py:506 lib/solaar/ui/window.py:508
-#: lib/solaar/ui/window.py:520 lib/solaar/ui/window.py:522
+#: lib/solaar/ui/window.py:570 lib/solaar/ui/window.py:572
+#: lib/solaar/ui/window.py:594 lib/solaar/ui/window.py:596
 msgid   "Serial"
 msgstr  "Serijski broj"
 
-#: lib/solaar/ui/window.py:512
+#: lib/solaar/ui/window.py:576
 msgid   "Index"
 msgstr  "Indeks"
 
-#: lib/solaar/ui/window.py:513
+#: lib/solaar/ui/window.py:577
 msgid   "Wireless PID"
 msgstr  "PID bežične mreže"
 
-#: lib/solaar/ui/window.py:515
+#: lib/solaar/ui/window.py:580
 msgid   "Protocol"
 msgstr  "Protokol"
 
-#: lib/solaar/ui/window.py:515
+#: lib/solaar/ui/window.py:581
 msgid   "Unknown"
 msgstr  "Nepoznato"
 
-#: lib/solaar/ui/window.py:517
+#: lib/solaar/ui/window.py:585
+msgid   "Polling rate"
+msgstr  "Cikličko osvježavanje"
+
+#: lib/solaar/ui/window.py:586
 #, python-format
 msgid   "%(rate)d ms (%(rate_hz)dHz)"
 msgstr  "%(rate)d ms (%(rate_hz)dHz)"
 
-#: lib/solaar/ui/window.py:517
-msgid   "Polling rate"
-msgstr  "Cikličko osvježavanje"
+#: lib/solaar/ui/window.py:605
+msgid   "Firmware"
+msgstr  ""
 
-#: lib/solaar/ui/window.py:532
+#: lib/solaar/ui/window.py:610
 msgid   "none"
 msgstr  "nepoznato"
 
-#: lib/solaar/ui/window.py:533
+#: lib/solaar/ui/window.py:614
 msgid   "Notifications"
 msgstr  "Obavijesti"
 
-#: lib/solaar/ui/window.py:569
+#: lib/solaar/ui/window.py:651
 msgid   "No device paired."
 msgstr  "Nema uparenih uređaja."
 
-#: lib/solaar/ui/window.py:572
+#: lib/solaar/ui/window.py:663
 #, python-format
 msgid   "Up to %(max_count)s device can be paired to this receiver."
 msgid_plural    "Up to %(max_count)s devices can be paired to this receiver."
@@ -477,28 +489,28 @@ msgstr[1]       "Najviše %(max_count)s uređaja može biti upareno s ovim "
 msgstr[2]       "Najviše %(max_count)s uređaja može biti upareno s ovim "
         "prijemnikom."
 
-#: lib/solaar/ui/window.py:574
+#: lib/solaar/ui/window.py:671
 msgid   "Only one device can be paired to this receiver."
 msgstr  "Samo jedan uređaj može biti uparen s ovim prijemnikom."
 
-#: lib/solaar/ui/window.py:624 lib/solaar/ui/window.py:809
+#: lib/solaar/ui/window.py:726 lib/solaar/ui/window.py:934
 #, python-format
 msgid   "%(battery_percent)d%%"
 msgstr  "%(battery_percent)d%%"
 
-#: lib/solaar/ui/window.py:627
+#: lib/solaar/ui/window.py:729
 msgid   "charging"
 msgstr  "punjenje"
 
-#: lib/solaar/ui/window.py:629
+#: lib/solaar/ui/window.py:731
 msgid   "last known"
 msgstr  "posljednje poznato"
 
-#: lib/solaar/ui/window.py:636
+#: lib/solaar/ui/window.py:738
 msgid   "not encrypted"
 msgstr  "nije šifrirano"
 
-#: lib/solaar/ui/window.py:638
+#: lib/solaar/ui/window.py:742
 msgid   "The wireless link between this device and its receiver is not "
         "encrypted.\n"
         "\n"
@@ -520,21 +532,21 @@ msgstr  "Bežično povezivanje između ovog uređaja i njegovog prijemnika nije 
         "zato jer upisani tekst može biti neprimjentno nadziran u dometu "
         "treće strane."
 
-#: lib/solaar/ui/window.py:645
+#: lib/solaar/ui/window.py:751
 msgid   "encrypted"
 msgstr  "šifrirano"
 
-#: lib/solaar/ui/window.py:647
+#: lib/solaar/ui/window.py:755
 msgid   "The wireless link between this device and its receiver is encrypted."
 msgstr  "Bežično povezivanje između ovog uređaja i njegovog prijemnika je "
         "šifrirano."
 
-#: lib/solaar/ui/window.py:660
+#: lib/solaar/ui/window.py:773
 #, python-format
 msgid   "%(light_level)d lux"
 msgstr  "%(light_level)d lux"
 
-#: lib/solaar/ui/window.py:807
+#: lib/solaar/ui/window.py:930
 #, python-format
 msgid   "%(battery_level)s"
 msgstr  "%(battery_level)s"

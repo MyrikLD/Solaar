@@ -16,22 +16,25 @@
 
 from logging import DEBUG, getLogger
 from struct import unpack
+from typing import Tuple
 
 from logitech_receiver.common import FirmwareInfo
 from .enums import BatteryStatus, DeviceKind, Feature, FirmwareKind
 
+if False:
+    from logitech_receiver import PairedDevice
 
 _log = getLogger(__name__)
 del getLogger
 
 
-def feature_request(device, feature, function=0x00, *params):
+def feature_request(device: "PairedDevice", feature: Feature, function=0x00, *params):
     if device.online and device.features and feature in device.features:
         feature_index = device.features.index(int(feature))
         return device.request((feature_index << 8) + (function & 0xFF), *params)
 
 
-def get_firmware(device):
+def get_firmware(device: "PairedDevice") -> Tuple[FirmwareInfo]:
     """Reads a device's firmware info.
 
     :returns: a list of FirmwareInfo tuples, ordered by firmware layer.
@@ -49,17 +52,17 @@ def get_firmware(device):
                     name, version_major, version_minor, build = unpack(
                         "!3sBBH", fw_info[1:8]
                     )
-                    version = "%02X.%02X" % (version_major, version_minor)
+                    version = f"{version_major:02X}.{version_minor:02X}"
                     if build:
-                        version += ".B%04X" % build
+                        version += f".B{build:04X}"
                     extras = fw_info[9:].rstrip(b"\x00") or None
                     fw_info = FirmwareInfo(
                         FirmwareKind(level), name.decode("ascii"), version, extras
                     )
-                elif level == FirmwareKind.Hardware:
-                    fw_info = FirmwareInfo(FirmwareKind.Hardware, "", str(fw_info[1]))
+                elif level == FirmwareKind.HW_VERSION:
+                    fw_info = FirmwareInfo(FirmwareKind.HW_VERSION, "", str(fw_info[1]))
                 else:
-                    fw_info = FirmwareInfo(FirmwareKind.Other, "", "")
+                    fw_info = FirmwareInfo(FirmwareKind.BL_VERSION, "", "")
 
                 fw.append(fw_info)
             # if _log.isEnabledFor(_DEBUG):
@@ -67,7 +70,7 @@ def get_firmware(device):
         return tuple(fw)
 
 
-def get_kind(device):
+def get_kind(device: "PairedDevice"):
     """Reads a device's type.
 
     :see DeviceKind:
@@ -82,7 +85,7 @@ def get_kind(device):
         return DeviceKind(kind)
 
 
-def get_name(device):
+def get_name(device: "PairedDevice"):
     """Reads a device's name.
 
     :returns: a string with the device name, or ``None`` if the device is not
@@ -108,7 +111,7 @@ def get_name(device):
         return name.decode("ascii")
 
 
-def get_battery(device):
+def get_battery(device: "PairedDevice"):
     """Reads a device's battery level.
 
     :raises FeatureNotSupported: if the device does not support this feature.
@@ -128,7 +131,7 @@ def get_battery(device):
         return discharge, BatteryStatus(status)
 
 
-def get_keys(device):
+def get_keys(device: "PairedDevice"):
     # TODO: add here additional variants for other REPROG_CONTROLS
     count = feature_request(device, Feature.REPROG_CONTROLS)
     if count is None:
@@ -139,7 +142,7 @@ def get_keys(device):
         return KeysArray(device, count[0])
 
 
-def get_mouse_pointer_info(device):
+def get_mouse_pointer_info(device: "PairedDevice") -> dict:
     pointer_info = feature_request(device, Feature.MOUSE_POINTER)
     if pointer_info:
         dpi, flags = unpack("!HB", pointer_info[:3])
@@ -154,7 +157,7 @@ def get_mouse_pointer_info(device):
         }
 
 
-def get_vertical_scrolling_info(device):
+def get_vertical_scrolling_info(device: "PairedDevice") -> dict:
     vertical_scrolling_info = feature_request(device, Feature.VERTICAL_SCROLLING)
     if vertical_scrolling_info:
         roller, ratchet, lines = unpack("!BBB", vertical_scrolling_info[:3])
@@ -171,23 +174,21 @@ def get_vertical_scrolling_info(device):
         return {"roller": roller_type, "ratchet": ratchet, "lines": lines}
 
 
-def get_hi_res_scrolling_info(device):
+def get_hi_res_scrolling_info(device: "PairedDevice"):
     hi_res_scrolling_info = feature_request(device, Feature.HI_RES_SCROLLING)
     if hi_res_scrolling_info:
         mode, resolution = unpack("!BB", hi_res_scrolling_info[:2])
         return mode, resolution
 
 
-def get_pointer_speed_info(device):
+def get_pointer_speed_info(device: "PairedDevice"):
     pointer_speed_info = feature_request(device, Feature.POINTER_SPEED)
     if pointer_speed_info:
         pointer_speed_hi, pointer_speed_lo = unpack("!BB", pointer_speed_info[:2])
-        # if pointer_speed_lo > 0:
-        # 	pointer_speed_lo = pointer_speed_lo
         return pointer_speed_hi + pointer_speed_lo / 256
 
 
-def get_lowres_wheel_status(device):
+def get_lowres_wheel_status(device: "PairedDevice"):
     lowres_wheel_status = feature_request(device, Feature.LOWRES_WHEEL)
     if lowres_wheel_status:
         wheel_flag = unpack("!B", lowres_wheel_status[:1])[0]
@@ -195,7 +196,7 @@ def get_lowres_wheel_status(device):
         return wheel_reporting
 
 
-def get_hires_wheel(device):
+def get_hires_wheel(device: "PairedDevice"):
     caps = feature_request(device, Feature.HIRES_WHEEL, 0x00)
     mode = feature_request(device, Feature.HIRES_WHEEL, 0x10)
     ratchet = feature_request(device, Feature.HIRES_WHEEL, 0x030)

@@ -28,8 +28,14 @@ class DeviceKind(NamedInts):
     mouse = 0x02
     numpad = 0x03
     presenter = 0x04
+    headset = 0x05  # Headset (Trifecta, Reg. HIDPP_REG_CURRENT_DEVICE)
+    speaker_phone = 0x06  # Speaker phone (2Face, Reg. HIDPP_REG_CURRENT_DEVICE)
+    remote_control = 0x07
     trackball = 0x08
-    touchpad = 0x09
+    touchpad = 0x09  # Touchpad (relative displacement)
+    tablet = 0x0A
+    gamepad = 0x0B
+    joystick = 0x0C
 
     @classmethod
     def from_name(cls, name: str):
@@ -138,3 +144,76 @@ class Registers(NamedInts):
     # apply to both
     notifications = 0x00
     firmware = 0xF1
+
+
+class SubId(NamedInts):
+    # HID++ notifications (0x00 .. 0x7F)
+    ALL = 0x00  # Reserved
+    KEYBOARD = 0x01  # Reserved for standard-keyboard keys
+    MOUSE = 0x02  # Reserved for mouse
+    CONSUMER_KEYS = 0x03  # Consumer control keys
+    POWER = 0x04  # Power keys
+    ROLLER = 0x05  # Roller
+    MOUSE_EXTRA_BT = 0x06  # Mouse extra buttons
+    BATTERY_STATUS = 0x07  # Battery status
+    UI_EVENT = 0x08  # User interface events
+    F_LOCK = 0x09  # F-Lock status
+    CALC_RESULT = 0x0A  # Calculator result {long}
+    MENU_ENTER = 0x0B  # Navigation menu enter
+    FN_PLUS_ALPHANUMKEY = 0x0C  # Fn + alpha-numeric key
+    BATTERY_MILEAGE = 0x0D  # Battery mileage
+    UART_RX = 0x0E  # UART received string {very-long}
+    BACKLIGHT_DURATION = 0x17  # Backlight duration update
+    DEVICE_DISCONNECT = 0x40  # Device disconnection
+    DEVICE_CONNECT = 0x41  # Device connection
+    DEVICE_DISCOVERY = 0x42  # Device discovery (BT) {long}
+    PIN_CODE_REQ = 0x43  # PIN code request
+    RCV_WORKING_MODE = 0x44  # Receiver working mode (BT)
+    NOTIFICATION_ERROR = 0x45  # Error notification
+    RFLINK_CHANGE = 0x46  # RF link change (27 MHz)
+    ENCRYPTION_KEY = 0x47  # Encryption key (27 MHz Quad) {long}
+    HCI_NOTIFICATION = 0x48  # HCI notification (BT) {long very-long}
+    LINK_QUALITY_INFO = 0x49  # Link quality information (eQuad) {short long}
+    QUAD_LOCKING_INFO = 0x4A  # Quad locking change information (Quad eQuad)
+    WL_DEV_CHANGE_INFO = 0x4B  # Wireless device change information
+    HOT_NOTIFICATION = 0x50  # HOT/SYNERGY notification
+    ACL_NOTIFICATION = 0x51  # ACL notification {very-long}
+    VOIP_TELEPHONY_EVENT = 0x5B  # VoIP telephony event
+    LED_NOTIFICATION = 0x60  # LED notification
+    GEST_NOTIFICATION = 0x65  # Gesture and air feature notification
+    MULTI_TOUCH_NOTIFICATION = 0x66  # Touchpad multi-touch notification {long}
+    TRACEABILITY_NOTIFICATION = 0x78  # Traceability notification
+
+    # HID++ register access (0x80 .. 0x8F)
+    SET_REGISTER = 0x80  # Set short register (short request/short response)
+    GET_REGISTER = 0x81  # Get short register (short request/short response)
+    SET_LONG_REGISTER = 0x82  # Set long register (long request/short response) {long}
+    GET_LONG_REGISTER = 0x83  # Get long register (short request/long response) {long}
+    SET_VERY_LONG_REGISTER = (
+        0x84  # Set very-long register (very-long request/short response) {very-long}
+    )
+    GET_VERY_LONG_REGISTER = (
+        0x85  # Get very-long register (short request/very-long response) {very-long}
+    )
+    ERROR_MSG_REGISTER = 0x8F  # Error message
+
+    # HOT (0x90 .. 0xFF)
+    TRANS_INIT_ASYN = (
+        0x90  # First asynchronous payload packet in a HOT stream {long very-long}
+    )
+    TRANS_CONT_ASYN = (
+        0x91  # Next asynchronous payload packet in a HOT stream {long very-long}
+    )
+    TRANS_INIT_SYN = (
+        0x92  # First synchronous payload packet in a HOT stream {long very-long}
+    )
+    TRANS_CONT_SYN = (
+        0x93  # Next synchronous payload packet in a HOT stream {long very-long}
+    )
+    RETRY_INIT_ASYN = 0x94  # First asynchronous payload packet in a HOT stream re-sent {long very-long}
+    RETRY_CONT_ASYN = 0x95  # Next asynchronous payload packet in a HOT stream re-sent {long very-long}
+    RETRY_INIT_SYN = 0x96  # First synchronous payload packet in a HOT stream re-sent {long very-long}
+    RETRY_CONT_SYN = (
+        0x97  # Next synchronous payload packet in a HOT stream re-sent {long very-long}
+    )
+    SYNC = 0xFF

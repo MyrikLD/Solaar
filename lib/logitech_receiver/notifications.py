@@ -22,7 +22,7 @@ from logging import DEBUG as _DEBUG, INFO as _INFO, getLogger
 from . import hidpp10 as _hidpp10, hidpp20 as _hidpp20
 from .common import strhex as _strhex, unpack as _unpack
 from .i18n import _
-from .status import ALERT as _ALERT, KEYS as _K
+from .status import ALERT, KEYS, KEYS_MASK
 
 _log = getLogger(__name__)
 del getLogger
@@ -59,13 +59,13 @@ def _process_receiver_notification(receiver, status, n):
         if _log.isEnabledFor(_INFO):
             _log.info(f"{receiver}: {reason}")
 
-        status[_K.ERROR] = None
+        status[KEYS.ERROR] = None
         if status.lock_open:
             status.new_device = None
 
         pair_error = n.data[0]
         if pair_error:
-            status[_K.ERROR] = error_string = _hidpp10.PairingErrors[pair_error]
+            status[KEYS.ERROR] = error_string = _hidpp10.PairingErrors[pair_error]
             status.new_device = None
             _log.warning(f"pairing error {pair_error}: {error_string}")
 
@@ -142,7 +142,7 @@ def _process_hidpp10_notification(device, status, n):
             device.status = None
             if device.number in device.receiver:
                 del device.receiver[device.number]
-            status.changed(active=False, alert=_ALERT.ALL, reason=_("unpaired"))
+            status.changed(active=False, alert=ALERT.ALL, reason=_("unpaired"))
         else:
             _log.warning(
                 "%s: disconnection with unknown type %02X: %s", device, n.address, n
@@ -171,11 +171,11 @@ def _process_hidpp10_notification(device, status, n):
                 assert wpid == device.wpid, f"{device} wpid mismatch, got {wpid}"
 
             flags = n.data[0] & 0xF0
-            link_encrypted = bool(flags & 0x20)
-            link_established = not (flags & 0x40)
+            link_encrypted = bool(flags & KEYS_MASK.ENCRYPTED_MASK)
+            link_established = not (flags & KEYS_MASK.NO_LINK_MASK)
             if _log.isEnabledFor(_DEBUG):
-                sw_present = bool(flags & 0x10)
-                has_payload = bool(flags & 0x80)
+                sw_present = bool(flags & KEYS_MASK.SW_PRESENT_MASK)
+                has_payload = bool(flags & KEYS_MASK.LOGITECH_MASK)
                 _log.debug(
                     f"{device}: {protocol_name} connection notification: "
                     f"software={sw_present}, "
@@ -183,7 +183,7 @@ def _process_hidpp10_notification(device, status, n):
                     f"link={link_established}, "
                     f"payload={has_payload}",
                 )
-            status[_K.LINK_ENCRYPTED] = link_encrypted
+            status[KEYS.LINK_ENCRYPTED] = link_encrypted
             status.changed(active=link_established)
         else:
             _log.warning(
@@ -205,7 +205,7 @@ def _process_hidpp10_notification(device, status, n):
             if _log.isEnabledFor(_DEBUG):
                 _log.debug(f"{device}: device powered on")
             reason = status.to_string() or _("powered on")
-            status.changed(active=True, alert=_ALERT.NOTIFICATION, reason=reason)
+            status.changed(active=True, alert=ALERT.NOTIFICATION, reason=reason)
         else:
             _log.warning(f"{device}: unknown {n}")
         return True
@@ -213,7 +213,7 @@ def _process_hidpp10_notification(device, status, n):
     _log.warning(f"{device}: unrecognized {n}")
 
 
-def _process_feature_notification(device, status, n, feature):
+def _process_feature_notification(device, status, n, feature: _F):
     if feature == _F.BATTERY_STATUS:
         if n.address == 0x00:
             discharge_level = n.data[0]
@@ -241,7 +241,7 @@ def _process_feature_notification(device, status, n, feature):
                 _log.debug(f"wireless status: {n}")
             if n.data[0:3] == b"\x01\x01\x01":
                 status.changed(
-                    active=True, alert=_ALERT.NOTIFICATION, reason="powered on"
+                    active=True, alert=ALERT.NOTIFICATION, reason="powered on"
                 )
             else:
                 _log.warning(f"{device}: unknown WIRELESS {n}")
@@ -257,17 +257,17 @@ def _process_feature_notification(device, status, n, feature):
             status_text = _hidpp20.BatteryStatus.discharging
 
             if n.address == 0x00:
-                status[_K.LIGHT_LEVEL] = None
+                status[KEYS.LIGHT_LEVEL] = None
                 status.set_battery_info(charge, status_text)
             elif n.address == 0x10:
-                status[_K.LIGHT_LEVEL] = lux
+                status[KEYS.LIGHT_LEVEL] = lux
                 if lux > 200:
                     status_text = _hidpp20.BatteryStatus.recharging
                 status.set_battery_info(charge, status_text)
             elif n.address == 0x20:
                 if _log.isEnabledFor(_DEBUG):
                     _log.debug(f"{device}: Light Check button pressed")
-                status.changed(alert=_ALERT.SHOW_WINDOW)
+                status.changed(alert=ALERT.SHOW_WINDOW)
                 # first cancel any reporting
                 # device.feature_request(_F.SOLAR_DASHBOARD)
                 # trigger a new report chain
@@ -319,5 +319,5 @@ def _process_feature_notification(device, status, n, feature):
         return True
 
     _log.warning(
-        f"{device}: unrecognized {n} for feature {feature} (index {n.sub_id:02X})"
+        f"{device}: unrecognized {n} for feature {feature} (index {n.sub_id.value:02X})"
     )

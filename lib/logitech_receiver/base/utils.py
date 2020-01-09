@@ -23,14 +23,19 @@ from time import time as _timestamp
 from typing import Callable, NamedTuple, Optional
 
 import hidapi as _hid
-from . import hidpp10, hidpp20
-from .common import KwException as _KwException, pack as _pack, strhex as _strhex
+from .enums import ReportType
+from .exceptions import ReadException, NoReceiver
+from .schemes import HIDPP_Notification
+from .. import hidpp10
+from ..base_usb import ALL as _RECEIVER_USB_IDS
+from ..common import (
+    pack as _pack,
+    strhex as _strhex,
+)
+from ..hidpp10.enums import SubId
 
 _log = getLogger(__name__)
 del getLogger
-#
-#
-#
 
 _SHORT_MESSAGE_SIZE = 7
 _LONG_MESSAGE_SIZE = 20
@@ -47,39 +52,6 @@ _DEVICE_REQUEST_TIMEOUT = DEFAULT_TIMEOUT
 _PING_TIMEOUT = DEFAULT_TIMEOUT * 2
 
 
-#
-# Exceptions that may be raised by this API.
-#
-
-
-class NoReceiver(_KwException):
-    """Raised when trying to talk through a previously open handle, when the
-    receiver is no longer available. Should only happen if the receiver is
-    physically disconnected from the machine, or its kernel driver module is
-    unloaded."""
-
-    pass
-
-
-class NoSuchDevice(_KwException):
-    """Raised when trying to reach a device number not paired to the receiver."""
-
-    pass
-
-
-class DeviceUnreachable(_KwException):
-    """Raised when a request is made to an unreachable (turned off) device."""
-
-    pass
-
-
-#
-#
-#
-
-from .base_usb import ALL as _RECEIVER_USB_IDS
-
-
 def receivers():
     """List all the Linux devices exposed by the UR attached to the machine."""
     for receiver_usb_id in _RECEIVER_USB_IDS:
@@ -90,11 +62,6 @@ def receivers():
 def notify_on_receivers_glib(callback):
     """Watch for matching devices and notifies the callback on the GLib thread."""
     _hid.monitor_glib(callback, *_RECEIVER_USB_IDS)
-
-
-#
-#
-#
 
 
 def open_path(path):
@@ -181,7 +148,7 @@ def write(handle: int, devnumber, data):
 
 
 class RawPacket(NamedTuple):
-    report_id: int
+    report_id: ReportType
     devnumber: int
     data: bytes
 
@@ -224,17 +191,26 @@ def _read(handle, timeout) -> Optional[RawPacket]:
 
     if data:
         assert isinstance(data, bytes), (repr(data), type(data))
-        report_id = data[0]
+        report_type = ReportType(data[0])
+
         assert (
-            (report_id & 0xF0 == 0)
-            or (report_id == 0x10 and len(data) == _SHORT_MESSAGE_SIZE)
-            or (report_id == 0x11 and len(data) == _LONG_MESSAGE_SIZE)
-            or (report_id == 0x20 and len(data) == _MEDIUM_MESSAGE_SIZE)
+            (report_type & 0xF0 == 0)
+            or (
+                report_type == ReportType.HIDPP_SHORT
+                and len(data) == _SHORT_MESSAGE_SIZE
+            )
+            or (
+                report_type == ReportType.HIDPP_LONG and len(data) == _LONG_MESSAGE_SIZE
+            )
+            or (
+                report_type == ReportType.DJ_BUS_ENUM_SHORT
+                and len(data) == _MEDIUM_MESSAGE_SIZE
+            )
         ), (
             "unexpected message size: report_id %02X message %s"
-            % (report_id, _strhex(data))
+            % (report_type, _strhex(data))
         )
-        if report_id & 0xF0 == 0x00:
+        if report_type & 0xF0 == 0x00:
             # These all should be normal HID reports that shouldn't really be reported in debugging
             # 			if _log.isEnabledFor(_DEBUG):
             # 				_log.debug("(%s) => r[%02X %s] ignoring unknown report", handle, report_id, strhex(data[1:]))
@@ -245,18 +221,13 @@ def _read(handle, timeout) -> Optional[RawPacket]:
             _log.debug(
                 "(%s) => r[%02X %02X %s %s]",
                 handle,
-                report_id,
+                report_type,
                 devnumber,
                 _strhex(data[2:4]),
                 _strhex(data[4:]),
             )
 
-        return RawPacket(report_id, devnumber, data[2:])
-
-
-#
-#
-#
+        return RawPacket(report_type, devnumber, data[2:])
 
 
 def _skip_incoming(handle: int, notifications_hook: Optional[Callable]):
@@ -299,7 +270,7 @@ def _skip_incoming(handle: int, notifications_hook: Optional[Callable]):
 def make_notification(devnumber, data):
     """Guess if this is a notification (and not just a request reply), and
     return a Notification tuple if it is."""
-    sub_id = data[0]
+    sub_id = SubId(data[0])
     if sub_id & 0x80 == 0x80:
         # this is either a HID++1.0 register r/w, or an error reply
         return
@@ -318,35 +289,7 @@ def make_notification(devnumber, data):
         # HID++ 2.0 feature notifications have the SoftwareID 0
         (address & 0x0F == 0x00)
     ):
-        return _HIDPP_Notification(devnumber, sub_id, address, data[2:])
-
-
-class _HIDPP_Notification(NamedTuple):
-    devnumber: int
-    sub_id: int
-    address: int
-    data: bytes
-
-    def __str__(self):
-        return "Notification(%d,%02X,%02X,%s)" % (
-            self.devnumber,
-            self.sub_id,
-            self.address,
-            _strhex(self.data),
-        )
-
-
-class ReadException(Exception):
-    def __init__(self, protocol: float, code: int):
-        self.protocol_version = protocol
-        self.code = code
-        super().__init__()
-
-    def error(self):
-        return {1.0: hidpp10, 2.0: hidpp20}[self.protocol_version].Error[self.code]
-
-    def __str__(self):
-        return f"HIDPP{self.protocol_version}0: {self.error()}"
+        return HIDPP_Notification(devnumber, sub_id, address, data[2:])
 
 
 #

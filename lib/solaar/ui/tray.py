@@ -20,7 +20,7 @@ from time import time as _timestamp
 from gi.repository import GLib, Gtk
 from gi.repository.Gdk import ScrollDirection
 
-from logitech_receiver.status import KEYS as _K
+from logitech_receiver.status import KEYS
 from solaar import NAME
 from solaar.i18n import _
 from . import icons as _icons
@@ -185,8 +185,8 @@ try:
     def _update_tray_icon():
         if _picked_device:
             _ignore, _ignore, name, device_status = _picked_device
-            battery_level = device_status.get(_K.BATTERY_LEVEL)
-            battery_charging = device_status.get(_K.BATTERY_CHARGING)
+            battery_level = device_status.get(KEYS.BATTERY_LEVEL)
+            battery_charging = device_status.get(KEYS.BATTERY_CHARGING)
             tray_icon_name = _icons.battery(battery_level, battery_charging)
 
             description = "%s: %s" % (name, device_status.to_string())
@@ -249,8 +249,8 @@ except ImportError:
 
         if _picked_device:
             _ignore, _ignore, name, device_status = _picked_device
-            battery_level = device_status.get(_K.BATTERY_LEVEL)
-            battery_charging = device_status.get(_K.BATTERY_CHARGING)
+            battery_level = device_status.get(KEYS.BATTERY_LEVEL)
+            battery_charging = device_status.get(KEYS.BATTERY_CHARGING)
             tray_icon_name = _icons.battery(battery_level, battery_charging)
         else:
             # there may be a receiver, but no peripherals
@@ -320,7 +320,7 @@ def _pick_device_with_lowest_battery():
     for info in _devices_info:
         if info[1] is None:  # is receiver/separator
             continue
-        level = info[-1].get(_K.BATTERY_LEVEL)
+        level = info[-1].get(KEYS.BATTERY_LEVEL)
         # print ("checking %s -> %s", info, level)
         if level is not None and picked_level > level:
             picked = info
@@ -438,8 +438,8 @@ def _update_menu_item(index, device):
     menu_items = _menu.get_children()
     menu_item = menu_items[index]
 
-    level = device.status.get(_K.BATTERY_LEVEL)
-    charging = device.status.get(_K.BATTERY_CHARGING)
+    level = device.status.get(KEYS.BATTERY_LEVEL)
+    charging = device.status.get(KEYS.BATTERY_CHARGING)
     icon_name = _icons.battery(level, charging)
 
     image_widget = menu_item.get_image()

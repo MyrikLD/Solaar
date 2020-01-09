@@ -80,19 +80,19 @@ msgid "too many devices"
 msgstr "设备数量太多"
 
 #: lib/logitech_receiver/i18n.py:48
-msgid "Bootloader"
+msgid "FW_BUILD"
 msgstr "启动器"
 
 #: lib/logitech_receiver/i18n.py:48 lib/solaar/ui/window.py:535
-msgid "Firmware"
+msgid "FW_VERSION"
 msgstr "固件"
 
 #: lib/logitech_receiver/i18n.py:48
-msgid "Hardware"
+msgid "HW_VERSION"
 msgstr "硬件"
 
 #: lib/logitech_receiver/i18n.py:48
-msgid "Other"
+msgid "BL_VERSION"
 msgstr "其他"
 
 #: lib/logitech_receiver/notifications.py:67

@@ -44,8 +44,8 @@ _DUMMY = (
     _("too many devices"),
     _("sequence timeout"),
     # firmware kinds
-    _("Firmware"),
-    _("Bootloader"),
-    _("Hardware"),
-    _("Other"),
+    _("FW_VERSION"),
+    _("FW_BUILD"),
+    _("HW_VERSION"),
+    _("BL_VERSION"),
 )

@@ -21,6 +21,7 @@ from logitech_receiver import (
     hidpp10 as _hidpp10,
     hidpp20 as _hidpp20,
     special_keys as _special_keys,
+    PairedDevice,
 )
 from logitech_receiver.hidpp20 import BatteryStatus
 from solaar.cli import find_device, find_receiver
@@ -69,7 +70,7 @@ def _print_receiver(receiver: Receiver, text: Text):
 
 
 class PrintDevice:
-    def __init__(self, dev, text: Text):
+    def __init__(self, dev: PairedDevice, text: Text):
         self.dev = dev
         self.text = text
 
@@ -272,7 +273,7 @@ def run(receivers: List[Receiver], args):
                     for dev in r:
                         dev.ping()
                         text()
-                        text(f"{dev.number}: {dev}")
+                        text(f"{dev.number}: {dev.codename}")
                         with text:
                             PrintDevice(dev, text)
                         count -= 1

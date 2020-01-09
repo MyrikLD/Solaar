@@ -48,6 +48,13 @@ class KEYS(int, Enum):
     ERROR = 7
 
 
+class KEYS_MASK(int, Enum):
+    SW_PRESENT_MASK = 1 << 4
+    ENCRYPTED_MASK = 1 << 5
+    NO_LINK_MASK = 1 << 6
+    LOGITECH_MASK = 1 << 7
+
+
 # If the battery charge is under this percentage, trigger an attention event
 # (blink systray icon/notification/whatever).
 _BATTERY_ATTENTION_LEVEL = 5

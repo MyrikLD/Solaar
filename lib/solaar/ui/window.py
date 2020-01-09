@@ -21,7 +21,7 @@ from gi.repository.GObject import TYPE_PYOBJECT
 
 from logitech_receiver import hidpp10 as _hidpp10
 from logitech_receiver.common import NamedInts
-from logitech_receiver.status import KEYS as _K
+from logitech_receiver.status import KEYS
 from solaar import NAME
 from solaar.i18n import _, ngettext
 
@@ -604,7 +604,7 @@ def _update_details(button):
             elif device.kind is None or device.online:
                 yield "  %s" % _("Firmware"), "..."
 
-            flag_bits = device.status.get(_K.NOTIFICATION_FLAGS)
+            flag_bits = device.status.get(KEYS.NOTIFICATION_FLAGS)
             if flag_bits is not None:
                 flag_names = (
                     ("(%s)" % _("none"),)
@@ -707,7 +707,7 @@ def _update_device_panel(device, panel, buttons, full=False):
     is_online = bool(device.online)
     panel.set_sensitive(is_online)
 
-    battery_level = device.status.get(_K.BATTERY_LEVEL)
+    battery_level = device.status.get(KEYS.BATTERY_LEVEL)
     if battery_level is None:
         icon_name = _icons.battery()
         panel._battery._icon.set_sensitive(False)
@@ -715,7 +715,7 @@ def _update_device_panel(device, panel, buttons, full=False):
         panel._battery._text.set_sensitive(True)
         panel._battery._text.set_markup("<small>%s</small>" % _("unknown"))
     else:
-        charging = device.status.get(_K.BATTERY_CHARGING)
+        charging = device.status.get(KEYS.BATTERY_CHARGING)
         icon_name = _icons.battery(battery_level, charging)
         panel._battery._icon.set_from_icon_name(icon_name, _INFO_ICON_SIZE)
         panel._battery._icon.set_sensitive(True)
@@ -733,7 +733,7 @@ def _update_device_panel(device, panel, buttons, full=False):
         panel._battery._text.set_markup(text)
 
     if is_online:
-        not_secure = device.status.get(_K.LINK_ENCRYPTED) == False
+        not_secure = device.status.get(KEYS.LINK_ENCRYPTED) == False
         if not_secure:
             panel._secure._text.set_text(_("not encrypted"))
             panel._secure._icon.set_from_icon_name("security-low", _INFO_ICON_SIZE)
@@ -762,7 +762,7 @@ def _update_device_panel(device, panel, buttons, full=False):
         panel._secure.set_tooltip_text("")
 
     if is_online:
-        light_level = device.status.get(_K.LIGHT_LEVEL)
+        light_level = device.status.get(KEYS.LIGHT_LEVEL)
         if light_level is None:
             panel._lux.set_visible(False)
         else:
@@ -921,7 +921,7 @@ def update(device, need_popup=False):
             is_online = bool(device.online)
             _model.set_value(item, _COLUMN.ACTIVE, is_online)
 
-            battery_level = device.status.get(_K.BATTERY_LEVEL)
+            battery_level = device.status.get(KEYS.BATTERY_LEVEL)
             if battery_level is None:
                 _model.set_value(item, _COLUMN.STATUS_TEXT, _CAN_SET_ROW_NONE)
                 _model.set_value(item, _COLUMN.STATUS_ICON, _CAN_SET_ROW_NONE)
@@ -936,7 +936,7 @@ def update(device, need_popup=False):
                     }
                 _model.set_value(item, _COLUMN.STATUS_TEXT, status_text)
 
-                charging = device.status.get(_K.BATTERY_CHARGING)
+                charging = device.status.get(KEYS.BATTERY_CHARGING)
                 icon_name = _icons.battery(battery_level, charging)
                 _model.set_value(item, _COLUMN.STATUS_ICON, icon_name)
 

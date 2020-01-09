@@ -18,7 +18,7 @@ from logging import DEBUG as _DEBUG, getLogger
 
 from gi.repository import GLib, Gtk
 
-from logitech_receiver.status import KEYS as _K
+from logitech_receiver.status import KEYS
 from solaar.i18n import _
 from . import icons as _icons
 
@@ -66,9 +66,9 @@ def _check_lock_state(assistant, receiver, count=2):
             _log.debug("assistant %s destroyed, bailing out", assistant)
         return False
 
-    if receiver.status.get(_K.ERROR):
+    if receiver.status.get(KEYS.ERROR):
         # receiver.status.new_device = _fake_device(receiver)
-        _pairing_failed(assistant, receiver, receiver.status.pop(_K.ERROR))
+        _pairing_failed(assistant, receiver, receiver.status.pop(KEYS.ERROR))
         return False
 
     if receiver.status.new_device:
@@ -98,7 +98,7 @@ def _prepare(assistant, page, receiver):
     if index == 0:
         if receiver.set_lock(False, timeout=_PAIRING_TIMEOUT):
             assert receiver.status.new_device is None
-            assert receiver.status.get(_K.ERROR) is None
+            assert receiver.status.get(KEYS.ERROR) is None
             spinner = page.get_children()[-1]
             spinner.start()
             GLib.timeout_add(_STATUS_CHECK, _check_lock_state, assistant, receiver)
@@ -119,7 +119,7 @@ def _finish(assistant, receiver):
     if receiver.status.lock_open:
         receiver.set_lock()
     else:
-        receiver.status[_K.ERROR] = None
+        receiver.status[KEYS.ERROR] = None
 
 
 def _pairing_failed(assistant, receiver, error):
@@ -177,7 +177,7 @@ def _pairing_succeeded(assistant, receiver, device):
 
     def _check_encrypted(dev):
         if assistant.is_drawable():
-            if device.status.get(_K.LINK_ENCRYPTED) == False:
+            if device.status.get(KEYS.LINK_ENCRYPTED) == False:
                 hbox.pack_start(
                     Gtk.Image.new_from_icon_name("security-low", Gtk.IconSize.MENU),
                     False,
