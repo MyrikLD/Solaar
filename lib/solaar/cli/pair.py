@@ -22,6 +22,7 @@ from logitech_receiver import (
     notifications as _notifications,
     status as _status,
 )
+from logitech_receiver.hidpp10.enums import SubId
 from solaar.cli import find_receiver
 
 
@@ -55,7 +56,7 @@ def run(receivers, args):
             if n.devnumber == 0xFF:
                 _notifications.process(receiver, n)
             elif (
-                n.sub_id == 0x41
+                n.sub_id == SubId.DEVICE_CONNECT
                 and n.address == 0x04
                 and n.devnumber not in known_devices
             ):

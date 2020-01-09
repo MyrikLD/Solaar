@@ -24,6 +24,7 @@ from logitech_receiver import (
     notifications as _notifications,
     status as _status,
 )
+from logitech_receiver.hidpp10.enums import SubId
 from solaar.i18n import _
 from . import configuration
 
@@ -210,11 +211,11 @@ class ReceiverListener(_listener.EventsListener):
         # status notification seems to tell us this. If this is the case, we
         # must wait a short amount of time to avoid causing a broken pipe
         # error.
-        device_ready = not bool(n.data[0] & 0x80) or n.sub_id != 0x41
+        device_ready = not bool(n.data[0] & 0x80) or n.sub_id != SubId.DEVICE_CONNECT
         if not device_ready:
             time.sleep(0.01)
 
-        if n.sub_id == 0x41 and not already_known:
+        if n.sub_id == SubId.DEVICE_CONNECT and not already_known:
             dev = self.receiver.register_new_device(n.devnumber, n)
         else:
             dev = self.receiver[n.devnumber]
@@ -230,7 +231,7 @@ class ReceiverListener(_listener.EventsListener):
             return
 
         # Apply settings every time the device connects
-        if n.sub_id == 0x41:
+        if n.sub_id == SubId.DEVICE_CONNECT:
             if _log.isEnabledFor(_INFO):
                 _log.info("%s triggered new device %s (%s)", n, dev, dev.kind)
             # If there are saved configs, bring the device's settings up-to-date.
@@ -245,7 +246,7 @@ class ReceiverListener(_listener.EventsListener):
         _notifications.process(dev, n)
         if self.receiver.status.lock_open and not already_known:
             # this should be the first notification after a device was paired
-            assert n.sub_id == 0x41 and n.address == 0x04
+            assert n.sub_id == SubId.DEVICE_CONNECT and n.address == SubId.POWER
             if _log.isEnabledFor(_INFO):
                 _log.info(f"{self.receiver}: pairing detected new device")
             self.receiver.status.new_device = dev

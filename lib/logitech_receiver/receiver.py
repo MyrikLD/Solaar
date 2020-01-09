@@ -18,7 +18,7 @@ import errno as _errno
 from logging import INFO as _INFO, getLogger
 
 from . import base as _base, hidpp10 as _hidpp10, hidpp20 as _hidpp20
-from .base import ReadException
+from .base import ReadException, SubId
 from .common import strhex as _strhex
 from .descriptors import DEVICES as _DESCRIPTORS
 from .i18n import _
@@ -477,7 +477,7 @@ class Receiver:
             raise IndexError("%s: device number %d already registered" % (self, number))
 
         assert notification is None or notification.devnumber == number
-        assert notification is None or notification.sub_id == 0x41
+        assert notification is None or notification.sub_id == SubId.DEVICE_CONNECT
 
         try:
             dev = PairedDevice(self, number, notification)

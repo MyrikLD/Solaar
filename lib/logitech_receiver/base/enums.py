@@ -14,3 +14,31 @@ class ReportType(NamedInts):
     HIDPP_EXTRA_LONG = 0x13  # Extra-long HID++ messages (111 bytes)
     DJ_BUS_ENUM_SHORT = 0x20  # DJ bus enumerator short messages
     DJ_BUS_ENUM_LONG = 0x21
+
+
+class ProtocolType(NamedInts):
+    BLUETOOTH = 0x01  # Bluetooth protocol
+    TWENTY_SEVEN_MHZ = 0x02  # 27 MHz protocol
+    QUAD = 0x03  # Quad or eQuad step 1 .. 3  protocol
+    EQUAD_DJ = 0x04  # eQuad step 4 "DJ" protocol
+    DFU_LITE = 0x05  # DFU Lite protocol
+    EQUAD_LITE = 0x06  # eQuad step 4 Lite protocol
+    EQUAD_HIGH_RPT_RATE = (
+        0x07  # eQuad step 4 gaming protocol (high report-rate gaming mice/keyboard)
+    )
+    EQUAD_GAMEPAD = 0x08  # eQuad step 4 protocol for gamepads
+
+    def __str__(self):
+        return {
+            0x01: "Bluetooth",
+            0x02: "27 MHz",
+            0x03: "QUAD or eQUAD step 1-3",
+            0x04: "eQUAD step 4 DJ",
+            0x05: "DFU Lite",
+            0x06: "eQUAD step 4 Lite",
+            0x07: "eQUAD step 4 Gaming",
+            0x08: "eQUAD step 4 for gamepads",
+            0x0A: "eQUAD nano Lite",
+            0x0C: "Lightspeed 1",
+            0x0D: "Lightspeed 1_1",
+        }[self.value]

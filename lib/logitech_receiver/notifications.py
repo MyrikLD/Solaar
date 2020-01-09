@@ -20,7 +20,9 @@
 from logging import DEBUG as _DEBUG, INFO as _INFO, getLogger
 
 from . import hidpp10 as _hidpp10, hidpp20 as _hidpp20
+from .base.enums import ProtocolType
 from .common import strhex as _strhex, unpack as _unpack
+from .hidpp10.enums import SubId
 from .i18n import _
 from .status import ALERT, KEYS, KEYS_MASK
 
@@ -49,7 +51,7 @@ def _process_receiver_notification(receiver, status, n):
     assert n.sub_id & 0x40 == 0x40
 
     # pairing lock notification
-    if n.sub_id == 0x4A:
+    if n.sub_id == SubId.QUAD_LOCKING_INFO:
         status.lock_open = bool(n.address & 0x01)
         reason = (
             _("pairing lock is open")
@@ -112,7 +114,7 @@ def _process_device_notification(device, status, n):
 
 def _process_hidpp10_custom_notification(device, status, n):
     if _log.isEnabledFor(_DEBUG):
-        _log.debug("%s (%s) custom notification %s", device, device.protocol, n)
+        _log.debug(f"{device} ({device.protocol}) custom notification {n}")
 
     if n.sub_id in (_R.battery_status, _R.battery_charge):
         # message layout: 10 ix <register> <xx> <yy> <zz> <00>
@@ -134,7 +136,7 @@ def _process_hidpp10_custom_notification(device, status, n):
 
 def _process_hidpp10_notification(device, status, n):
     # unpair notification
-    if n.sub_id == 0x40:
+    if n.sub_id == SubId.DEVICE_DISCONNECT:
         if n.address == 0x02:
             # device un-paired
             status.clear()
@@ -145,26 +147,13 @@ def _process_hidpp10_notification(device, status, n):
             status.changed(active=False, alert=ALERT.ALL, reason=_("unpaired"))
         else:
             _log.warning(
-                "%s: disconnection with unknown type %02X: %s", device, n.address, n
+                f"{device}: disconnection with unknown type {n.address:02X}: {n}"
             )
         return True
 
     # wireless link notification
-    if n.sub_id == 0x41:
-        protocol_names = {
-            0x01: "Bluetooth",
-            0x02: "27 MHz",
-            0x03: "QUAD or eQUAD",
-            0x04: "eQUAD step 4 DJ",
-            0x05: "DFU Lite",
-            0x06: "eQUAD step 4 Lite",
-            0x07: "eQUAD step 4 Gaming",
-            0x08: "eQUAD step 4 for gamepads",
-            0x0A: "eQUAD nano Lite",
-            0x0C: "Lightspeed 1",
-            0x0D: "Lightspeed 1_1",
-        }
-        protocol_name = protocol_names.get(n.address)
+    if n.sub_id == SubId.DEVICE_CONNECT:
+        protocol_name = ProtocolType(n.address)
         if protocol_name:
             if _log.isEnabledFor(_DEBUG):
                 wpid = _strhex(n.data[2:3] + n.data[1:2])
@@ -192,7 +181,7 @@ def _process_hidpp10_notification(device, status, n):
 
         return True
 
-    if n.sub_id == 0x49:
+    if n.sub_id == SubId.LINK_QUALITY_INFO:
         # raw input event? just ignore it
         # if n.address == 0x01, no idea what it is, but they keep on coming
         # if n.address == 0x03, appears to be an actual input event,
@@ -200,7 +189,7 @@ def _process_hidpp10_notification(device, status, n):
         return True
 
     # power notification
-    if n.sub_id == 0x4B:
+    if n.sub_id == SubId.WL_DEV_CHANGE_INFO:
         if n.address == 0x01:
             if _log.isEnabledFor(_DEBUG):
                 _log.debug(f"{device}: device powered on")
