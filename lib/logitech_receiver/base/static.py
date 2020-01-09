@@ -14,10 +14,16 @@
 ## with this program; if not, write to the Free Software Foundation, Inc.,
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+SHORT_MESSAGE_SIZE = 7
+LONG_MESSAGE_SIZE = 20
+MEDIUM_MESSAGE_SIZE = 15
+MAX_READ_SIZE = 32
 
-from .enums import ReportType
-from .exceptions import DeviceUnreachable, NoReceiver, NoSuchDevice, ReadException
-from .make_notification import make_notification
-from .make_request import ping, request, request
-from .schemes import HIDPP_Notification, RawPacket
-from .utils import close, open, open_path, read, receivers, write
+"""Default timeout on read (in seconds)."""
+DEFAULT_TIMEOUT = 4
+# the receiver itself should reply very fast, within 500ms
+RECEIVER_REQUEST_TIMEOUT = 0.9
+# devices may reply a lot slower, as the call has to go wireless to them and come back
+DEVICE_REQUEST_TIMEOUT = DEFAULT_TIMEOUT
+# when pinging, be extra patient
+PING_TIMEOUT = DEFAULT_TIMEOUT * 2

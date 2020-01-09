@@ -75,7 +75,7 @@ def run(receivers, args):
     while receiver.status.lock_open or _timestamp() - pairing_start < patience:
         n = _base.read(receiver.handle)
         if n:
-            n = _base.make_notification(*n)
+            n = _base.make_notification(devnumber=n.devnumber, data=n.data)
             if n:
                 receiver.handle.notifications_hook(n)
 

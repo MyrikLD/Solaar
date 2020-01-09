@@ -52,7 +52,7 @@ LIGHTSPEED_RECEIVER_C53f = _lightspeed_receiver(0xC53F)
 
 del _DRIVER, _unifying_receiver, _nano_receiver, _lenovo_receiver, _lightspeed_receiver
 
-ALL = (
+RECEIVER_USB_IDS = (
     UNIFYING_RECEIVER_C52B,
     UNIFYING_RECEIVER_C532,
     NANO_RECEIVER_ADVANCED,

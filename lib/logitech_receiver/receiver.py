@@ -18,9 +18,10 @@ import errno as _errno
 from logging import INFO as _INFO, getLogger
 
 from . import base as _base, hidpp10 as _hidpp10, hidpp20 as _hidpp20
-from .base import ReadException, SubId
+from .base import ReadException
 from .common import strhex as _strhex
 from .descriptors import DEVICES as _DESCRIPTORS
+from .hidpp10.enums import SubId
 from .i18n import _
 from .settings_templates import check_feature_settings as _check_feature_settings
 
@@ -417,7 +418,8 @@ class Receiver:
 
     def close(self):
         handle, self.handle = self.handle, None
-        self._devices.clear()
+        if hasattr(self, '_devices'):
+            self._devices.clear()
         return handle and _base.close(handle)
 
     def __del__(self):
@@ -607,5 +609,5 @@ class Receiver:
             _log.exception("open %s", device_info)
             if e.errno == _errno.EACCES:
                 raise
-        except:
+        except Exception as e:
             _log.exception("open %s", device_info)

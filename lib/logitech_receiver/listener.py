@@ -177,7 +177,7 @@ class EventsListener(_threading.Thread):
                     break
 
                 if n:
-                    n = _base.make_notification(*n)
+                    n = _base.make_notification(devnumber=n.devnumber, data=n.data)
             else:
                 # deliver any queued notifications
                 n = self._queued_notifications.get()
