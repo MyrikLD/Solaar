@@ -61,11 +61,6 @@ def _parse_arguments():
         help="restart Solaar on sleep wake-up (experimental)",
     )
     arg_parser.add_argument(
-        "--gtk-debug",
-        action="store_true",
-        help="restart Solaar on sleep wake-up (experimental)",
-    )
-    arg_parser.add_argument(
         "-V", "--version", action="version", version="%(prog)s " + __version__
     )
     arg_parser.add_argument(
