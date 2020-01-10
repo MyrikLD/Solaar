@@ -57,4 +57,20 @@ class ReadException(Exception):
         return f"HID++ {self.protocol_version}: {self.error}"
 
     def __repr__(self):
-        return f'ReadException[{self}]'
+        return f"ReadException[{self}]"
+
+
+class ReadException1(ReadException):
+    protocol_version = 1.0
+
+    def __init__(self, code: int):
+        self.code = code
+        super().__init__(protocol=self.protocol_version, code=code)
+
+
+class ReadException2(ReadException):
+    protocol_version = 2.0
+
+    def __init__(self, code: int):
+        self.code = code
+        super().__init__(protocol=self.protocol_version, code=code)

@@ -20,7 +20,7 @@ from time import time as _timestamp
 from typing import Callable, Optional
 
 from .enums import ReportType
-from .exceptions import ReadException
+from .exceptions import ReadException1, ReadException2
 from .schemes import RawPacket
 from .skip_incoming import skip_incoming
 from .static import DEVICE_REQUEST_TIMEOUT, RECEIVER_REQUEST_TIMEOUT
@@ -83,11 +83,11 @@ class Request:
     def handle_reply(self, reply: RawPacket):
         exception = self.v1_exception(reply)
         if exception:
-            raise ReadException(protocol=1.0, code=exception)
+            raise ReadException1(code=exception)
 
         exception = self.v2_exception(reply)
         if exception:
-            raise ReadException(protocol=2.0, code=exception)
+            raise ReadException2(code=exception)
 
         return self.get_data(reply)
 

@@ -18,7 +18,7 @@ import errno as _errno
 from logging import INFO as _INFO, getLogger
 
 from . import base as _base, hidpp10 as _hidpp10, hidpp20 as _hidpp20
-from .base import ReadException
+from .base.exceptions import ReadException1
 from .common import strhex as _strhex
 from .descriptors import DEVICES as _DESCRIPTORS
 from .hidpp10.enums import SubId
@@ -402,13 +402,13 @@ class Receiver:
         # TODO _properly_ figure out which receivers do and which don't support unpairing
         try:
             self.write_register(_R.QUAD_CONNECT_DEVICE)
-        except ReadException as e:
-            if e.protocol_version == 1.0 and e.code == _hidpp10.Error.invalid_value:
-                self.may_unpair = False
+        except ReadException1 as e:
+            if e.code == _hidpp10.Error.invalid_value:
+                self.may_unpair = True
             else:
                 raise e from None
         else:
-            self.may_unpair = True
+            self.may_unpair = False
 
         self._firmware = None
         self._devices = {}
@@ -514,8 +514,11 @@ class Receiver:
         if self:
             return _base.request(self.handle, 0xFF, request_id, *params)
 
-    read_register = _hidpp10.read_register
-    write_register = _hidpp10.write_register
+    def read_register(self, register_number, *params):
+        return _hidpp10.read_register(self, register_number, *params)
+
+    def write_register(self, register_number, *params):
+        return _hidpp10.write_register(self, register_number, *params)
 
     def __iter__(self):
         for number in range(1, 1 + self.max_devices):
