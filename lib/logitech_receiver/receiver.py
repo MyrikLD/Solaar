@@ -403,8 +403,10 @@ class Receiver:
         try:
             self.write_register(_R.QUAD_CONNECT_DEVICE)
         except ReadException as e:
-            if e.protocol_version == 1 and e.code == _hidpp10.Error.invalid_value:
+            if e.protocol_version == 1.0 and e.code == _hidpp10.Error.invalid_value:
                 self.may_unpair = False
+            else:
+                raise e from None
         else:
             self.may_unpair = True
 

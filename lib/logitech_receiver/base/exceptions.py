@@ -45,8 +45,16 @@ class ReadException(Exception):
         self.code = code
         super().__init__()
 
+    @property
+    def protocol(self):
+        return {1.0: hidpp10, 2.0: hidpp20}[self.protocol_version]
+
+    @property
     def error(self):
-        return {1.0: hidpp10, 2.0: hidpp20}[self.protocol_version].Error[self.code]
+        return self.protocol.Error(self.code)
 
     def __str__(self):
-        return f"HIDPP{self.protocol_version}0: {self.error()}"
+        return f"HID++ {self.protocol_version}: {self.error}"
+
+    def __repr__(self):
+        return f'ReadException[{self}]'
