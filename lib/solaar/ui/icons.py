@@ -45,8 +45,7 @@ def _look_for_application_icons():
 
     import sys as _sys
 
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("sys.path[0] = %s", _sys.path[0])
+    _log.debug("sys.path[0] = %s", _sys.path[0])
     prefix_share = _path.normpath(_path.join(_path.realpath(_sys.path[0]), ".."))
     src_share = _path.normpath(_path.join(_path.realpath(_sys.path[0]), "..", "share"))
     local_share = _environ.get(
@@ -64,8 +63,7 @@ def _look_for_application_icons():
     )
     for location in share_solaar:
         location = _path.join(location, "icons")
-        if _log.isEnabledFor(_DEBUG):
-            _log.debug("looking for icons in %s", location)
+        _log.debug("looking for icons in %s", location)
 
         if _path.exists(_path.join(location, TRAY_ATTENTION + ".svg")):
             yield location
@@ -107,15 +105,14 @@ def _init_icon_paths():
     ) and _default_theme.has_icon("battery-full-charged")
     _has_elementary_icons = _default_theme.has_icon("battery-020-charging")
 
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug(
-            "detected icon sets: Mint %s, gpm %s, oxygen %s, gnome %s, elementary %s",
-            _has_mint_icons,
-            _has_gpm_icons,
-            _has_oxygen_icons,
-            _has_gnome_icons,
-            _has_elementary_icons,
-        )
+    _log.debug(
+        "detected icon sets: Mint %s, gpm %s, oxygen %s, gnome %s, elementary %s",
+        _has_mint_icons,
+        _has_gpm_icons,
+        _has_oxygen_icons,
+        _has_gnome_icons,
+        _has_elementary_icons,
+    )
 
     if (
         not _has_mint_icons
@@ -136,8 +133,7 @@ def battery(level=None, charging=False):
     icon_name = _battery_icon_name(level, charging)
     if not _default_theme.has_icon(icon_name):
         _log.warning("icon %s not found in current theme", icon_name)
-    # elif _log.isEnabledFor(_DEBUG):
-    # 	_log.debug("battery icon for %s:%s = %s", level, charging, icon_name)
+    # _log.debug("battery icon for %s:%s = %s", level, charging, icon_name)
     return icon_name
 
 
@@ -268,8 +264,7 @@ def icon_file(name, size=_LARGE_SIZE):
     theme_icon = _default_theme.lookup_icon(name, size, 0)
     if theme_icon:
         file_name = theme_icon.get_filename()
-        # if _log.isEnabledFor(_DEBUG):
-        # 	_log.debug("icon %s(%d) => %s", name, size, file_name)
+        # _log.debug("icon %s(%d) => %s", name, size, file_name)
         return file_name
 
     _log.warning("icon %s(%d) not found in current theme", name, size)

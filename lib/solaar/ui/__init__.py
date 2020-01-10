@@ -120,8 +120,7 @@ def _startup(app, startup_hook):
 
 
 def _activate(app):
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("activate")
+    _log.debug("activate")
     if app.get_windows():
         window.popup()
     else:
@@ -136,8 +135,7 @@ def _command_line(app, command_line):
 
 
 def _shutdown(app, shutdown_hook):
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("shutdown")
+    _log.debug("shutdown")
 
     shutdown_hook()
 
@@ -174,8 +172,7 @@ from logitech_receiver.status import ALERT
 
 def _status_changed(device, alert, reason):
     assert device is not None
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("status changed: %s (%s) %s", device, alert, reason)
+    _log.debug("status changed: %s (%s) %s", device, alert, reason)
 
     tray.update(device)
     if alert & ALERT.ATTENTION:

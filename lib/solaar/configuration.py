@@ -47,8 +47,7 @@ def _load():
         _configuration.clear()
         _configuration.update(loaded_configuration)
 
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("load => %s", _configuration)
+    _log.debug("load => %s", _configuration)
 
     _cleanup(_configuration)
     _configuration[_KEY_VERSION] = __version__
@@ -76,8 +75,7 @@ def save():
                 _configuration, config_file, skipkeys=True, indent=2, sort_keys=True
             )
 
-        if _log.isEnabledFor(_INFO):
-            _log.info("saved %s to %s", _configuration, _file_path)
+        _log.info("saved %s to %s", _configuration, _file_path)
         return True
     except:
         _log.error("failed to save to %s", _file_path)

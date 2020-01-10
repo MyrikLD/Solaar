@@ -62,8 +62,7 @@ def _create_page(assistant, kind, header=None, icon_name=None, text=None):
 
 def _check_lock_state(assistant, receiver, count=2):
     if not assistant.is_drawable():
-        if _log.isEnabledFor(_DEBUG):
-            _log.debug("assistant %s destroyed, bailing out", assistant)
+        _log.debug("assistant %s destroyed, bailing out", assistant)
         return False
 
     if receiver.status.get(KEYS.ERROR):
@@ -92,8 +91,7 @@ def _check_lock_state(assistant, receiver, count=2):
 
 def _prepare(assistant, page, receiver):
     index = assistant.get_current_page()
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("prepare %s %d %s", assistant, index, page)
+    _log.debug("prepare %s %d %s", assistant, index, page)
 
     if index == 0:
         if receiver.set_lock(False, timeout=_PAIRING_TIMEOUT):
@@ -112,8 +110,7 @@ def _prepare(assistant, page, receiver):
 
 
 def _finish(assistant, receiver):
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("finish %s", assistant)
+    _log.debug("finish %s", assistant)
     assistant.destroy()
     receiver.status.new_device = None
     if receiver.status.lock_open:
@@ -123,8 +120,7 @@ def _finish(assistant, receiver):
 
 
 def _pairing_failed(assistant, receiver, error):
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("%s fail: %s", receiver, error)
+    _log.debug("%s fail: %s", receiver, error)
 
     assistant.commit()
 
@@ -149,8 +145,7 @@ def _pairing_failed(assistant, receiver, error):
 
 def _pairing_succeeded(assistant, receiver, device):
     assert device
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("%s success: %s", receiver, device)
+    _log.debug("%s success: %s", receiver, device)
 
     page = _create_page(assistant, Gtk.AssistantPageType.SUMMARY)
 

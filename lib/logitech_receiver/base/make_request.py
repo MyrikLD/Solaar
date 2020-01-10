@@ -73,8 +73,7 @@ def request(handle, devnumber, request_id, *params):
                     r.notifications_hook(n)
 
         delta = _timestamp() - r.started
-    # if _log.isEnabledFor(_DEBUG):
-    # 	_log.debug("(%s) still waiting for reply, delta %f", handle, delta)
+    # _log.debug("(%s) still waiting for reply, delta %f", handle, delta)
 
     _log.warning(
         "timeout (%0.2f/%0.2f) on device %d request {%04X} params [%s]",
@@ -91,8 +90,7 @@ def ping(handle, devnumber):
 
     :returns: The HID protocol supported by the device, as a floating point number, if the device is active.
     """
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("(%s) pinging device %d", handle, devnumber)
+    _log.debug("(%s) pinging device %d", handle, devnumber)
 
     # import inspect as _inspect
     # print ('\n  '.join(str(s) for s in _inspect.stack()))

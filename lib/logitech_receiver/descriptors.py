@@ -66,21 +66,17 @@ def _D(
         if wpid:
             for w in wpid if isinstance(wpid, tuple) else (wpid,):
                 if protocol > 1.0:
-                    assert w[0:1] == "4", "%s has protocol %0.1f, wpid %s" % (
-                        name,
-                        protocol,
-                        w,
-                    )
+                    assert w[0:1] == "4", f"name has protocol {protocol:0.1f}, wpid {w}"
                 else:
                     if w[0:1] == "1":
                         assert (
                             kind == DeviceKind.mouse
-                        ), "%s has protocol %0.1f, wpid %s" % (name, protocol, w,)
+                        ), f"{name} has protocol {protocol:0.1f}, wpid {w}"
                     elif w[0:1] == "2":
                         assert kind in (
                             DeviceKind.keyboard,
                             DeviceKind.numpad,
-                        ), "%s has protocol %0.1f, wpid %s" % (name, protocol, w)
+                        ), f"{name} has protocol {protocol:0.1f}, wpid {w}"
 
     device_descriptor = _DeviceDescriptor(
         name=name,
@@ -231,7 +227,7 @@ _D(
     protocol=1.0,
     wpid="2011",
     registers=(Registers.BATTERY_STATUS,),
-    settings=[RegisterSettings.fn_swap(),],
+    settings=[RegisterSettings.fn_swap()],
 )
 _D(
     "Number Pad N545", protocol=1.0, wpid="2006", registers=(Registers.BATTERY_STATUS,),
@@ -242,7 +238,7 @@ _D(
     protocol=1.0,
     wpid="2008",
     registers=(Registers.BATTERY_STATUS,),
-    settings=[RegisterSettings.fn_swap(),],
+    settings=[RegisterSettings.fn_swap()],
 )
 _D(
     "Wireless Solar Keyboard K750",
@@ -261,7 +257,7 @@ _D(
     protocol=1.0,
     wpid="2010",
     registers=(Registers.BATTERY_STATUS, Registers.UI_LEDS,),
-    settings=[RegisterSettings.fn_swap(), RegisterSettings.hand_detection(),],
+    settings=[RegisterSettings.fn_swap(), RegisterSettings.hand_detection()],
 )
 _D(
     "Illuminated Living-Room Keyboard K830",
@@ -280,7 +276,7 @@ _D(
     codename="M185n",
     protocol=4.5,
     wpid="4054",
-    settings=[FeatureSettings.lowres_smooth_scroll(), FeatureSettings.pointer_speed(),],
+    settings=[FeatureSettings.lowres_smooth_scroll(), FeatureSettings.pointer_speed()],
 )
 # Apparently Logitech uses wpid 4055 for three different mice
 # That's not so strange, as M185 is used on both Unifying-ready and non-Unifying-ready mice
@@ -289,7 +285,7 @@ _D(
     codename="M185/M235/M310",
     protocol=4.5,
     wpid="4055",
-    settings=[FeatureSettings.lowres_smooth_scroll(), FeatureSettings.pointer_speed(),],
+    settings=[FeatureSettings.lowres_smooth_scroll(), FeatureSettings.pointer_speed()],
 )
 _D("Wireless Mouse M185", protocol=2.0, wpid="4038")
 _D("Wireless Mouse M187", protocol=2.0, wpid="4019")
@@ -313,7 +309,7 @@ _D(
     "Wireless Mouse M325",
     protocol=2.0,
     wpid="400A",
-    settings=[FeatureSettings.hi_res_scroll(),],
+    settings=[FeatureSettings.hi_res_scroll()],
 )
 _D("Wireless Mouse M345", protocol=2.0, wpid="4017")
 _D(
@@ -328,21 +324,21 @@ _D(
     protocol=1.0,
     wpid="101D",
     registers=(Registers.BATTERY_MILEAGE,),
-    settings=[RegisterSettings.smooth_scroll(), RegisterSettings.side_scroll(),],
+    settings=[RegisterSettings.smooth_scroll(), RegisterSettings.side_scroll()],
 )
 _D(
     "Wireless Mouse M510",
     protocol=1.0,
     wpid="1025",
     registers=(Registers.BATTERY_STATUS,),
-    settings=[RegisterSettings.smooth_scroll(), RegisterSettings.side_scroll(),],
+    settings=[RegisterSettings.smooth_scroll(), RegisterSettings.side_scroll()],
 )
 _D(
     "Wireless Mouse M510",
     codename="M510v2",
     protocol=2.0,
     wpid="4051",
-    settings=[FeatureSettings.lowres_smooth_scroll(),],
+    settings=[FeatureSettings.lowres_smooth_scroll()],
 )
 _D("Couch Mouse M515", protocol=2.0, wpid="4007")
 _D("Wireless Mouse M525", protocol=2.0, wpid="4013")
@@ -351,7 +347,7 @@ _D(
     codename="M585/M590",
     protocol=4.5,
     wpid="406B",
-    settings=[FeatureSettings.lowres_smooth_scroll(), FeatureSettings.pointer_speed(),],
+    settings=[FeatureSettings.lowres_smooth_scroll(), FeatureSettings.pointer_speed()],
 )
 _D("Touch Mouse M600", protocol=2.0, wpid="401A")
 _D(
@@ -360,7 +356,7 @@ _D(
     protocol=1.0,
     wpid="101B",
     registers=(Registers.BATTERY_MILEAGE,),
-    settings=[RegisterSettings.smooth_scroll(), RegisterSettings.side_scroll(),],
+    settings=[RegisterSettings.smooth_scroll(), RegisterSettings.side_scroll()],
 )
 _D(
     "Marathon Mouse M705 (M-R0073)",
@@ -382,7 +378,7 @@ _D(
     protocol=1.0,
     wpid="1017",
     registers=(Registers.BATTERY_MILEAGE,),
-    settings=[RegisterSettings.smooth_scroll(), RegisterSettings.side_scroll(),],
+    settings=[RegisterSettings.smooth_scroll(), RegisterSettings.side_scroll()],
 )
 _D(
     "Anywhere Mouse MX 2",
@@ -473,7 +469,7 @@ _D(
     protocol=1.0,
     wpid=("100B", "100F"),
     registers=(Registers.BATTERY_MILEAGE,),
-    settings=[RegisterSettings.smooth_scroll(), RegisterSettings.side_scroll(),],
+    settings=[RegisterSettings.smooth_scroll(), RegisterSettings.side_scroll()],
 )
 _D(
     "V450 Nano Cordless Laser Mouse",
@@ -488,7 +484,7 @@ _D(
     protocol=1.0,
     wpid="1013",
     registers=(Registers.BATTERY_MILEAGE,),
-    settings=[RegisterSettings.smooth_scroll(), RegisterSettings.side_scroll(),],
+    settings=[RegisterSettings.smooth_scroll(), RegisterSettings.side_scroll()],
 )
 
 # Mini receiver mice

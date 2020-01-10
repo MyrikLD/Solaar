@@ -28,8 +28,7 @@ _suspend_callback = None
 
 def _suspend():
     if _suspend_callback:
-        if _log.isEnabledFor(_INFO):
-            _log.info("received suspend event from UPower")
+        _log.info("received suspend event from UPower")
         _suspend_callback()
 
 
@@ -38,8 +37,7 @@ _resume_callback = None
 
 def _resume():
     if _resume_callback:
-        if _log.isEnabledFor(_INFO):
-            _log.info("received resume event from UPower")
+        _log.info("received resume event from UPower")
         _resume_callback()
 
 
@@ -79,8 +77,7 @@ try:
         bus_name=_UPOWER_BUS,
     )
 
-    if _log.isEnabledFor(_INFO):
-        _log.info("connected to system dbus, watching for suspend/resume events")
+    _log.info("connected to system dbus, watching for suspend/resume events")
 
 except:
     # Either:

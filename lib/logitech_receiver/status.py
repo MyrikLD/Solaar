@@ -177,8 +177,7 @@ class DeviceStatus(dict):
         return bool(self._active)
 
     def set_battery_info(self, level, status, timestamp=None):
-        if _log.isEnabledFor(_DEBUG):
-            _log.debug("%s: battery %s, %s", self._device, level, status)
+        _log.debug("%s: battery %s, %s", self._device, level, status)
 
         if level is None:
             # Some notifications may come with no battery level info, just
@@ -303,6 +302,5 @@ class DeviceStatus(dict):
             alert |= ALERT.NOTIFICATION
         self.updated = timestamp
 
-        # if _log.isEnabledFor(_DEBUG):
-        # 	_log.debug("device %d changed: active=%s %s", d.number, self._active, dict(self))
+        # _log.debug("device %d changed: active=%s %s", d.number, self._active, dict(self))
         self._changed_callback(d, alert, reason)

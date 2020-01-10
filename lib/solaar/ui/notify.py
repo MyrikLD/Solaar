@@ -60,8 +60,7 @@ if available:
         """Init the notifications system."""
         global available
         if available and not Notify.is_initted():
-            if _log.isEnabledFor(_INFO):
-                _log.info("starting desktop notifications")
+            _log.info("starting desktop notifications")
             try:
                 return Notify.init(NAME)
             except:
@@ -71,8 +70,7 @@ if available:
 
     def uninit():
         if available and Notify.is_initted():
-            if _log.isEnabledFor(_INFO):
-                _log.info("stopping desktop notifications")
+            _log.info("stopping desktop notifications")
             _notifications.clear()
             Notify.uninit()
 
@@ -104,8 +102,7 @@ if available:
             n.set_urgency(Notify.Urgency.NORMAL)
 
             try:
-                # if _log.isEnabledFor(_DEBUG):
-                # 	_log.debug("showing %s", n)
+                # _log.debug("showing %s", n)
                 n.show()
             except Exception:
                 _log.exception("showing %s", n)
@@ -142,8 +139,7 @@ if available:
             n.set_urgency(urgency)
 
             try:
-                # if _log.isEnabledFor(_DEBUG):
-                # 	_log.debug("showing %s", n)
+                # _log.debug("showing %s", n)
                 n.show()
             except Exception:
                 _log.exception("showing %s", n)

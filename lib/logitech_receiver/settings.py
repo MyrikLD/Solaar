@@ -142,8 +142,7 @@ class Setting:
         assert hasattr(self, "_device")
         assert value is not None
 
-        if _log.isEnabledFor(_DEBUG):
-            _log.debug("%s: write %r to %s", self.name, value, self._device)
+        _log.debug("%s: write %r to %s", self.name, value, self._device)
 
         if self._device.online:
             # Remember the value we're trying to set, even if the write fails.
@@ -160,9 +159,8 @@ class Setting:
 
             data_bytes = self._validator.prepare_write(value, current_value)
             if data_bytes is not None:
-                if _log.isEnabledFor(_DEBUG):
-                    _log.debug(
-                        "%s: prepare write(%s) => %r", self.name, value, data_bytes
+                _log.debug(
+                    "%s: prepare write(%s) => %r", self.name, value, data_bytes
                     )
 
                 reply = self._rw.write(self._device, data_bytes)
@@ -176,8 +174,7 @@ class Setting:
         assert hasattr(self, "_value")
         assert hasattr(self, "_device")
 
-        if _log.isEnabledFor(_DEBUG):
-            _log.debug("%s: apply %s (%s)", self.name, self._value, self._device)
+        _log.debug("%s: apply %s (%s)", self.name, self._value, self._device)
 
         value = self.read()
         if value is not None:
@@ -310,11 +307,10 @@ class BooleanValidator:
     def validate_read(self, reply_bytes):
         if isinstance(self.mask, int):
             reply_value = reply_bytes[0] & self.mask
-            if _log.isEnabledFor(_DEBUG):
-                _log.debug(
-                    "BooleanValidator: validate read %r => %02X",
-                    reply_bytes,
-                    reply_value,
+            _log.debug(
+                "BooleanValidator: validate read %r => %02X",
+                reply_bytes,
+                reply_value,
                 )
             if reply_value == self.true_value:
                 return True
@@ -379,13 +375,12 @@ class BooleanValidator:
             if current_value is not None and to_write == current_value[: len(to_write)]:
                 return None
 
-        if _log.isEnabledFor(_DEBUG):
-            _log.debug(
-                "BooleanValidator: prepare_write(%s, %s) => %r",
-                new_value,
-                current_value,
-                to_write,
-            )
+        _log.debug(
+            "BooleanValidator: prepare_write(%s, %s) => %r",
+            new_value,
+            current_value,
+            to_write,
+        )
 
         return to_write
 

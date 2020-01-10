@@ -58,8 +58,7 @@ def _process_receiver_notification(receiver, status, n):
             if status.lock_open
             else _("pairing lock is closed")
         )
-        if _log.isEnabledFor(_INFO):
-            _log.info(f"{receiver}: {reason}")
+        _log.info("%s: %s", receiver, reason)
 
         status[KEYS.ERROR] = None
         if status.lock_open:
@@ -67,14 +66,14 @@ def _process_receiver_notification(receiver, status, n):
 
         pair_error = n.data[0]
         if pair_error:
-            status[KEYS.ERROR] = error_string = hidpp10.PairingErrors[pair_error]
+            status[KEYS.ERROR] = error_string = hidpp10.PairingErrors(pair_error)
             status.new_device = None
-            _log.warning(f"pairing error {pair_error}: {error_string}")
+            _log.warning("pairing error %s: %s", pair_error, error_string)
 
         status.changed(reason=reason)
         return True
 
-    _log.warning(f"{receiver}: unhandled notification {n}")
+    _log.warning("%s: unhandled notification %s", receiver, n)
 
 
 #
@@ -113,8 +112,7 @@ def _process_device_notification(device, status, n):
 
 
 def _process_hidpp10_custom_notification(device, status, n):
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug(f"{device} ({device.protocol}) custom notification {n}")
+    _log.debug("%s (%s) custom notification %s", device, device.protocol, n)
 
     if n.sub_id in (Registers.BATTERY_STATUS, Registers.BATTERY_MILEAGE):
         # message layout: 10 ix <register> <xx> <yy> <zz> <00>
@@ -127,11 +125,10 @@ def _process_hidpp10_custom_notification(device, status, n):
     if n.sub_id == Registers.LCD_BACKLIGHT:
         # message layout: 10 ix 17("address")  <??> <?> <??> <light level 1=off..5=max>
         # TODO anything we can do with this?
-        if _log.isEnabledFor(_INFO):
-            _log.info(f"illumination event: {n}")
+        _log.info("illumination event: %s", n)
         return True
 
-    _log.warning(f"{device}: unrecognized {n}")
+    _log.warning("%s: unrecognized %s", device, n)
 
 
 def _process_hidpp10_notification(device, status, n):
@@ -191,15 +188,14 @@ def _process_hidpp10_notification(device, status, n):
     # power notification
     if n.sub_id == SubId.WL_DEV_CHANGE_INFO:
         if n.address == 0x01:
-            if _log.isEnabledFor(_DEBUG):
-                _log.debug(f"{device}: device powered on")
+            _log.debug("%s: device powered on", device)
             reason = status.to_string() or _("powered on")
             status.changed(active=True, alert=ALERT.NOTIFICATION, reason=reason)
         else:
-            _log.warning(f"{device}: unknown {n}")
+            _log.warning("%s: unknown %s", device, n)
         return True
 
-    _log.warning(f"{device}: unrecognized {n}")
+    _log.warning("%s: unrecognized %s", device, n)
 
 
 def _process_feature_notification(device, status, n, feature: Feature):
@@ -212,30 +208,28 @@ def _process_feature_notification(device, status, n, feature: Feature):
                 discharge_level, hidpp20.BatteryStatus(battery_status)
             )
         else:
-            _log.warning(f"{device}: unknown BATTERY {n}")
+            _log.warning("%s: unknown BATTERY %s", device, n)
         return True
 
     # TODO: what are REPROG_CONTROLS_V{2,3}?
     if feature == Feature.REPROG_CONTROLS:
         if n.address == 0x00:
-            if _log.isEnabledFor(_INFO):
-                _log.info(f"{device}: reprogrammable key: {n}")
+            _log.info("%s: reprogrammable key: %s", device, n)
         else:
-            _log.warning(f"{device}: unknown REPROGRAMMABLE KEYS {n}")
+            _log.warning("%s: unknown REPROGRAMMABLE KEYS %s", device, n)
         return True
 
     if feature == Feature.WIRELESS_DEVICE_STATUS:
         if n.address == 0x00:
-            if _log.isEnabledFor(_DEBUG):
-                _log.debug(f"wireless status: {n}")
+            _log.debug("wireless status: %s", n)
             if n.data[0:3] == b"\x01\x01\x01":
                 status.changed(
                     active=True, alert=ALERT.NOTIFICATION, reason="powered on"
                 )
             else:
-                _log.warning(f"{device}: unknown WIRELESS {n}")
+                _log.warning("%s: unknown WIRELESS %s", device, n)
         else:
-            _log.warning(f"{device}: unknown WIRELESS {n}")
+            _log.warning("%s: unknown WIRELESS %s", device, n)
         return True
 
     if feature == Feature.SOLAR_DASHBOARD:
@@ -254,8 +248,7 @@ def _process_feature_notification(device, status, n, feature: Feature):
                     status_text = hidpp20.BatteryStatus.recharging
                 status.set_battery_info(charge, status_text)
             elif n.address == 0x20:
-                if _log.isEnabledFor(_DEBUG):
-                    _log.debug(f"{device}: Light Check button pressed")
+                _log.debug("%s: Light Check button pressed", device)
                 status.changed(alert=ALERT.SHOW_WINDOW)
                 # first cancel any reporting
                 # device.feature_request(Feature.SOLAR_DASHBOARD)
@@ -266,25 +259,23 @@ def _process_feature_notification(device, status, n, feature: Feature):
                     Feature.SOLAR_DASHBOARD, 0x00, reports_count, reports_period
                 )
             else:
-                _log.warning(f"{device}: unknown SOLAR CHARGE {n}")
+                _log.warning("%s: unknown SOLAR CHARGE %s", device, n)
         else:
-            _log.warning(f"{device}: SOLAR CHARGE not GOOD? {n}")
+            _log.warning("%s: SOLAR CHARGE not GOOD? %s", device, n)
         return True
 
     if feature == Feature.TOUCHMOUSE_RAW_POINTS:
         if n.address == 0x00:
-            if _log.isEnabledFor(_INFO):
-                _log.info("%s: TOUCH MOUSE points %s", device, n)
+            _log.info("%s: TOUCH MOUSE points %s", device, n)
         elif n.address == 0x10:
             touch = n.data[0]
             button_down = bool(touch & 0x02)
             mouse_lifted = bool(touch & 0x01)
-            if _log.isEnabledFor(_INFO):
-                _log.info(
-                    f"{device}: TOUCH MOUSE status: button_down={button_down} mouse_lifted={mouse_lifted}"
-                )
+            _log.info(
+                "%s: TOUCH MOUSE status: button_down=%s mouse_lifted=%s", device, button_down, mouse_lifted
+            )
         else:
-            _log.warning(f"{device}: unknown TOUCH MOUSE {n}")
+            _log.warning("%s: unknown TOUCH MOUSE %s", device, n)
         return True
 
     if feature == Feature.HIRES_WHEEL:
@@ -301,10 +292,10 @@ def _process_feature_notification(device, status, n, feature: Feature):
             if _log.isEnabledFor(_INFO):
                 flags = n.data[0]
                 ratchet = flags & 0x01
-                _log.info(f"{device}: WHEEL: ratchet: {ratchet}")
+                _log.info("%s: WHEEL: ratchet: %s", device, ratchet)
             return True
         else:
-            _log.warning(f"{device}: unknown WHEEL {n}")
+            _log.warning("%s: unknown WHEEL %s", device, n)
         return True
 
     _log.warning(

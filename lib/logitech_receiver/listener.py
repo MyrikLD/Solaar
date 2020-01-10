@@ -63,8 +63,7 @@ class _ThreadedHandle:
         if handle is None:
             _log.error("%r failed to open new handle", self)
         else:
-            # if _log.isEnabledFor(_DEBUG):
-            # 	_log.debug("%r opened new handle %d", self, handle)
+            # _log.debug("%r opened new handle %d", self, handle)
             self._local.handle = handle
             self._handles.append(handle)
             return handle
@@ -73,8 +72,7 @@ class _ThreadedHandle:
         if self._local:
             self._local = None
             handles, self._handles = self._handles, []
-            if _log.isEnabledFor(_DEBUG):
-                _log.debug("%r closing %s", self, handles)
+            _log.debug("%r closing %s", self, handles)
             for h in handles:
                 _base.close(h)
 
@@ -156,8 +154,7 @@ class EventsListener(_threading.Thread):
         )
         # get the right low-level handle for this thread
         ihandle = int(self.receiver.handle)
-        if _log.isEnabledFor(_INFO):
-            _log.info(f"started with {self.receiver} ({ihandle})")
+        _log.info("started with %s (%s)", self.receiver, ihandle)
 
         self.has_started()
 
@@ -183,12 +180,11 @@ class EventsListener(_threading.Thread):
                 n = self._queued_notifications.get()
 
             if n:
-                # if _log.isEnabledFor(_DEBUG):
-                # 	_log.debug("%s: processing %s", self.receiver, n)
+                # _log.debug("%s: processing %s", self.receiver, n)
                 try:
                     self._notifications_callback(n)
                 except:
-                    _log.exception(f"processing {n}")
+                    _log.exception("processing %s", n)
 
         # elif self.tick_period:
         # 	idle_reads -= 1
@@ -224,8 +220,7 @@ class EventsListener(_threading.Thread):
         # i.e. triggered by a callback handling a previous notification.
         assert _threading.current_thread() == self
         if self._active:  # and _threading.current_thread() == self:
-            # if _log.isEnabledFor(_DEBUG):
-            # 	_log.debug("queueing unhandled %s", n)
+            # _log.debug("queueing unhandled %s", n)
             if not self._queued_notifications.full():
                 self._queued_notifications.put(n)
 

@@ -65,8 +65,7 @@ def get_firmware(device: "PairedDevice") -> Tuple[FirmwareInfo]:
                     fw_info = FirmwareInfo(FirmwareKind.BL_VERSION, "", "")
 
                 fw.append(fw_info)
-            # if _log.isEnabledFor(_DEBUG):
-            # 	_log.debug("device %d firmware %s", devnumber, fw_info)
+            # _log.debug("device %d firmware %s", devnumber, fw_info)
         return tuple(fw)
 
 
@@ -80,8 +79,7 @@ def get_kind(device: "PairedDevice"):
     kind = feature_request(device, Feature.DEVICE_NAME, 0x20)
     if kind:
         kind = kind[0]
-        # if _log.isEnabledFor(_DEBUG):
-        # 	_log.debug("device %d type %d = %s", devnumber, kind, DeviceKind[kind])
+        # _log.debug("device %d type %d = %s", devnumber, kind, DeviceKind[kind])
         return DeviceKind(kind)
 
 
@@ -119,15 +117,14 @@ def get_battery(device: "PairedDevice"):
     battery = feature_request(device, Feature.BATTERY_STATUS)
     if battery:
         discharge, discharge_next, status = unpack("!BBB", battery[:3])
-        if _log.isEnabledFor(DEBUG):
-            _log.debug(
-                "device %d battery %d%% charged, next level %d%% charge, status %d = %s",
-                device.number,
-                discharge,
-                discharge_next,
-                status,
-                BatteryStatus(status),
-            )
+        _log.debug(
+            "device %d battery %d%% charged, next level %d%% charge, status %d = %s",
+            device.number,
+            discharge,
+            discharge_next,
+            status,
+            BatteryStatus(status),
+        )
         return discharge, BatteryStatus(status)
 
 

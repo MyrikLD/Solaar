@@ -173,8 +173,7 @@ def read(handle, timeout=DEFAULT_TIMEOUT) -> Optional[RawPacket]:
         )
         if report_type & 0xF0 == 0x00:
             # These all should be normal HID reports that shouldn't really be reported in debugging
-            # 			if _log.isEnabledFor(_DEBUG):
-            # 				_log.debug("(%s) => r[%02X %s] ignoring unknown report", handle, report_type, strhex(data[1:]))
+            # 			_log.debug("(%s) => r[%02X %s] ignoring unknown report", handle, report_type, strhex(data[1:]))
             return
         devnumber = data[1]
 

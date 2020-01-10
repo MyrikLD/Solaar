@@ -94,8 +94,7 @@ def _scroll(tray_icon, event, direction=None):
         return
     _last_scroll = now
 
-    # if _log.isEnabledFor(_DEBUG):
-    # 	_log.debug("scroll direction %s", direction)
+    # _log.debug("scroll direction %s", direction)
 
     global _picked_device
     candidate = None
@@ -140,8 +139,7 @@ def _scroll(tray_icon, event, direction=None):
             _picked_device = None
 
     _picked_device = candidate or _picked_device
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("scroll: picked %s", _picked_device)
+    _log.debug("scroll: picked %s", _picked_device)
     _update_tray_icon()
 
 
@@ -155,8 +153,7 @@ try:
         raise ImportError
     from gi.repository import AppIndicator3
 
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("using AppIndicator3")
+    _log.debug("using AppIndicator3")
 
     def _create(menu):
         theme_paths = Gtk.IconTheme.get_default().get_search_path()
@@ -218,8 +215,7 @@ try:
 
 except ImportError:
 
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("using StatusIcon")
+    _log.debug("using StatusIcon")
 
     def _create(menu):
         icon = Gtk.StatusIcon.new_from_icon_name(_icons.TRAY_INIT)
@@ -326,8 +322,7 @@ def _pick_device_with_lowest_battery():
             picked = info
             picked_level = level or 0
 
-    if _log.isEnabledFor(_DEBUG):
-        _log.debug("picked device with lowest battery: %s", picked)
+    _log.debug("picked device with lowest battery: %s", picked)
 
     return picked
 

@@ -70,12 +70,11 @@ class ReceiverListener(listener.EventsListener):
         _status.attach_to(receiver, self._status_changed)
 
     def has_started(self):
-        if _log.isEnabledFor(_INFO):
-            _log.info(
-                "%s: notifications listener has started (%s)",
-                self.receiver,
-                self.receiver.handle,
-            )
+        _log.info(
+            "%s: notifications listener has started (%s)",
+            self.receiver,
+            self.receiver.handle,
+        )
         notification_flags = self.receiver.enable_notifications()
         self.receiver.status[_status.KEYS.NOTIFICATION_FLAGS] = notification_flags
         self.receiver.notify_devices()
@@ -84,8 +83,7 @@ class ReceiverListener(listener.EventsListener):
     def has_stopped(self):
         r, self.receiver = self.receiver, None
         assert r is not None
-        if _log.isEnabledFor(_INFO):
-            _log.info("%s: notifications listener has stopped", r)
+        _log.info("%s: notifications listener has stopped", r)
 
         # because udev is not notifying us about device removal,
         # make sure to clean up in _all_listeners
@@ -101,26 +99,25 @@ class ReceiverListener(listener.EventsListener):
 
     def _status_changed(self, device, alert=_status.ALERT.NONE, reason=None):
         assert device is not None
-        if _log.isEnabledFor(_INFO):
-            if device.kind is None:
-                _log.info(
-                    "status_changed %s: %s, %s (%X) %s",
-                    device,
-                    "present" if bool(device) else "removed",
-                    device.status,
-                    alert,
-                    reason or "",
-                )
-            else:
-                _log.info(
-                    "status_changed %s: %s %s, %s (%X) %s",
-                    device,
-                    "paired" if bool(device) else "unpaired",
-                    "online" if device.online else "offline",
-                    device.status,
-                    alert,
-                    reason or "",
-                )
+        if device.kind is None:
+            _log.info(
+                "status_changed %s: %s, %s (%X) %s",
+                device,
+                "present" if bool(device) else "removed",
+                device.status,
+                alert,
+                reason or "",
+            )
+        else:
+            _log.info(
+                "status_changed %s: %s %s, %s (%X) %s",
+                device,
+                "paired" if bool(device) else "unpaired",
+                "online" if device.online else "offline",
+                device.status,
+                alert,
+                reason or "",
+            )
 
         if device.kind is None:
             assert device == self.receiver
@@ -145,8 +142,7 @@ class ReceiverListener(listener.EventsListener):
 
     def _notifications_handler(self, n):
         assert self.receiver
-        # if _log.isEnabledFor(_DEBUG):
-        # 	_log.debug("%s: handling %s", self.receiver, n)
+        # _log.debug("%s: handling %s", self.receiver, n)
         if n.devnumber == 0xFF:
             # a receiver notification
             notifications.process(self.receiver, n)
@@ -183,8 +179,7 @@ class ReceiverListener(listener.EventsListener):
 
         # Apply settings every time the device connects
         if n.sub_id == SubId.DEVICE_CONNECT:
-            if _log.isEnabledFor(_INFO):
-                _log.info("%s triggered new device %s (%s)", n, dev, dev.kind)
+            _log.info("%s triggered new device %s (%s)", n, dev, dev.kind)
             # If there are saved configs, bring the device's settings up-to-date.
             # They will be applied when the device is marked as online.
             configuration.attach_to(dev)
@@ -198,8 +193,7 @@ class ReceiverListener(listener.EventsListener):
         if self.receiver.status.lock_open and not already_known:
             # this should be the first notification after a device was paired
             assert n.sub_id == SubId.DEVICE_CONNECT and n.address == SubId.POWER
-            if _log.isEnabledFor(_INFO):
-                _log.info(f"{self.receiver}: pairing detected new device")
+            _log.info("%s: pairing detected new device", self.receiver)
             self.receiver.status.new_device = dev
         elif dev.online is None:
             dev.ping()
@@ -233,8 +227,7 @@ def start_all():
     # just in case this it called twice in a row...
     stop_all()
 
-    if _log.isEnabledFor(_INFO):
-        _log.info("starting receiver listening threads")
+    _log.info("starting receiver listening threads")
     for device_info in base.receivers():
         _process_receiver_event("add", device_info)
 
@@ -244,8 +237,7 @@ def stop_all():
     _all_listeners.clear()
 
     if listeners:
-        if _log.isEnabledFor(_INFO):
-            _log.info("stopping receiver listening threads %s", listeners)
+        _log.info("stopping receiver listening threads %s", listeners)
 
         for l in listeners:
             l.stop()
@@ -289,8 +281,7 @@ def _process_receiver_event(action, device_info):
     assert device_info is not None
     assert _error_callback
 
-    if _log.isEnabledFor(_INFO):
-        _log.info("receiver event %s %s", action, device_info)
+    _log.info("receiver event %s %s", action, device_info)
 
     # whatever the action, stop any previous receivers at this path
     l = _all_listeners.pop(device_info.path, None)

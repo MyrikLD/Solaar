@@ -18,9 +18,10 @@ import errno as _errno
 from logging import INFO as _INFO, getLogger
 
 from . import base as _base, hidpp10 as _hidpp10, hidpp20 as _hidpp20
+from .base.enums import LogitechProductCategory
 from .base.exceptions import ReadException1
-from .common import strhex as _strhex
-from .descriptors import DEVICES as _DESCRIPTORS
+from .common import strhex
+from .descriptors import DEVICES
 from .hidpp10.enums import SubId
 from .i18n import _
 from .settings_templates import check_feature_settings as _check_feature_settings
@@ -36,47 +37,39 @@ _R = _hidpp10.Registers
 
 
 class PairedDevice:
+    _kind = None  # mouse, keyboard, etc (see hidpp10.DeviceKind)
+    _codename = None  # Unifying peripherals report a codename.
+    _name = None  # the full name of the model
+    _protocol = None  # HID++ protocol version, 1.0 or 2.0
+    _serial = None  # serial number (an 8-char hex string)
+
+    online = None  # 'device active' flag; requires manual management.
+    wpid = None  # the Wireless PID is unique per device model
+    descriptor = None
+
+    # Misc stuff that's irrelevant to any functionality, but may be
+    # displayed in the UI and caching it here helps.
+    _polling_rate = None
+    _power_switch = None
+
+    _firmware = None
+    _keys = None
+    _registers = None
+    _settings = None
+
     def __init__(self, receiver, number, link_notification=None):
         assert receiver
+        assert number > 0 and number <= receiver.max_devices
         self.receiver = receiver
 
-        assert number > 0 and number <= receiver.max_devices
         # Device number, 1..6 for unifying devices, 1 otherwise.
         self.number = number
-        # 'device active' flag; requires manual management.
-        self.online = None
 
-        # the Wireless PID is unique per device model
-        self.wpid = None
-        self.descriptor = None
-
-        # mouse, keyboard, etc (see hidpp10.DeviceKind)
-        self._kind = None
-        # Unifying peripherals report a codename.
-        self._codename = None
-        # the full name of the model
-        self._name = None
-        # HID++ protocol version, 1.0 or 2.0
-        self._protocol = None
-        # serial number (an 8-char hex string)
-        self._serial = None
-
-        self._firmware = None
-        self._keys = None
-        self._registers = None
-        self._settings = None
-
-        # Misc stuff that's irrelevant to any functionality, but may be
-        # displayed in the UI and caching it here helps.
-        self._polling_rate = None
-        self._power_switch = None
-
-        # if _log.isEnabledFor(_DEBUG):
-        # 	_log.debug("new PairedDevice(%s, %s, %s)", receiver, number, link_notification)
+        # _log.debug("new PairedDevice(%s, %s, %s)", receiver, number, link_notification)
 
         if link_notification is not None:
             self.online = not bool(link_notification.data[0] & 0x40)
-            self.wpid = _strhex(
+            self.wpid = strhex(
                 link_notification.data[2:3] + link_notification.data[1:2]
             )
             # assert link_notification.address == (0x04 if unifying else 0x03)
@@ -87,7 +80,7 @@ class PairedDevice:
             pair_info = receiver.read_register(_R.receiver_info, 0x20 + number - 1)
             if pair_info:
                 # may be either a Unifying receiver, or an Unifying-ready receiver
-                self.wpid = _strhex(pair_info[3:5])
+                self.wpid = strhex(pair_info[3:5])
                 kind = pair_info[7] & 0x0F
                 self._kind = _hidpp10.DeviceKind(kind)
                 self._polling_rate = pair_info[2]
@@ -103,7 +96,7 @@ class PairedDevice:
                         number=number, receiver=receiver, error="read Nano wpid"
                     )
 
-                self.wpid = _strhex(device_info[3:5])
+                self.wpid = strhex(device_info[3:5])
                 self._polling_rate = 0
                 self._power_switch = "(" + _("unknown") + ")"
 
@@ -114,7 +107,7 @@ class PairedDevice:
             receiver,
         )
 
-        self.descriptor = _DESCRIPTORS.get(self.wpid)
+        self.descriptor = DEVICES.get(self.wpid)
         if self.descriptor is None:
             # Last chance to correctly identify the device; many Nano receivers
             # do not support this call.
@@ -125,7 +118,7 @@ class PairedDevice:
                 codename_length = codename[1]
                 codename = codename[2 : 2 + codename_length]
                 self._codename = codename.decode("ascii")
-                self.descriptor = _DESCRIPTORS.get(self._codename)
+                self.descriptor = DEVICES.get(self._codename)
 
         if self.descriptor:
             self._name = self.descriptor.name
@@ -145,14 +138,17 @@ class PairedDevice:
             self.features = _hidpp20.FeaturesArray(self)
 
     @property
+    def category(self):
+        return LogitechProductCategory.from_pid(self.wpid)
+
+    @property
     def protocol(self):
         if self._protocol is None and self.online is not False:
             self._protocol = _base.ping(self.receiver.handle, self.number)
             # if the ping failed, the peripheral is (almost) certainly offline
             self.online = self._protocol is not None
 
-        # if _log.isEnabledFor(_DEBUG):
-        # 	_log.debug("device %d protocol %s", self.number, self._protocol)
+        # _log.debug("device %d protocol %s", self.number, self._protocol)
         return self._protocol or 0
 
     @property
@@ -165,8 +161,7 @@ class PairedDevice:
                 codename_length = codename[1]
                 codename = codename[2 : 2 + codename_length]
                 self._codename = codename.decode("ascii")
-            # if _log.isEnabledFor(_DEBUG):
-            # 	 _log.debug("device %d codename %s", self.number, self._codename)
+            # _log.debug("device %d codename %s", self.number, self._codename)
             else:
                 self._codename = "? (%s)" % self.wpid
         return self._codename
@@ -214,7 +209,7 @@ class PairedDevice:
                 serial = self.receiver.read_register(0x2D5)
 
             if serial:
-                self._serial = _strhex(serial[1:5])
+                self._serial = strhex(serial[1:5])
             else:
                 # fallback...
                 self._serial = self.receiver.serial
@@ -298,20 +293,22 @@ class PairedDevice:
             if flag_bits is None
             else tuple(_hidpp10.NotificateionFlag.flag_names(flag_bits))
         )
-        if _log.isEnabledFor(_INFO):
-            _log.info(
-                "%s: device notifications %s %s",
-                self,
-                "enabled" if enable else "disabled",
-                flag_names,
-            )
+        _log.info(
+            "%s: device notifications %s %s",
+            self,
+            "enabled" if enable else "disabled",
+            flag_names,
+        )
         return flag_bits if ok else None
 
     def request(self, request_id, *params):
         return _base.request(self.receiver.handle, self.number, request_id, *params)
 
-    read_register = _hidpp10.read_register
-    write_register = _hidpp10.write_register
+    def read_register(self, register_number, *params):
+        return _hidpp10.read_register(self, register_number, *params)
+
+    def write_register(self, register_number, *params):
+        return _hidpp10.write_register(self, register_number, *params)
 
     def feature_request(self, feature, function=0x00, *params):
         if self.protocol >= 2.0:
@@ -374,7 +371,7 @@ class Receiver:
         if self.product_id != "c534":
             serial_reply = self.read_register(_R.receiver_info, 0x03)
             assert serial_reply
-            self.serial = _strhex(serial_reply[1:5])
+            self.serial = strhex(serial_reply[1:5])
             self.max_devices = serial_reply[6]
         else:
             self.serial = 0
@@ -457,13 +454,10 @@ class Receiver:
             if flag_bits is None
             else tuple(_hidpp10.NotificateionFlag.flag_names(flag_bits))
         )
-        if _log.isEnabledFor(_INFO):
-            _log.info(
-                "%s: receiver notifications %s => %s",
-                self,
-                "enabled" if enable else "disabled",
-                flag_names,
-            )
+        _log.info(
+            f"{self}: receiver notifications %s => {flag_names}",
+            "enabled" if enable else "disabled",
+        )
         return flag_bits
 
     def notify_devices(self):
@@ -473,7 +467,7 @@ class Receiver:
 
     def register_new_device(self, number, notification=None):
         if self._devices.get(number) is not None:
-            raise IndexError("%s: device number %d already registered" % (self, number))
+            raise IndexError(f"{self}: device number {number} already registered")
 
         assert notification is None or notification.devnumber == number
         assert notification is None or notification.sub_id == SubId.DEVICE_CONNECT
@@ -481,14 +475,13 @@ class Receiver:
         try:
             dev = PairedDevice(self, number, notification)
             assert dev.wpid
-            if _log.isEnabledFor(_INFO):
-                _log.info("%s: found new device %d (%s)", self, number, dev.wpid)
+            _log.info("%s: found new device %s (%s)", self, number, dev.wpid)
             self._devices[number] = dev
             return dev
         except _base.NoSuchDevice:
             _log.exception("register_new_device")
 
-        _log.warning("%s: looked for device %d, not found", self, number)
+        _log.warning("%s: looked for device %s, not found", self, number)
         self._devices[number] = None
 
     def set_lock(self, lock_closed=True, device=0, timeout=0):

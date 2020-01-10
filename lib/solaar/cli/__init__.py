@@ -103,8 +103,7 @@ def _receivers(dev_path=None):
             continue
         try:
             r = Receiver.open(dev_info)
-            if _log.isEnabledFor(_DEBUG):
-                _log.debug("[%s] => %s", dev_info.path, r)
+            _log.debug("[%s] => %s", dev_info.path, r)
             if r:
                 yield r
         except Exception as e:
