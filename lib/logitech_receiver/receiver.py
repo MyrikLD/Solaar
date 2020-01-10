@@ -22,7 +22,8 @@ from .base.enums import LogitechProductCategory
 from .base.exceptions import ReadException1
 from .common import strhex
 from .descriptors import DEVICES
-from .hidpp10.enums import SubId
+from .hidpp10.enums import SubId, Registers
+from .hidpp20 import Feature
 from .i18n import _
 from .settings_templates import check_feature_settings as _check_feature_settings
 
@@ -102,10 +103,9 @@ class PairedDevice:
 
         # the wpid is necessary to properly identify wireless link on/off notifications
         # also it gets set to None on this object when the device is unpaired
-        assert self.wpid is not None, "failed to read wpid: device %d of %s" % (
-            number,
-            receiver,
-        )
+        assert (
+            self.wpid is not None
+        ), f"failed to read wpid: device {number} of {receiver}"
 
         self.descriptor = DEVICES.get(self.wpid)
         if self.descriptor is None:
@@ -304,13 +304,13 @@ class PairedDevice:
     def request(self, request_id, *params):
         return _base.request(self.receiver.handle, self.number, request_id, *params)
 
-    def read_register(self, register_number, *params):
+    def read_register(self, register_number: Registers, *params):
         return _hidpp10.read_register(self, register_number, *params)
 
-    def write_register(self, register_number, *params):
+    def write_register(self, register_number: Registers, *params):
         return _hidpp10.write_register(self, register_number, *params)
 
-    def feature_request(self, feature, function=0x00, *params):
+    def feature_request(self, feature: Feature, function=0x00, *params):
         if self.protocol >= 2.0:
             return _hidpp20.feature_request(self, feature, function, *params)
 

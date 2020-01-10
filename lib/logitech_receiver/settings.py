@@ -183,10 +183,9 @@ class Setting:
     def __str__(self):
         if hasattr(self, "_value"):
             assert hasattr(self, "_device")
-            return "<Setting([%s:%s] %s:%s=%s)>" % (
+            return "<Setting([%s:%s] %s=%s)>" % (
                 self._rw.kind,
                 self._validator.kind,
-                self._device.codename,
                 self.name,
                 self._value,
             )

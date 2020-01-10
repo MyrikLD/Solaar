@@ -184,7 +184,7 @@ class BatteryStatus(NamedInts):
 
     @property
     def ok(self) -> bool:
-        return self not in (BatteryStatus.invalid_battery, BatteryStatus.thermal_error,)
+        return self not in (BatteryStatus.invalid_battery, BatteryStatus.thermal_error)
 
 
 class Error(NamedInts):

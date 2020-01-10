@@ -162,6 +162,10 @@ class FeaturesArray:
     def __len__(self):
         return len(self.features) if self._check() else 0
 
+    def __str__(self):
+        a = ", ".join(str(i) for i in self)
+        return a
+
 
 class KeysArray:
     """A sequence of key mappings supported by a HID++ 2.0 device."""

@@ -20,8 +20,10 @@ from typing import NamedTuple, Optional
 
 from aenum import IntEnum, extend_enum
 
+
 if False:
     from logitech_receiver.special_keys import TASK, CONTROL
+    from logitech_receiver.hidpp10.enums import FirmwareVersionItem
 
 
 class NamedInts(IntEnum):
@@ -44,6 +46,9 @@ class NamedInts(IntEnum):
 
     def __str__(self):
         return self.name
+
+    def __repr__(self):
+        return f"{self.name}({self.value})"
 
 
 def strhex(x: bytes):
@@ -101,10 +106,18 @@ class KwException(Exception):
 class FirmwareInfo(NamedTuple):
     """Firmware information."""
 
-    kind: int
+    kind: "FirmwareVersionItem"
     name: str
     version: str
     extras: Optional[bytes] = None
+
+    def __str__(self):
+        value = self.version
+        if self.name:
+            value += " " + self.name
+        return f"{self.kind.name}: {value}"
+
+    __repr__ = __str__
 
 
 class Firmware(NamedTuple):
