@@ -400,7 +400,7 @@ class Receiver:
         try:
             self.write_register(_R.QUAD_CONNECT_DEVICE)
         except ReadException1 as e:
-            if e.code == _hidpp10.Error.invalid_value:
+            if e.code == _hidpp10.Error.INVALID_VALUE:
                 self.may_unpair = True
             else:
                 raise e from None

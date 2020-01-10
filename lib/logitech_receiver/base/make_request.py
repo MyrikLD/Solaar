@@ -124,15 +124,15 @@ def ping(handle, devnumber):
                     assert reply.data[-1] == 0x00
                     error = reply.data[3]
 
-                    if error == hidpp10.Error.invalid_SubID__command:
+                    if error == hidpp10.Error.INVALID_SUBID:
                         # a valid reply from a HID++ 1.0 device
                         return 1.0
 
-                    if error == hidpp10.Error.resource_error:
+                    if error == hidpp10.Error.RESOURCE_ERROR:
                         # device unreachable
                         return
 
-                    if error == hidpp10.Error.unknown_device:
+                    if error == hidpp10.Error.UNKNOWN_DEVICE:
                         # no paired device with that number
                         _log.error(
                             "(%s) device %d error on ping request: unknown device",

@@ -93,18 +93,18 @@ class NotificateionFlag(NamedInts):
 
 
 class Error(NamedInts):
-    invalid_SubID__command = 0x01
-    invalid_address = 0x02
-    invalid_value = 0x03
-    connection_request_failed = 0x04
-    too_many_devices = 0x05
-    already_exists = 0x06
-    busy = 0x07
-    unknown_device = 0x08
-    resource_error = 0x09
-    request_unavailable = 0x0A
-    unsupported_parameter_value = 0x0B
-    wrong_pin_code = 0x0C
+    INVALID_SUBID = 0x01  # Invalid sub-identifier / command
+    INVALID_ADDRESS = 0x02  # Invalid address
+    INVALID_VALUE = 0x03  # Invalid value
+    CONNECT_FAIL = 0x04  # Connection request failed (receiver)
+    TOO_MANY_DEVICES = 0x05  # Too many devices connected (receiver)
+    ALREADY_EXISTS = 0x06  # Already exists (receiver)
+    BUSY = 0x07  # Busy (receiver)
+    UNKNOWN_DEVICE = 0x08  # Unknown device (receiver)
+    RESOURCE_ERROR = 0x09  # Resource error (receiver)
+    INVALID_STATE = 0x0A  # Request not valid in current state
+    INVALID_PARAM = 0x0B  # Invalid parameter(s)
+    WRONG_PIN_CODE = 0x0C
 
 
 class PairingErrors(NamedInts):

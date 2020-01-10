@@ -33,5 +33,5 @@ class TestReq:
         with pytest.raises(ReadException) as excinfo:
             hidpp10.write_register(Device(), hidpp10.Registers.QUAD_CONNECT_DEVICE)
 
-            assert excinfo.code == hidpp10.Error.invalid_value
+            assert excinfo.code == hidpp10.Error.INVALID_VALUE
             assert excinfo.protocol_version == 1
