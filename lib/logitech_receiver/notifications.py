@@ -104,7 +104,7 @@ def _process_device_notification(device, status, n):
         feature = device.features[n.sub_id]
     except IndexError:
         _log.warning(
-            f"{device}: notification from invalid feature index {n.sub_id:02X}: {n}"
+            f"{device}: notification from invalid feature index {n.sub_id}: {n}"
         )
         return False
 
@@ -299,5 +299,5 @@ def _process_feature_notification(device, status, n, feature: Feature):
         return True
 
     _log.warning(
-        f"{device}: unrecognized {n} for feature {feature} (index {n.sub_id.value:02X})"
+        f"{device}: unrecognized {n} for feature {feature} (index {n.sub_id})"
     )
