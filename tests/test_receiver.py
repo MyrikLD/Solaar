@@ -1,7 +1,7 @@
 import pytest
 
 from logitech_receiver import hidpp10
-from logitech_receiver.base import request, ReadException
+from logitech_receiver.base import ReadException, request
 
 
 class TestReq:
