@@ -88,11 +88,9 @@ def _D(
                     )
                 else:
                     if w[0:1] == "1":
-                        assert kind == DeviceKind.mouse, "%s has protocol %0.1f, wpid %s" % (
-                            name,
-                            protocol,
-                            w,
-                        )
+                        assert (
+                            kind == DeviceKind.mouse
+                        ), "%s has protocol %0.1f, wpid %s" % (name, protocol, w,)
                     elif w[0:1] == "2":
                         assert kind in (
                             DeviceKind.keyboard,
