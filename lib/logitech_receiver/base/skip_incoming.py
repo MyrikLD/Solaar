@@ -67,9 +67,7 @@ def skip_incoming(handle: int, notifications_hook: Optional[Callable]):
                         report_type == ReportType.DJ_BUS_ENUM_SHORT
                         and len(data) == MEDIUM_MESSAGE_SIZE
                     )
-                ), (
-                    f"unexpected message size: report_type {report_type} message {strhex(data)}"
-                )
+                ), f"unexpected message size: report_type {report_type} message {strhex(data)}"
             if notifications_hook and report_type & 0xF0:
                 n = make_notification(data[1], data[2:])
                 if n:

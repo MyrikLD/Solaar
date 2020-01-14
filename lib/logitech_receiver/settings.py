@@ -159,9 +159,7 @@ class Setting:
 
             data_bytes = self._validator.prepare_write(value, current_value)
             if data_bytes is not None:
-                _log.debug(
-                    "%s: prepare write(%s) => %r", self.name, value, data_bytes
-                    )
+                _log.debug("%s: prepare write(%s) => %r", self.name, value, data_bytes)
 
                 reply = self._rw.write(self._device, data_bytes)
                 if not reply:
@@ -307,10 +305,8 @@ class BooleanValidator:
         if isinstance(self.mask, int):
             reply_value = reply_bytes[0] & self.mask
             _log.debug(
-                "BooleanValidator: validate read %r => %02X",
-                reply_bytes,
-                reply_value,
-                )
+                "BooleanValidator: validate read %r => %02X", reply_bytes, reply_value,
+            )
             if reply_value == self.true_value:
                 return True
             if reply_value == self.false_value:

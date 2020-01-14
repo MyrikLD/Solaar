@@ -272,7 +272,10 @@ def _process_feature_notification(device, status, n, feature: Feature):
             button_down = bool(touch & 0x02)
             mouse_lifted = bool(touch & 0x01)
             _log.info(
-                "%s: TOUCH MOUSE status: button_down=%s mouse_lifted=%s", device, button_down, mouse_lifted
+                "%s: TOUCH MOUSE status: button_down=%s mouse_lifted=%s",
+                device,
+                button_down,
+                mouse_lifted,
             )
         else:
             _log.warning("%s: unknown TOUCH MOUSE %s", device, n)
@@ -298,6 +301,4 @@ def _process_feature_notification(device, status, n, feature: Feature):
             _log.warning("%s: unknown WHEEL %s", device, n)
         return True
 
-    _log.warning(
-        f"{device}: unrecognized {n} for feature {feature} (index {n.sub_id})"
-    )
+    _log.warning(f"{device}: unrecognized {n} for feature {feature} (index {n.sub_id})")
