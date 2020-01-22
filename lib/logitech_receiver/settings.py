@@ -415,13 +415,13 @@ class ChoicesValidator:
 
     def prepare_write(self, new_value, current_value=None):
         if new_value is None:
-            choice = self.choices[:][0]
+            choice = list(self.choices)[0]
         else:
             if isinstance(new_value, int):
                 choice = self.choices(new_value)
-            elif int(new_value) in self.choices:
+            elif int(new_value) in list(self.choices):
                 choice = self.choices(int(new_value))
-            elif new_value in self.choices:
+            elif new_value in list(self.choices):
                 choice = self.choices(new_value)
             else:
                 raise ValueError(new_value)

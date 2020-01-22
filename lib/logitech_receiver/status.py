@@ -37,6 +37,9 @@ class ALERT(int, Enum):
     ATTENTION = 0x04
     ALL = 0xFF
 
+    def __str__(self):
+        return self.name
+
 
 class KEYS(int, Enum):
     BATTERY_LEVEL = 1
@@ -47,12 +50,18 @@ class KEYS(int, Enum):
     NOTIFICATION_FLAGS = 6
     ERROR = 7
 
+    def __str__(self):
+        return self.name
+
 
 class KEYS_MASK(int, Enum):
     SW_PRESENT_MASK = 1 << 4
     ENCRYPTED_MASK = 1 << 5
     NO_LINK_MASK = 1 << 6
     LOGITECH_MASK = 1 << 7
+
+    def __str__(self):
+        return self.name
 
 
 # If the battery charge is under this percentage, trigger an attention event
@@ -295,7 +304,7 @@ class DeviceStatus(dict):
                     if battery is not None:
                         self[KEYS.BATTERY_LEVEL] = battery
 
-        if self.updated == 0 and active == True:
+        if self.updated == 0 and active is True:
             # if the device is active on the very first status notification,
             # (meaning just when the program started or a new receiver was just
             # detected), pop-up a notification about it

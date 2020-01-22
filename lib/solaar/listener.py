@@ -18,7 +18,7 @@ import time
 from logging import INFO as _INFO, getLogger
 from typing import Any, NamedTuple, Optional
 
-from logitech_receiver import Receiver, base, listener, notifications, status as _status
+from logitech_receiver import Receiver, base, listener, notifications, status as _status, PairedDevice
 from logitech_receiver.hidpp10.enums import SubId
 from solaar.i18n import _
 from . import configuration
@@ -97,7 +97,7 @@ class ReceiverListener(listener.EventsListener):
                 _log.exception("closing receiver %s" % r.path)
         self.status_changed_callback(r)  # , _status.ALERT.NOTIFICATION)
 
-    def _status_changed(self, device, alert=_status.ALERT.NONE, reason=None):
+    def _status_changed(self, device: PairedDevice, alert=_status.ALERT.NONE, reason=None):
         assert device is not None
         if device.kind is None:
             _log.info(

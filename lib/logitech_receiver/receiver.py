@@ -340,13 +340,14 @@ class PairedDevice:
         return self.wpid is not None and self.number in self.receiver
 
     def __str__(self):
+        return f"PairedDevice(%s)" % (self.codename or "?")
+
+    def __repr__(self):
         return "<PairedDevice(%d,%s,%s)>" % (
             self.number,
             self.wpid,
             self.codename or "?",
         )
-
-    __repr__ = __str__
 
 
 class Receiver:

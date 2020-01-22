@@ -128,7 +128,7 @@ def _process_hidpp10_custom_notification(device, status, n):
         _log.info("illumination event: %s", n)
         return True
 
-    _log.warning("%s: unrecognized %s", device, n)
+    _log.debug("%s: unrecognized %s", device, n)
 
 
 def _process_hidpp10_notification(device, status, n):
@@ -195,7 +195,7 @@ def _process_hidpp10_notification(device, status, n):
             _log.warning("%s: unknown %s", device, n)
         return True
 
-    _log.warning("%s: unrecognized %s", device, n)
+    _log.debug("%s: unrecognized %s", device, n)
 
 
 def _process_feature_notification(device, status, n, feature: Feature):
@@ -301,4 +301,4 @@ def _process_feature_notification(device, status, n, feature: Feature):
             _log.warning("%s: unknown WHEEL %s", device, n)
         return True
 
-    _log.warning(f"{device}: unrecognized {n} for feature {feature} (index {n.sub_id})")
+    _log.debug(f"{device}: unrecognized {n} for feature {feature} (index {n.sub_id})")
